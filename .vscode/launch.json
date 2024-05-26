@@ -1,0 +1,14 @@
+{
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Spring Boot-ElevaconApplication<elevacon>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "com.elevacon.elevacon.ElevaconApplication",
+            "projectName": "elevacon",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
+        }
+    ]
+}
