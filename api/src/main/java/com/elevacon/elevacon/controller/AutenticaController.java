@@ -3,6 +3,7 @@ package com.elevacon.elevacon.controller;
 import jakarta.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -33,37 +34,52 @@ public class AutenticaController {
     private TokenService tokenService;
 
     @PostMapping("/login")
-    public ResponseEntity login(@RequestBody @Valid AutenticaDTO dados){
-        //hash para criptografar senha
+    public ResponseEntity login(@RequestBody @Valid AutenticaDTO dados) {
+        // hash para criptografar senha
         var loginSenha = new UsernamePasswordAuthenticationToken(dados.login(), dados.senha());
         var autentica = this.authenticationManager.authenticate(loginSenha);
 
-        var token = tokenService.geraToken((Usuario)autentica.getPrincipal());
+        var token = tokenService.geraToken((Usuario) autentica.getPrincipal());
 
         return ResponseEntity.ok(new LoginTokenDTO(token));
     }
 
     @PostMapping("/cadastrar")
-    public ResponseEntity cadastrar(@RequestBody @Valid reqUsuarioDTO dados){
-        if (this.usuarioRepository.findByLogin(dados.login()) != null) return ResponseEntity.badRequest().build();
-            
+    public ResponseEntity cadastrar(@RequestBody @Valid reqUsuarioDTO dados) {
+        if (this.usuarioRepository.findByLogin(dados.login()) != null)
+            return ResponseEntity.badRequest().build();
+
         String senhaCriptografada = new BCryptPasswordEncoder().encode(dados.senha());
-        Usuario novoUsuario = new Usuario(dados.login(), senhaCriptografada, dados.dataCriacao(),dados.role());
+        Usuario novoUsuario = new Usuario(dados.login(), senhaCriptografada, dados.dataCriacao(), dados.role());
 
         this.usuarioRepository.save(novoUsuario);
 
         return ResponseEntity.ok().build();
     }
 
+    @PostMapping("/validaToken")
+    public ResponseEntity<String> validaToken(@RequestBody java.util.Map<String, String> request) {
+        String token = request.get("token");
+        try {
+            String subject = tokenService.validaToken(token);
+            return ResponseEntity.ok(subject);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Token inválido ou expirado.");
+        }
+    }
+
     // @PostMapping("/cadastrar")
     // public ResponseEntity cadastrar(@RequestBody @Valid RegistroDTO dados){
-    //     if (this.usuarioRepository.findByLogin(dados.login()) != null) return ResponseEntity.badRequest().build();
-            
-    //     String senhaCriptografada = new BCryptPasswordEncoder().encode(dados.senha());
-    //     Usuario novoUsuario = new Usuario(dados.login(), senhaCriptografada, dados.role());
+    // if (this.usuarioRepository.findByLogin(dados.login()) != null) return
+    // ResponseEntity.badRequest().build();
 
-    //     this.usuarioRepository.save(novoUsuario);
+    // String senhaCriptografada = new
+    // BCryptPasswordEncoder().encode(dados.senha());
+    // Usuario novoUsuario = new Usuario(dados.login(), senhaCriptografada,
+    // dados.role());
 
-    //     return ResponseEntity.ok().build();
+    // this.usuarioRepository.save(novoUsuario);
+
+    // return ResponseEntity.ok().build();
     // }
 }
