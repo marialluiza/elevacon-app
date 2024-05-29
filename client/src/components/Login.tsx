@@ -1,36 +1,22 @@
-import React, { useState } from 'react';
+import React, {useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
-import { toast } from 'sonner';
+import { useAuth } from '../contexts/auth/ProvedorAutentica';
+const Login: React.FC = () => {
 
-export function Login() {
-  const [usuario, setUsuario] = useState('');
+  const { userAuth } = useAuth(); // ssando o hook 'useAuth' pra acessar o contexto de autenticação
+  const navigate = useNavigate();
+
+  const [login, setLogin] = useState('');
   const [senha, setSenha] = useState('');
   const [erro, setErro] = useState('');
-  const navegar = useNavigate();
-
-  const handleUsuarioChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setUsuario(e.target.value);
-  };
-
-  const handleSenhaChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSenha(e.target.value);
-  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const response = await axios.post('http://localhost:8080/autentica/login', {
-        login: usuario,
-        senha: senha
-      });
-      const token = response.data.token;
-      localStorage.setItem('token', token);
-      toast.success('Login realizado com sucesso!');
-      // Redireciona para:
-      navegar('/PaginaInicial');
-    } catch (error) {
-      setErro('Usuário ou senha incorretos');
+      await userAuth(login, senha); // chamando a função login do contexto de autenticação
+      navigate('/PaginaInicial'); 
+    } catch (err) {
+      setErro('Login falhou, verifique suas credenciais.');
     }
   };
 
@@ -40,16 +26,16 @@ export function Login() {
         <h2 className="text-2xl font-bold text-center text-white">Login</h2>
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
-            <label htmlFor="usuario" className="block text-sm font-medium text-white">
+            <label htmlFor="login" className="block text-sm font-medium text-white">
               Digite seu nome de usuário
             </label>
             <input
-              id="usuario"
+              id="login"
               type="text"
-              value={usuario}
-              onChange={handleUsuarioChange}
+              value={login}
+              onChange={(e) => setLogin(e.target.value)}
               className="w-full px-3 py-2 mt-1 bg-slate-200 text-gray-900 placeholder-gray-500 border rounded-md focus:outline-none focus:ring focus:border-blue-300"
-              placeholder="Digite seu usuario"
+              placeholder="Digite seu login"
               required
             />
           </div>
@@ -61,7 +47,7 @@ export function Login() {
               id="senha"
               type="password"
               value={senha}
-              onChange={handleSenhaChange}
+              onChange={(e) => setSenha(e.target.value)}
               className="w-full px-3 py-2 mt-1 bg-slate-200 text-gray-900 placeholder-gray-500 border rounded-md focus:outline-none focus:ring focus:border-blue-300"
               placeholder="Digite sua senha"
               required
@@ -83,4 +69,6 @@ export function Login() {
       </div>
     </div>
   );
-}
+};
+
+export default Login;
