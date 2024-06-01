@@ -13,9 +13,12 @@ import com.elevacon.elevacon.security.Roles.UsuarioRole;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
@@ -47,6 +50,10 @@ public class Usuario implements UserDetails {
     @Column(nullable = false)
     private UsuarioRole role;
 
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "pessoa_id")
+    private Pessoa pessoa;
+
     @PrePersist
     protected void onCreate() {
         data_criacao = new Date();
@@ -68,7 +75,7 @@ public class Usuario implements UserDetails {
         this.role = role;
     }
 
-    // GrantedAuthority - método que retorna as rules do usuário
+    // GrantedAuthority - método que retorna as roles do usuário
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         if (this.role == UsuarioRole.ADMIN) {

@@ -1,6 +1,7 @@
 import React, {useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../contexts/auth/ProvedorAutentica';
+import { useAuth } from '../../../contexts/auth/ProvedorAutentica';
+
 const Login: React.FC = () => {
 
   const { userAuth } = useAuth(); // ssando o hook 'useAuth' pra acessar o contexto de autenticação

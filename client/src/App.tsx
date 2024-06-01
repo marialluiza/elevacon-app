@@ -30,8 +30,9 @@ import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-d
 import PrivateRoute from './components/PrivateRoute';
 import { AuthProvider } from './contexts/auth/ProvedorAutentica';
 import { PaginaInicial } from './components/PaginaInicial';
-import Login from './components/Login';
-// import ListaCliente from './components/ListaCliente';
+import ListaCliente from './components/ListaCliente';
+import Login from './components/pages/login/Login';
+import InserirCliente from './components/InserirCliente';
 
 const App: React.FC = () => {
   return (
@@ -41,7 +42,8 @@ const App: React.FC = () => {
           <Route path="/Login" element={<Login />} />
           <Route element={<PrivateRoute />}>
             <Route path="/PaginaInicial" element={<PaginaInicial />} />
-            {/* <Route path="/ListaCliente" element={<ListaCliente />} /> */}
+            <Route path="/ListaCliente" element={<ListaCliente />} />
+            <Route path="/InserirCliente" element={<InserirCliente/>} />
           </Route>
           <Route path="/" element={<Navigate to="/Login" />} />
         </Routes>

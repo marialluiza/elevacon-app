@@ -35,6 +35,3 @@ public class ContadorService {
         return contadorRepository.findAll();
     }
 }
-
-// lógica, regras de negócio
-// por exemplo: lógica de conectar 'usuario' com 'contador'

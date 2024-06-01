@@ -35,22 +35,30 @@ public class ConfigSeguranca {
         return httpSecurity
             .csrf(csrf -> csrf.disable())
             .sessionManagement(session-> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) //indica que será autenticação STATELESS(autenticação por token)
-                .authorizeHttpRequests(autoriza -> autoriza //define requisições http que serão autorizadas e a aprtir de quais roles
-                .requestMatchers(HttpMethod.POST, "/autentica/cadastrar").hasRole("ADMIN")
+            .authorizeHttpRequests(autoriza -> autoriza //define requisições http que serão autorizadas e a aprtir de quais roles
+                
                 .requestMatchers(HttpMethod.POST, "/autentica/login").permitAll()
-            
+                // .requestMatchers(HttpMethod.POST, "/pessoa/cadastrar-pessoa").permitAll()
+
+                .requestMatchers(HttpMethod.POST, "/autentica/cadastrar").hasRole("ADMIN")
+                
                 .requestMatchers(HttpMethod.GET, "/usuario/listar-usuarios").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.POST, "/usuario").hasRole("ADMIN")
-
+                
                 .requestMatchers(HttpMethod.GET, "/pessoa/listar-pessoas").hasRole("ADMIN")
-                .requestMatchers(HttpMethod.POST, "/pessoa/cadastrar-pessoa").permitAll()
-
+                
                 .requestMatchers(HttpMethod.POST, "/contador/cadastrar-contador").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.GET, "/contador/listar-contadores").hasRole("ADMIN")
 
-                .requestMatchers(HttpMethod.POST, "/cliente/cadastrar-cliente").hasRole("CONTADOR")
-                .requestMatchers(HttpMethod.GET, "/cliente/r-clientes").hasRole("CONTADOR")
+                .requestMatchers(HttpMethod.DELETE, "/usuario/remover").hasRole("ADMIN")
 
+                .requestMatchers(HttpMethod.DELETE, "/usuario/remover").hasRole("CONTADOR")
+                .requestMatchers(HttpMethod.GET, "/cliente/listar-clientes").hasRole("CONTADOR")
+                .requestMatchers(HttpMethod.POST, "/cliente/cadastrar-cliente").hasRole("CONTADOR")
+
+                .requestMatchers(HttpMethod.PUT, "/cliente/editar-cliente").hasRole("CONTADOR")
+
+                
                 .anyRequest().authenticated()
             )
             .addFilterBefore(filtroSeguranca, UsernamePasswordAuthenticationFilter.class )

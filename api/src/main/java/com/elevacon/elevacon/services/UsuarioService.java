@@ -2,8 +2,14 @@ package com.elevacon.elevacon.services;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Collection;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
 
@@ -17,14 +23,15 @@ public class UsuarioService {
     @Autowired
     private UsuarioRepository usuarioRepository;
 
-    //método de autenticação
+    @Autowired
+    private AutenticaService autenticaService;
 
     public Usuario inserirUsuario(@RequestBody reqUsuarioDTO dados) {
         Usuario usuario = new Usuario(dados);
         return usuarioRepository.save(usuario);
     }
 
-    public List<Usuario> listarUsuarios(){
+    public List<Usuario> listarUsuarios() {
         return usuarioRepository.findAll();
     }
 
@@ -33,32 +40,97 @@ public class UsuarioService {
     }
 
     public Usuario atualizarUsuario(Long id, Usuario usuarioAtualizado) {
+        Authentication autenticado = SecurityContextHolder.getContext().getAuthentication(); // autenticado fornece o contexto do usuario autenticado
+        String usuarioAtual = autenticado.getName();
+
         Optional<Usuario> usuarioExistente = usuarioRepository.findById(id);
         if (usuarioExistente.isPresent()) {
             Usuario usuario = usuarioExistente.get();
-            // Atualizar os campos do usuário com os novos valores
-            usuario.setLogin(usuarioAtualizado.getLogin());
-            usuario.setSenha(usuarioAtualizado.getSenha());
-            // usuario.setUsuarioAtivo(false);
-            // Salvar o usuário atualizado no repositório
-            return usuarioRepository.save(usuario);
+
+            if (usuarioPode(usuarioAtual, usuario)) {
+                // atualiza os campos do usuário com os novos valores:
+                usuario.setLogin(usuarioAtualizado.getLogin());
+                String senhaCriptografada = new BCryptPasswordEncoder().encode(usuarioAtualizado.getSenha());
+                usuario.setSenha(senhaCriptografada);
+                return usuarioRepository.save(usuario); // slva o usuário atualizado no repositório
+            } else {
+                throw new AccessDeniedException("Usuário não possui permissão.");
+            }
+
         } else {
             throw new RuntimeException("Usuário não encontrado");
         }
+
+    }
+    
+    private boolean usuarioPode(String atualUsuario, Usuario usuario){
+        Collection<? extends GrantedAuthority> authorities = SecurityContextHolder.getContext().getAuthentication().getAuthorities();
+
+        for (GrantedAuthority autorizacao : authorities) {
+            String role = autorizacao.getAuthority();
+            if (role.equals("ROLE_ADMIN")) {
+                return true;
+
+            } else if (role.equals("ROLE_CONTADOR")) {
+                if (atualUsuario.equals(usuario.getLogin())) {
+                    return true;
+                }
+            } else if (role.equals("ROLE_CLIENTE")) {
+                if (atualUsuario.equals(usuario.getLogin())) {
+                    return true;
+                }
+            } else if (role.equals("ROLE_USUARIO")) {
+                if (atualUsuario.equals(usuario.getLogin())) {
+                    return true;
+                }
+            }
+        }
+        System.out.println("Não possui permissão para atualizar este usuário.");
+        return false;
     }
 
     public String removerUsuario(Long id) {
-        if (usuarioRepository.existsById(id)) {
-            usuarioRepository.deleteById(id);
-            return "Usuário removido com sucesso.";
+        Authentication autenticado = SecurityContextHolder.getContext().getAuthentication();
+        String usuarioAtual = autenticado.getName();
+
+        Optional<Usuario> usuarioExistente = usuarioRepository.findById(id);
+        if (usuarioExistente.isPresent()) {
+            Usuario usuario = usuarioExistente.get();
+
+            if (usuarioPode(usuarioAtual, usuario)) {
+                usuarioRepository.deleteById(id);
+                return "Usuário removido com sucesso.";
+            } else {
+                throw new AccessDeniedException("Usuário não possui permissão.");
+            }
+
         } else {
             return "Usuário não encontrado.";
         }
     }
-    
+
+    // private boolean usuarioPodeRemover(String atualUsuario, Usuario usuario) {
+    //     Collection<? extends GrantedAuthority> authorities = SecurityContextHolder.getContext().getAuthentication().getAuthorities();
+
+    //     for (GrantedAuthority autorizacao : authorities) {
+    //         String role = autorizacao.getAuthority();
+    //         if (role.equals("ROLE_ADMIN")) {
+    //             return true;
+
+    //         } else if (role.equals("ROLE_CONTADOR")) {
+    //             if ("ROLE_CLIENTE".equals(usuario.getRole().getRole())) {
+    //                 return true;
+    //             }
+    //         } else if (role.equals("ROLE_CLIENTE") || role.equals("ROLE_USUARIO")) {
+    //             if (atualUsuario.equals(usuario.getLogin())) {
+    //                 return true;
+    //             }
+    //         }
+    //     }
+    //     return false;
+    // }
+
 }
 
-
-//-----------------------------------------------------------------------------------------------------
-//lógica, regras de negócio
-//por exemplo: lógica de conectar 'usuario' 'usuario' com 'contador' 
+// -----------------------------------------------------------------------------------------------------
+// lógica, regras de negócio
