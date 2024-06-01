@@ -19,12 +19,12 @@ export const PaginaInicial = () => {
         </div>
         <h2 className="text-xl font-bold mt-8">Acessar</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 my-4">
-          <div className="bg-gray-200 p-4 rounded-lg text-center">
+          <Link to="/ListaCliente" className="bg-gray-200 p-4 rounded-lg text-center hover:bg-gray-300 transition-colors duration-300">
             Clientes
-          </div>
-          <div className="bg-gray-200 p-4 rounded-lg text-center">
+          </Link>
+          <Link to="#" className="bg-gray-200 p-4 rounded-lg text-center hover:bg-gray-300 transition-colors duration-300">
             Documentos
-          </div>
+          </Link>
         </div>
       </div>
       <div className="p-4">
@@ -40,13 +40,3 @@ export const PaginaInicial = () => {
 };
 
 export default PaginaInicial;
-
-
-
-{/* <Link to="/ListaCliente">Lista Clientes</Link>
-<Button
-  onClick={logout} 
-  className="w-42 px-4 py-2 text-white bg-black rounded-md hover:bg-yellow focus:outline-none focus:bg-yellow"
-  >
-  Sair
-</Button> */}
