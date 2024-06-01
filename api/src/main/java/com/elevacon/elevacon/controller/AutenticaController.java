@@ -39,9 +39,13 @@ public class AutenticaController {
         var loginSenha = new UsernamePasswordAuthenticationToken(dados.login(), dados.senha());
         var autentica = this.authenticationManager.authenticate(loginSenha);
 
-        var token = tokenService.geraToken((Usuario) autentica.getPrincipal());
+        var usuario = (Usuario) autentica.getPrincipal();
+        // var token = tokenService.geraToken((Usuario) autentica.getPrincipal());
+        var token = tokenService.geraToken(usuario);
 
-        return ResponseEntity.ok(new LoginTokenDTO(token));
+        var response = new LoginTokenDTO(token, usuario.getId_usuario(), usuario.getLogin(), usuario.getRole());
+        return ResponseEntity.ok(response);
+
     }
 
     @PostMapping("/cadastrar")

@@ -5,6 +5,7 @@ import api from '../../hooks/usaAPI';
 interface AuthContextData {
     signed: boolean;
     token: string | null;
+    userId: number | null;
     userAuth(login: string, senha: string): Promise<void>;
     logout(): void;
 }
@@ -12,7 +13,9 @@ interface AuthContextData {
 const AuthContext = createContext<AuthContextData>({} as AuthContextData);
 
 export const AuthProvider = ({ children }: { children: JSX.Element }) => {
+
     const [token, setToken] = useState<string | null>(null);
+    const [userId, setUserId] = useState<number | null>(null);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -25,19 +28,21 @@ export const AuthProvider = ({ children }: { children: JSX.Element }) => {
 
     const userAuth = async (login: string, senha: string) => {
         const response = await api.post('/autentica/login', { login, senha });
-        const { token } = response.data;
+        const { token, id_usuario } = response.data;
         localStorage.setItem('token', token);
         setToken(token);
+        setUserId(id_usuario);
     };
 
     const logout = () => {
         localStorage.removeItem('token');
         setToken(null);
+        setUserId(null);
         navigate('/Login');
     };
 
     return (
-        <AuthContext.Provider value={{ signed: !!token, token, userAuth, logout }}>
+        <AuthContext.Provider value={{ signed: !!token, token, userId, userAuth, logout }}>
             {children}
         </AuthContext.Provider>
     );

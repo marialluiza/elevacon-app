@@ -47,18 +47,6 @@ public class FiltroSeguranca extends OncePerRequestFilter{
         filterChain.doFilter(request, response); // Chama o próximo filtro
     }
     
-    // protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-    //     var token = this.recuperaToken(request);
-    //     if (token != null) {
-    //         var login = tokenService.validaToken(token);
-    //         UserDetails usuario = usuarioRepository.findByLogin(login);
-            
-    //         var autenticacao = new UsernamePasswordAuthenticationToken(usuario, null, usuario.getAuthorities());
-    //         SecurityContextHolder.getContext().setAuthentication(autenticacao);
-    //     }
-    //     filterChain.doFilter(request, response); //chama próximo filtro
-    // }
-    
     private String recuperaToken(HttpServletRequest request){
         var cabecalhoAutenticacao = request.getHeader("Authorization");
         if (cabecalhoAutenticacao == null) {

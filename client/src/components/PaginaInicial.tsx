@@ -1,5 +1,6 @@
-// import { Link } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { useAuth } from "../contexts/auth/ProvedorAutentica";
+import { Flex, Text, Button } from '@radix-ui/themes';
 
 export const PaginaInicial = () => {
 
@@ -9,11 +10,13 @@ export const PaginaInicial = () => {
     <div className="flex items-center justify-center min-h-screen bg-slate-200">
       <h1>Hello</h1>
 
-      {/* <Link to="/ListaCliente">Lista Clientes</Link> */}
-      <button
-        onClick={logout} className="w-42 px-4 py-2 text-white bg-blue-800 rounded-md hover:bg-blue-700 focus:outline-none focus:bg-blue-600">
+      <Link to="/ListaCliente">Lista Clientes</Link>
+      <Button
+        onClick={logout} 
+        className="w-42 px-4 py-2 text-white bg-black rounded-md hover:bg-yellow focus:outline-none focus:bg-yellow"
+        >
         Sair
-      </button>
+      </Button>
     </div>
   );
 }
