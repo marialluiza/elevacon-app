@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.elevacon.elevacon.model.Cliente;
-import com.elevacon.elevacon.services.ClienteService;
+import com.elevacon.elevacon.services.ClienteService; 
 
 @RestController
 @RequestMapping("/cliente")
@@ -24,7 +24,6 @@ public class ClienteController {
     @Autowired
     private ClienteService clienteService;
 
-
     @PostMapping("/cadastrar-cliente")
     public ResponseEntity<Cliente> inserirCliente(@RequestBody Cliente cliente) {
         Cliente novoCliente = clienteService.inserirCliente(cliente);
@@ -32,8 +31,8 @@ public class ClienteController {
     }
 
     @GetMapping("/listar-clientes")
-    public List<Cliente> listarClientes(){
-    return clienteService.listarClientes();
+    public List<Cliente> listarClientes() {
+        return clienteService.listarClientes();
     }
 
     @PutMapping("/editar-cliente/{id}")
@@ -55,4 +54,15 @@ public class ClienteController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
+
+    @GetMapping("/buscar-cliente/{id}") 
+    public ResponseEntity<Cliente> buscarClientePorId(@PathVariable Long id) {
+        try {
+            Cliente cliente = clienteService.buscarClientePorId(id);
+            return new ResponseEntity<>(cliente, HttpStatus.OK);
+        } catch (RuntimeException e) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+
 }

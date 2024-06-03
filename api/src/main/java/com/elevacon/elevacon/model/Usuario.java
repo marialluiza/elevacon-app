@@ -10,6 +10,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import com.elevacon.elevacon.model.DTOs.reqUsuarioDTO;
 import com.elevacon.elevacon.security.Roles.UsuarioRole;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -50,9 +51,9 @@ public class Usuario implements UserDetails {
     @Column(nullable = false)
     private UsuarioRole role;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "pessoa_id")
-    private Pessoa pessoa;
+    // @OneToOne(fetch = FetchType.LAZY)
+    // @JoinColumn(name = "pessoa_id")
+    // private Pessoa pessoa;
 
     @PrePersist
     protected void onCreate() {
@@ -77,6 +78,7 @@ public class Usuario implements UserDetails {
 
     // GrantedAuthority - método que retorna as roles do usuário
     @Override
+    @JsonIgnore
     public Collection<? extends GrantedAuthority> getAuthorities() {
         if (this.role == UsuarioRole.ADMIN) {
             return List.of(

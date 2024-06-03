@@ -1,0 +1,18 @@
+export type ClienteData = {
+    nome: '',
+    data_nascimento: '',
+    ocupacao_principal: '',
+    email: '',
+    titulo_eleitoral: '',
+    cpf: '',
+    telefone: '',
+    logradouro: '',
+    numero: '',
+    bairro: '',
+    cidade: '',
+    estado: '',
+    cep: '',
+    nome_conjugue: '',
+    cpf_conjugue: '',
+    observacao: '',
+}

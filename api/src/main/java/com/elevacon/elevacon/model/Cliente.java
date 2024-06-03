@@ -23,12 +23,22 @@ public class Cliente {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id_cliente;
+    private String nome;
+    private String email;
+    private String telefone;
     private String titulo_eleitoral;
     private boolean conjugue;
     private String cpf;
     private Date data_nascimento;
     private boolean dependente;
     private String ocupacao_principal;
+    private String logradouro;
+    private int numero;
+    private String bairro;
+    private String cidade;
+    private String estado;
+    private String cep;
+    private String observacao;
 
     private String nome_conjugue;
     private String cpf_conjugue;

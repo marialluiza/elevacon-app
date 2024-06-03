@@ -57,7 +57,8 @@ public class ConfigSeguranca {
                 .requestMatchers(HttpMethod.POST, "/cliente/cadastrar-cliente").hasRole("CONTADOR")
 
                 .requestMatchers(HttpMethod.PUT, "/cliente/editar-cliente").hasRole("CONTADOR")
-
+                .requestMatchers(HttpMethod.GET, "/cliente/buscar-cliente").hasRole("CONTADOR")
+                .requestMatchers(HttpMethod.DELETE, "/cliente/excluir-cliente").hasRole("CONTADOR")
                 
                 .anyRequest().authenticated()
             )

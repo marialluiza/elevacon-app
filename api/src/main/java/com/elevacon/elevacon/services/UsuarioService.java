@@ -23,8 +23,8 @@ public class UsuarioService {
     @Autowired
     private UsuarioRepository usuarioRepository;
 
-    @Autowired
-    private AutenticaService autenticaService;
+    // @Autowired
+    // private AutenticaService autenticaService;
 
     public Usuario inserirUsuario(@RequestBody reqUsuarioDTO dados) {
         Usuario usuario = new Usuario(dados);
@@ -62,7 +62,28 @@ public class UsuarioService {
         }
 
     }
-    
+
+    public String removerUsuario(Long id) {
+        Authentication autenticado = SecurityContextHolder.getContext().getAuthentication();
+        String usuarioAtual = autenticado.getName();
+
+        Optional<Usuario> usuarioExistente = usuarioRepository.findById(id);
+        if (usuarioExistente.isPresent()) {
+            Usuario usuario = usuarioExistente.get();
+
+            if (usuarioPode(usuarioAtual, usuario)) {
+                usuarioRepository.deleteById(id);
+                return "Usuário removido com sucesso.";
+            } else {
+                throw new AccessDeniedException("Usuário não possui permissão.");
+            }
+
+        } else {
+            return "Usuário não encontrado.";
+        }
+    }
+
+
     private boolean usuarioPode(String atualUsuario, Usuario usuario){
         Collection<? extends GrantedAuthority> authorities = SecurityContextHolder.getContext().getAuthentication().getAuthorities();
 
@@ -85,51 +106,9 @@ public class UsuarioService {
                 }
             }
         }
-        System.out.println("Não possui permissão para atualizar este usuário.");
+        System.out.println("Não possui permissão para realizar essa ação referente a este usuário.");
         return false;
     }
-
-    public String removerUsuario(Long id) {
-        Authentication autenticado = SecurityContextHolder.getContext().getAuthentication();
-        String usuarioAtual = autenticado.getName();
-
-        Optional<Usuario> usuarioExistente = usuarioRepository.findById(id);
-        if (usuarioExistente.isPresent()) {
-            Usuario usuario = usuarioExistente.get();
-
-            if (usuarioPode(usuarioAtual, usuario)) {
-                usuarioRepository.deleteById(id);
-                return "Usuário removido com sucesso.";
-            } else {
-                throw new AccessDeniedException("Usuário não possui permissão.");
-            }
-
-        } else {
-            return "Usuário não encontrado.";
-        }
-    }
-
-    // private boolean usuarioPodeRemover(String atualUsuario, Usuario usuario) {
-    //     Collection<? extends GrantedAuthority> authorities = SecurityContextHolder.getContext().getAuthentication().getAuthorities();
-
-    //     for (GrantedAuthority autorizacao : authorities) {
-    //         String role = autorizacao.getAuthority();
-    //         if (role.equals("ROLE_ADMIN")) {
-    //             return true;
-
-    //         } else if (role.equals("ROLE_CONTADOR")) {
-    //             if ("ROLE_CLIENTE".equals(usuario.getRole().getRole())) {
-    //                 return true;
-    //             }
-    //         } else if (role.equals("ROLE_CLIENTE") || role.equals("ROLE_USUARIO")) {
-    //             if (atualUsuario.equals(usuario.getLogin())) {
-    //                 return true;
-    //             }
-    //         }
-    //     }
-    //     return false;
-    // }
-
 }
 
 // -----------------------------------------------------------------------------------------------------

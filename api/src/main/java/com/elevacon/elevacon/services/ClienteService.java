@@ -25,14 +25,25 @@ public class ClienteService {
     private ContadorRepository contadorRepository;
 
     public Cliente inserirCliente(Cliente cliente) {
-        Long idContador = cliente.getContador().getId_contador();
-        Optional<Contador> contadorOptional = contadorRepository.findById(idContador);
-        if (contadorOptional.isPresent()) {
-            Contador contador = contadorOptional.get();
-            cliente.setContador(contador);
-            return clienteRepository.save(cliente);
+        Authentication usuarioAutenticado = SecurityContextHolder.getContext().getAuthentication();
+
+        if (usuarioAutenticado != null && usuarioAutenticado.getPrincipal() instanceof UserDetails) {
+            UserDetails userDetails = (UserDetails) usuarioAutenticado.getPrincipal();
+
+            if (userDetails.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_CONTADOR"))) {
+                Contador contador = contadorRepository.findByUsuarioLogin(userDetails.getUsername());
+
+                if (contador != null) {
+                    cliente.setContador(contador);
+                    return clienteRepository.save(cliente);
+                } else {
+                    throw new RuntimeException("Contador não encontrado para o usuário autenticado.");
+                }
+            } else {
+                throw new RuntimeException("Acesso negado: Contador apenas.");
+            }
         } else {
-            throw new RuntimeException("Contador com o ID fornecido não encontrado.");
+            throw new RuntimeException("Usuário autenticado não encontrado.");
         }
     }
 
@@ -72,6 +83,9 @@ public class ClienteService {
                     if (clienteOptional.isPresent()) {
                         Cliente clienteExistente = clienteOptional.get();
                         if (clienteExistente.getContador().getId_contador().equals(contador.getId_contador())) {
+                            clienteExistente.setNome(clienteAtualizado.getNome());
+                            clienteExistente.setTelefone(clienteAtualizado.getTelefone());
+                            clienteExistente.setEmail(clienteAtualizado.getEmail());
                             clienteExistente.setTitulo_eleitoral(clienteAtualizado.getTitulo_eleitoral());
                             clienteExistente.setConjugue(clienteAtualizado.isConjugue());
                             clienteExistente.setCpf(clienteAtualizado.getCpf());
@@ -84,7 +98,8 @@ public class ClienteService {
                             clienteExistente.setPessoa(clienteAtualizado.getPessoa());
                             return clienteRepository.save(clienteExistente);
                         } else {
-                            throw new RuntimeException("Acesso negado: O cliente não pertence ao contador autenticado.");
+                            throw new RuntimeException(
+                                    "Acesso negado: O cliente não pertence ao contador autenticado.");
                         }
                     } else {
                         throw new RuntimeException("Cliente com o ID fornecido não encontrado.");
@@ -116,7 +131,8 @@ public class ClienteService {
                         if (cliente.getContador().getId_contador().equals(contador.getId_contador())) {
                             clienteRepository.delete(cliente);
                         } else {
-                            throw new RuntimeException("Acesso negado: O cliente não pertence ao contador autenticado.");
+                            throw new RuntimeException(
+                                    "Acesso negado: O cliente não pertence ao contador autenticado.");
                         }
                     } else {
                         throw new RuntimeException("Cliente com o ID fornecido não encontrado.");
@@ -133,4 +149,36 @@ public class ClienteService {
         }
     }
 
+    public Cliente buscarClientePorId(Long idCliente) {
+        Authentication usuarioAutenticado = SecurityContextHolder.getContext().getAuthentication();
+
+        if (usuarioAutenticado != null && usuarioAutenticado.getPrincipal() instanceof UserDetails) {
+            UserDetails userDetails = (UserDetails) usuarioAutenticado.getPrincipal();
+
+            if (userDetails.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_CONTADOR"))) {
+                Contador contador = contadorRepository.findByUsuarioLogin(userDetails.getUsername());
+
+                if (contador != null) {
+                    Optional<Cliente> clienteOptional = clienteRepository.findById(idCliente);
+                    if (clienteOptional.isPresent()) {
+                        Cliente clienteExistente = clienteOptional.get();
+                        if (clienteExistente.getContador().getId_contador().equals(contador.getId_contador())) {
+                            return clienteExistente;
+                        } else {
+                            throw new RuntimeException(
+                                    "Acesso negado: O cliente não pertence ao contador autenticado.");
+                        }
+                    } else {
+                        throw new RuntimeException("Cliente com o ID fornecido não encontrado.");
+                    }
+                } else {
+                    throw new RuntimeException("Contador não encontrado para o usuário autenticado.");
+                }
+            } else {
+                throw new RuntimeException("Acesso apenas para contadores.");
+            }
+        } else {
+            throw new RuntimeException("Usuário autenticado não encontrado.");
+        }
+    }
 }

@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { useAuth } from "../contexts/auth/ProvedorAutentica";
-import { Flex, Text, Button } from '@radix-ui/themes';
+import { Button } from '@radix-ui/themes';
 import NavBar from "./ui/NavBar";
 import Card from "./ui/Card";
 
@@ -13,7 +13,7 @@ export const PaginaInicial = () => {
       <div className="flex-grow p-4">
         <h2 className="text-xl font-bold">Atualizações</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 my-4">
-          <Card color="bg-blue-500" title="x documentos" description="x clientes" />
+          <Card color="bg-blue-500" title="x documentos recebidos" description="" />
           <Card color="bg-yellow-500" title="x documentos pendentes" description="x clientes" />
           <Card color="bg-green-500" title="" description="Visualizar tudo" />
         </div>

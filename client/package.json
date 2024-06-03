@@ -10,16 +10,19 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@radix-ui/react-dialog": "^1.0.5",
     "@radix-ui/react-radio-group": "^1.1.3",
     "@radix-ui/themes": "^3.0.5",
     "@types/axios": "^0.14.0",
     "autoprefixer": "^10.4.19",
     "axios": "^1.7.2",
+    "lucide-react": "^0.381.0",
     "postcss": "^8.4.38",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.23.1",
-    "sonner": "^1.4.41"
+    "sonner": "^1.4.41",
+    "yup": "^1.4.0"
   },
   "devDependencies": {
     "@types/node": "^20.12.12",
