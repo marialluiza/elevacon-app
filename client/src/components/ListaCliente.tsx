@@ -4,8 +4,8 @@ import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/auth/ProvedorAutentica";
 import { useEffect, useState } from "react";
 import api from "../hooks/usaAPI";
-import NavBar from "./ui/NavBar";
-import { Edit, SearchCheck, SearchIcon, SquareArrowOutUpRight, X } from 'lucide-react';
+import NavBar from "./ui/Header/Header";
+import { Edit, SearchIcon, SquareArrowOutUpRight, Trash2Icon, X } from 'lucide-react';
 
 const ListaCliente = () => {
 
@@ -30,11 +30,11 @@ const ListaCliente = () => {
   }, [userId]);
 
   const formatarData = (data: string | undefined) => {
-    if (!data) return 'N/A'; // retorna 'N/A' se a data for nula
+    if (!data) return 'N/A';
 
     const dataObj = new Date(data);
     const dia = dataObj.getDate().toString().padStart(2, '0'); // recebe o dia e adiciona o zero à esquerda se necessário
-    const mes = (dataObj.getMonth() + 1).toString().padStart(2, '0'); // Obtém o mês - comeca em janeiro=0
+    const mes = (dataObj.getMonth() + 1).toString().padStart(2, '0'); // obtém o mês - comeca em janeiro=0
     const ano = dataObj.getFullYear();
 
     return `${dia}/${mes}/${ano}`;
@@ -68,7 +68,7 @@ const ListaCliente = () => {
   return (
     <>
       <NavBar />
-      <div className="min-h-screen bg-gray-100 p-4">
+      <div className="min-h-screen bg-gray-100 p-4 ">
         <div className="bg-white p-6 rounded-lg shadow-lg">
           <h2 className="text-2xl font-bold mb-4">Lista de Clientes</h2>
           <div className="mb-4 flex items-center gap-4">
@@ -80,18 +80,16 @@ const ListaCliente = () => {
             <div className="p-2 cursor-pointer border rounded-md border-blue-800 focus:outline-none focus:ring focus:border-blue-300">
               <SearchIcon className="cursor-pointer text-blue-800" />
             </div>
-            {/* <button className="ml-2 px-4 py-2 bg-gray-200 text-gray-700 rounded-md">Filtrar</button>
-            <button className="min-w-max ml-2 px-4 py-2 bg-gray-200 text-gray-700 rounded-md">Limpar Filtros</button> */}
           </div>
           <div className="overflow-y-auto max-h-[70vh]">
             <Table.Root>
               <Table.Header>
                 <Table.Row>
-                  <Table.ColumnHeaderCell>ID</Table.ColumnHeaderCell>
+                  {/* <Table.ColumnHeaderCell>ID</Table.ColumnHeaderCell> */}
                   <Table.ColumnHeaderCell>Nome</Table.ColumnHeaderCell>
                   <Table.ColumnHeaderCell>Telefone</Table.ColumnHeaderCell>
                   <Table.ColumnHeaderCell>CPF</Table.ColumnHeaderCell>
-                  <Table.ColumnHeaderCell>Data de Nascimento</Table.ColumnHeaderCell>
+                  <Table.ColumnHeaderCell>Data de nascimento</Table.ColumnHeaderCell>
                   <Table.ColumnHeaderCell>Ocupação</Table.ColumnHeaderCell>
                   <Table.ColumnHeaderCell>Titulo Eleitoral</Table.ColumnHeaderCell>
                   <Table.ColumnHeaderCell></Table.ColumnHeaderCell>
@@ -102,7 +100,7 @@ const ListaCliente = () => {
               <Table.Body>
                 {clientes.map(cliente => (
                   <Table.Row key={cliente.id}>
-                    <Table.RowHeaderCell>{cliente.id_cliente}</Table.RowHeaderCell>
+                    {/* <Table.RowHeaderCell>{cliente.id_cliente}</Table.RowHeaderCell> */}
                     <Table.Cell>{cliente.nome ? cliente.nome : 'N/A'}</Table.Cell>
                     <Table.Cell>{cliente.telefone ? cliente.telefone : 'N/A'}</Table.Cell>
                     <Table.Cell>{cliente.cpf ? cliente.cpf : 'N/A'}</Table.Cell>
@@ -119,7 +117,7 @@ const ListaCliente = () => {
                     <Table.Cell>
                       <Dialog.Root open={isOpen} onOpenChange={setIsOpen}>
                         <Dialog.Trigger>
-                          <X className="text-red-700" />
+                          <Trash2Icon className="text-red-700" />
                         </Dialog.Trigger>
 
                         <Dialog.Portal>
@@ -168,9 +166,9 @@ const ListaCliente = () => {
           </div>
 
           <div className="mt-4 flex justify-between">
-            <Link to="/PaginaInicial" className="fixed bottom-4  bg-blue-500 text-white px-4 py-2 rounded-md shadow-lg hover:bg-blue-700 z-50">
+            {/* <Link to="/PaginaInicial" className="fixed bottom-4  bg-blue-500 text-white px-4 py-2 rounded-md shadow-lg hover:bg-blue-700">
               Página anterior
-            </Link>
+            </Link> */}
 
             <Link to="/InserirCliente" className="fixed bottom-4 right-4 bg-blue-500 text-white px-4 py-2 rounded-md shadow-lg hover:bg-blue-700 z-50">
               Inserir Cliente

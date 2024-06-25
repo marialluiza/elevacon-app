@@ -15,7 +15,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.elevacon.elevacon.model.Cliente;
-import com.elevacon.elevacon.services.ClienteService; 
+// import com.elevacon.elevacon.model.Usuario;
+// import com.elevacon.elevacon.repository.UsuarioRepository;
+import com.elevacon.elevacon.services.ClienteService;
 
 @RestController
 @RequestMapping("/cliente")
@@ -23,6 +25,9 @@ public class ClienteController {
 
     @Autowired
     private ClienteService clienteService;
+
+    // @Autowired
+    // private UsuarioRepository usuarioRepository;
 
     @PostMapping("/cadastrar-cliente")
     public ResponseEntity<Cliente> inserirCliente(@RequestBody Cliente cliente) {
@@ -55,7 +60,7 @@ public class ClienteController {
         }
     }
 
-    @GetMapping("/buscar-cliente/{id}") 
+    @GetMapping("/buscar-cliente/{id}")
     public ResponseEntity<Cliente> buscarClientePorId(@PathVariable Long id) {
         try {
             Cliente cliente = clienteService.buscarClientePorId(id);
@@ -63,6 +68,12 @@ public class ClienteController {
         } catch (RuntimeException e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
+    }
+
+    @PostMapping("/{clienteId}/ativar-usuario")
+    public ResponseEntity<?> ativarUsuario(@PathVariable Long clienteId) {
+        clienteService.ativarUsuario(clienteId);
+        return ResponseEntity.ok("Usuário ativado com sucesso");
     }
 
 }

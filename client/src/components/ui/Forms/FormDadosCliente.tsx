@@ -273,7 +273,7 @@ const FormDadosCliente: React.FC<FormDadosClienteProps> = ({ clienteData, handle
 
 
             <div className="mt-2 flex items-center justify-between gap-x-4">
-                <Link to="/ListaCliente" className=" right-4 bg-blue-500 text-white px-4 py-2 rounded-md shadow-lg hover:bg-blue-700 z-50">
+                <Link to="/ListaCliente" className=" right-4 bg-blue-500 text-white px-4 py-2 rounded-md shadow-lg hover:bg-blue-700">
                     Página anterior
                 </Link>
                 <button

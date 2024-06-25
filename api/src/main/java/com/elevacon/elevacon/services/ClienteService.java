@@ -1,5 +1,6 @@
 package com.elevacon.elevacon.services;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 
@@ -8,12 +9,19 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.elevacon.elevacon.model.Cliente;
 import com.elevacon.elevacon.model.Contador;
+import com.elevacon.elevacon.model.Usuario;
 import com.elevacon.elevacon.repository.ClienteRepository;
 import com.elevacon.elevacon.repository.ContadorRepository;
+import com.elevacon.elevacon.repository.UsuarioRepository;
+import com.elevacon.elevacon.security.Roles.UsuarioRole;
+
+import jakarta.transaction.Transactional;
 
 @Service
 public class ClienteService {
@@ -23,6 +31,12 @@ public class ClienteService {
 
     @Autowired
     private ContadorRepository contadorRepository;
+
+    @Autowired
+    private UsuarioRepository usuarioRepository;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     public Cliente inserirCliente(Cliente cliente) {
         Authentication usuarioAutenticado = SecurityContextHolder.getContext().getAuthentication();
@@ -35,6 +49,16 @@ public class ClienteService {
 
                 if (contador != null) {
                     cliente.setContador(contador);
+
+                    // Cria o novo usuário para o cliente
+                    Usuario usuario = new Usuario();
+                    usuario.setLogin(cliente.getEmail()); // ou outro atributo único
+                    usuario.setSenha(passwordEncoder.encode("senhaPadrão")); // define uma senha padrão ou gerada
+                    usuario.setUsuarioAtivo(false); // desativa o usuário inicialmente
+                    usuario.setRole(UsuarioRole.CLIENTE);
+                    usuario = usuarioRepository.save(usuario);
+
+                    cliente.setUsuario(usuario);
                     return clienteRepository.save(cliente);
                 } else {
                     throw new RuntimeException("Contador não encontrado para o usuário autenticado.");
@@ -46,6 +70,34 @@ public class ClienteService {
             throw new RuntimeException("Usuário autenticado não encontrado.");
         }
     }
+
+    // public Cliente inserirCliente(Cliente cliente) {
+    // Authentication usuarioAutenticado =
+    // SecurityContextHolder.getContext().getAuthentication();
+
+    // if (usuarioAutenticado != null && usuarioAutenticado.getPrincipal()
+    // instanceof UserDetails) {
+    // UserDetails userDetails = (UserDetails) usuarioAutenticado.getPrincipal();
+
+    // if (userDetails.getAuthorities().contains(new
+    // SimpleGrantedAuthority("ROLE_CONTADOR"))) {
+    // Contador contador =
+    // contadorRepository.findByUsuarioLogin(userDetails.getUsername());
+
+    // if (contador != null) {
+    // cliente.setContador(contador);
+    // return clienteRepository.save(cliente);
+    // } else {
+    // throw new RuntimeException("Contador não encontrado para o usuário
+    // autenticado.");
+    // }
+    // } else {
+    // throw new RuntimeException("Acesso negado: Contador apenas.");
+    // }
+    // } else {
+    // throw new RuntimeException("Usuário autenticado não encontrado.");
+    // }
+    // }
 
     public List<Cliente> listarClientes() {
         Authentication usuarioAutenticado = SecurityContextHolder.getContext().getAuthentication();
@@ -179,6 +231,43 @@ public class ClienteService {
             }
         } else {
             throw new RuntimeException("Usuário autenticado não encontrado.");
+        }
+    }
+
+    @Transactional
+    public void ativarUsuario(Long clienteId) {
+        Authentication usuarioAutenticado = SecurityContextHolder.getContext().getAuthentication();
+
+        if (usuarioAutenticado != null && usuarioAutenticado.getPrincipal() instanceof UserDetails) {
+            UserDetails userDetails = (UserDetails) usuarioAutenticado.getPrincipal();
+
+            if (userDetails.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_CONTADOR"))) {
+                Contador contador = contadorRepository.findByUsuarioLogin(userDetails.getUsername());
+
+                if (contador != null) {
+                    Cliente cliente = clienteRepository.findById(clienteId)
+                            .orElseThrow(() -> new RuntimeException("Cliente não encontrado"));
+
+                    if (cliente.getContador().equals(contador)) {
+                        Usuario usuario = cliente.getUsuario();
+
+                        if (usuario != null) {
+                            usuario.setUsuarioAtivo(true); // ativa o usuário
+                            usuarioRepository.save(usuario);
+                        } else {
+                            throw new RuntimeException("Usuário não encontrado para o cliente");
+                        }
+                    } else {
+                        throw new RuntimeException("Cliente não pertence ao contador autenticado");
+                    }
+                } else {
+                    throw new RuntimeException("Contador não encontrado para o usuário autenticado");
+                }
+            } else {
+                throw new RuntimeException("Acesso negado: Contador apenas");
+            }
+        } else {
+            throw new RuntimeException("Usuário autenticado não encontrado");
         }
     }
 }
