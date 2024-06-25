@@ -2,7 +2,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useAuth } from "../contexts/auth/ProvedorAutentica";
 import { useEffect, useState } from "react";
 import api from "../hooks/usaAPI";
-import NavBar from "./ui/NavBar";
+import NavBar from "./ui/Header/Header";
 
 const EditarCliente = () => {
 
@@ -174,12 +174,13 @@ const EditarCliente = () => {
 
                         <div className="sm:col-span-3">
                             <label htmlFor="logradouro" className="block text-sm font-medium text-gray-900">
-                                Rua
+                                Logradouro
                             </label>
                             <input
                                 id="logradouro"
                                 type="text"
                                 value={clienteData.logradouro}
+                                onChange={handleChange}
                                 className="p-4 block w-full mt-2 rounded-md border border-slate-400 bg-white py-1.5 text-gray-900 placeholder-gray-500 focus:ring-2 focus:outline-none focus:border-blue-300 "
                             />
                         </div>
@@ -191,6 +192,7 @@ const EditarCliente = () => {
                             <input
                                 id="numero"
                                 type="text"
+                                onChange={handleChange}
                                 value={clienteData.numero}
                                 className="p-4 block w-full mt-2 rounded-md border border-slate-400 bg-white py-1.5 text-gray-900 placeholder-gray-500 focus:ring-2 focus:outline-none focus:border-blue-300 "
                             />
@@ -203,6 +205,7 @@ const EditarCliente = () => {
                             <input
                                 id="bairro"
                                 type="text"
+                                onChange={handleChange}
                                 value={clienteData.bairro}
                                 className="p-4 block w-full mt-2 rounded-md border border-slate-400 bg-white py-1.5 text-gray-900 placeholder-gray-500 focus:ring-2 focus:outline-none focus:border-blue-300 "
                             />
@@ -228,6 +231,7 @@ const EditarCliente = () => {
                             <input
                                 id="estado"
                                 type="text"
+                                onChange={handleChange}
                                 value={clienteData.estado}
                                 className="p-4 block w-full mt-2 rounded-md border border-slate-400 bg-white py-1.5 text-gray-900 placeholder-gray-500 focus:ring-2 focus:outline-none focus:border-blue-300 "
                             />
@@ -240,6 +244,7 @@ const EditarCliente = () => {
                             <input
                                 id="cep"
                                 type="text"
+                                onChange={handleChange}
                                 value={clienteData.cep}
                                 className="p-4 block w-full mt-2 rounded-md border border-slate-400 bg-white py-1.5 text-gray-900 placeholder-gray-500 focus:ring-2 focus:outline-none focus:border-blue-300 "
                             />

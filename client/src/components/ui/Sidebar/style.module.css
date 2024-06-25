@@ -1,0 +1,9 @@
+.button-sair {
+  .rt-BaseButton {
+    display: none;
+  }
+
+  .rt-reset {
+    display: none;
+  }
+}

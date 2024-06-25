@@ -1,11 +1,11 @@
 import { Link } from "react-router-dom";
-import { useAuth } from "../contexts/auth/ProvedorAutentica";
-import { Button } from '@radix-ui/themes';
-import NavBar from "./ui/NavBar";
-import Card from "./ui/Card";
+// import { useAuth } from "../contexts/auth/ProvedorAutentica";
+// import { Button } from '@radix-ui/themes';
+import NavBar from "./ui/Header/Header";
+import Card from "./pages/Home/Card";
 
 export const PaginaInicial = () => {
-  const { logout } = useAuth();
+  // const { logout } = useAuth();
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -28,12 +28,12 @@ export const PaginaInicial = () => {
         </div>
       </div>
       <div className="p-4">
-        <Button
+        {/* <Button
           onClick={logout}
           className="w-full px-4 py-2 text-white bg-blue-500 rounded-md hover:bg-blue-700 focus:outline-none focus:bg-blue-700"
         >
           Sair
-        </Button>
+        </Button> */}
       </div>
     </div>
   );

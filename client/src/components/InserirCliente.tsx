@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import api from '../hooks/usaAPI';
 import { useAuth } from '../contexts/auth/ProvedorAutentica';
-import NavBar from './ui/NavBar';
+import NavBar from './ui/Header/Header';
 
 const InserirCliente = () => {
 
@@ -290,13 +290,12 @@ const InserirCliente = () => {
               </div>
             </div>
 
-
           </div>
         </div>
 
         <div className="mt-2 flex items-center justify-between gap-x-4">
-          <Link to="/ListaCliente" className=" right-4 bg-blue-500 text-white px-4 py-2 rounded-md shadow-lg hover:bg-blue-700 z-50">
-            Página anterior
+          <Link to="/ListaCliente" className=" right-4 bg-blue-500 text-white px-4 py-2 rounded-md shadow-lg hover:bg-blue-700">
+            Cancelar
           </Link>
           <button
             type="submit"
