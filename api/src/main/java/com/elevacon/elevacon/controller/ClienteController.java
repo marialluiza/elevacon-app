@@ -54,6 +54,7 @@ public class ClienteController {
     public ResponseEntity<Void> excluirCliente(@PathVariable Long id) {
         try {
             clienteService.excluirCliente(id);
+            System.out.println("Cliente com o id " + id + " foi excluído com sucesso");
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         } catch (RuntimeException e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);

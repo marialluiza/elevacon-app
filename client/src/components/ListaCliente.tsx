@@ -5,18 +5,33 @@ import { useAuth } from "../contexts/auth/ProvedorAutentica";
 import { useEffect, useState } from "react";
 import api from "../hooks/usaAPI";
 import NavBar from "./ui/Header/Header";
-import { Edit, SearchIcon, SquareArrowOutUpRight, Trash2Icon, X } from 'lucide-react';
+import { Edit, SearchIcon, SquareArrowOutUpRight, Trash2Icon } from 'lucide-react';
 
-const ListaCliente = () => {
+interface Cliente {
+  id_cliente: number;
+  nome?: string;
+  telefone?: string;
+  cpf?: string;
+  data_nascimento?: string;
+  ocupacao_principal?: string;
+  titulo_eleitoral?: string;
+}
 
-  const { userId } = useAuth();
-  const [clientes, setClientes] = useState<any[]>([]);
+const ListaCliente: React.FC = () => {
+  const { userId, token, loading } = useAuth();
+  const [clientes, setClientes] = useState<Cliente[]>([]);
+  const [clienteIdParaExcluir, setClienteIdParaExcluir] = useState<number | null>(null);
+  const [isOpen, setIsOpen] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
     const fetchClientes = async () => {
       try {
-        const response = await api.get(`/cliente/listar-clientes`);
+        const response = await api.get(`/cliente/listar-clientes`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
         setClientes(response.data);
         console.log('Clientes recebidos:', response.data);
       } catch (error) {
@@ -24,17 +39,17 @@ const ListaCliente = () => {
       }
     };
 
-    if (userId) {
+    if (userId && token) {
       fetchClientes();
     }
-  }, [userId]);
+  }, [userId, token]);
 
   const formatarData = (data: string | undefined) => {
     if (!data) return 'N/A';
 
     const dataObj = new Date(data);
-    const dia = dataObj.getDate().toString().padStart(2, '0'); // recebe o dia e adiciona o zero à esquerda se necessário
-    const mes = (dataObj.getMonth() + 1).toString().padStart(2, '0'); // obtém o mês - comeca em janeiro=0
+    const dia = dataObj.getDate().toString().padStart(2, '0');
+    const mes = (dataObj.getMonth() + 1).toString().padStart(2, '0');
     const ano = dataObj.getFullYear();
 
     return `${dia}/${mes}/${ano}`;
@@ -44,26 +59,36 @@ const ListaCliente = () => {
     navigate(`/EditarCliente/${id_cliente}`);
   };
 
-  const handleExcluirCliente = async (idCliente: number) => {
+  const handleExcluirCliente = async () => {
+    if (clienteIdParaExcluir === null) return;
     try {
-      const response = await api.delete(`/cliente/excluir-cliente/${idCliente}`);
-      setClientes(clientes.filter(cliente => cliente.id_cliente !== idCliente));
+      const response = await api.delete(`/cliente/excluir-cliente/${clienteIdParaExcluir}`);
+      setClientes(clientes.filter(cliente => cliente.id_cliente !== clienteIdParaExcluir));
       setIsOpen(false);
-      console.log('Cliente excluído com sucesso!');
+      setClienteIdParaExcluir(null);
+      console.log(`Cliente com o id ${clienteIdParaExcluir} foi excluído com sucesso!`);
     } catch (error) {
       console.error('Erro ao excluir cliente:', error);
     }
   };
 
-  const [isOpen, setIsOpen] = useState(false);
+  const handleAbrirModalExcluir = (idCliente: number) => {
+    setClienteIdParaExcluir(idCliente);
+    setIsOpen(true);
+  };
 
   const handleFecharModal = () => {
     setIsOpen(false);
+    setClienteIdParaExcluir(null);
   };
 
   const handleNaviteVisualizar = (id_cliente: number) => {
     navigate(`/VisualizarCliente/${id_cliente}`);
   };
+
+  if (loading) {
+    return <div>Carregando...</div>; // ou um spinner de carregamento
+  }
 
   return (
     <>
@@ -85,7 +110,6 @@ const ListaCliente = () => {
             <Table.Root>
               <Table.Header>
                 <Table.Row>
-                  {/* <Table.ColumnHeaderCell>ID</Table.ColumnHeaderCell> */}
                   <Table.ColumnHeaderCell>Nome</Table.ColumnHeaderCell>
                   <Table.ColumnHeaderCell>Telefone</Table.ColumnHeaderCell>
                   <Table.ColumnHeaderCell>CPF</Table.ColumnHeaderCell>
@@ -94,13 +118,13 @@ const ListaCliente = () => {
                   <Table.ColumnHeaderCell>Titulo Eleitoral</Table.ColumnHeaderCell>
                   <Table.ColumnHeaderCell></Table.ColumnHeaderCell>
                   <Table.ColumnHeaderCell></Table.ColumnHeaderCell>
+                  <Table.ColumnHeaderCell></Table.ColumnHeaderCell>
                 </Table.Row>
               </Table.Header>
 
               <Table.Body>
                 {clientes.map(cliente => (
-                  <Table.Row key={cliente.id}>
-                    {/* <Table.RowHeaderCell>{cliente.id_cliente}</Table.RowHeaderCell> */}
+                  <Table.Row key={cliente.id_cliente}>
                     <Table.Cell>{cliente.nome ? cliente.nome : 'N/A'}</Table.Cell>
                     <Table.Cell>{cliente.telefone ? cliente.telefone : 'N/A'}</Table.Cell>
                     <Table.Cell>{cliente.cpf ? cliente.cpf : 'N/A'}</Table.Cell>
@@ -116,15 +140,15 @@ const ListaCliente = () => {
                     </Table.Cell>
                     <Table.Cell>
                       <Dialog.Root open={isOpen} onOpenChange={setIsOpen}>
-                        <Dialog.Trigger>
-                          <Trash2Icon className="text-red-700" />
+                        <Dialog.Trigger asChild>
+                          <Trash2Icon className="text-red-700 cursor-pointer" onClick={() => handleAbrirModalExcluir(cliente.id_cliente)} />
                         </Dialog.Trigger>
 
                         <Dialog.Portal>
                           <Dialog.Overlay className="inset-0 fixed bg-black/10" >
                             <Dialog.Content>
-                              <div id="" className="fixed flex flex-col left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-md outline-none justify-center items-center">
-                                <div className=" p-4 w-full max-w-lg h-full md:h-auto">
+                              <div className="fixed flex flex-col left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-md outline-none justify-center items-center">
+                                <div className="p-4 w-full max-w-lg h-full md:h-auto">
                                   <div className="p-4 bg-white rounded-lg shadow dark:bg-gray-800 md:p-8">
                                     <div className="mb-4 text-sm font-light text-gray-500 dark:text-gray-400">
                                       <h3 className="mb-3 text-2xl font-bold text-gray-900 dark:text-white">Tem certeza?</h3>
@@ -132,9 +156,8 @@ const ListaCliente = () => {
                                         Tem certeza de que deseja excluir esse cliente? Esta ação é irreversível e todas as informações serão perdidas permanentemente.
                                       </p>
                                     </div>
-                                    <div className=" pt-0 space-y-4 sm:flex sm:space-y-0">
-
-                                      <div className=" space-y-4 sm:space-x-4 sm:flex sm:space-y-0">
+                                    <div className="pt-0 space-y-4 sm:flex sm:space-y-0">
+                                      <div className="space-y-4 sm:space-x-4 sm:flex sm:space-y-0">
                                         <button id="close-modal"
                                           type="button"
                                           onClick={handleFecharModal}
@@ -144,11 +167,10 @@ const ListaCliente = () => {
 
                                         <button id="confirm-button"
                                           type="button"
-                                          onClick={() => handleExcluirCliente(cliente.id_cliente)}
+                                          onClick={handleExcluirCliente}
                                           className="bg-red-700 py-2 px-4 w-full text-sm font-medium text-center text-white rounded-lg bg-primary-700 sm:w-auto hover:bg-primary-800 focus:ring-4 focus:outline-none focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800"
                                         >Sim, apagar!
                                         </button>
-
                                       </div>
                                     </div>
                                   </div>
@@ -166,10 +188,6 @@ const ListaCliente = () => {
           </div>
 
           <div className="mt-4 flex justify-between">
-            {/* <Link to="/PaginaInicial" className="fixed bottom-4  bg-blue-500 text-white px-4 py-2 rounded-md shadow-lg hover:bg-blue-700">
-              Página anterior
-            </Link> */}
-
             <Link to="/InserirCliente" className="fixed bottom-4 right-4 bg-blue-500 text-white px-4 py-2 rounded-md shadow-lg hover:bg-blue-700 z-50">
               Inserir Cliente
             </Link>
@@ -177,7 +195,7 @@ const ListaCliente = () => {
         </div>
       </div>
     </>
-
   );
 };
+
 export default ListaCliente;
