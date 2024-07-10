@@ -1,9 +1,9 @@
 import { Table } from "@radix-ui/themes";
 import * as Dialog from '@radix-ui/react-dialog';
 import { Link, useNavigate } from "react-router-dom";
-import { useAuth } from "../contexts/auth/ProvedorAutentica";
+import { useAuth } from "../contexts/auth/AuthProvider";
 import { useEffect, useState } from "react";
-import api from "../hooks/usaAPI";
+import api from "../hooks/useAPI";
 import NavBar from "./ui/Header/Header";
 import { Edit, SearchIcon, SquareArrowOutUpRight, Trash2Icon } from 'lucide-react';
 
@@ -188,6 +188,7 @@ const ListaCliente: React.FC = () => {
           </div>
 
           <div className="mt-4 flex justify-between">
+
             <Link to="/InserirCliente" className="fixed bottom-4 right-4 bg-blue-500 text-white px-4 py-2 rounded-md shadow-lg hover:bg-blue-700 z-50">
               Inserir Cliente
             </Link>

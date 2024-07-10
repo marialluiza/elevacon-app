@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import api from '../hooks/usaAPI';
-import { useAuth } from '../contexts/auth/ProvedorAutentica';
-import NavBar from './ui/Header/Header';
+import { useAuth } from '../../../../contexts/auth/AuthProvider';
+import api from '../../../../hooks/useAPI';
+import NavBar from '../../../ui/Header/Header';
+
 
 const InserirCliente = () => {
 

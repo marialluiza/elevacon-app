@@ -1,8 +1,8 @@
 import { useNavigate, useParams } from "react-router-dom";
-import { useAuth } from "../contexts/auth/ProvedorAutentica";
 import { useEffect, useState } from "react";
-import api from "../hooks/usaAPI";
-import NavBar from "./ui/Header/Header";
+import { useAuth } from "../../../../contexts/auth/AuthProvider";
+import api from "../../../../hooks/useAPI";
+import NavBar from "../../../ui/Header/Header";
 
 const EditarCliente = () => {
 

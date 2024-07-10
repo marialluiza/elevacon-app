@@ -1,6 +1,6 @@
 import { CircleUser, HandHelpingIcon } from "lucide-react";
 import { Link } from "react-router-dom";
-import { useAuth } from "../../../contexts/auth/ProvedorAutentica";
+import { useAuth } from "../../../contexts/auth/AuthProvider";
 
 import styles from './style.module.css';
 const Sidebar = () => {

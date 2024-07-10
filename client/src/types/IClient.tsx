@@ -1,4 +1,4 @@
-export type ClienteData = {
+export type IClient = {
     nome: '',
     data_nascimento: '',
     ocupacao_principal: '',
