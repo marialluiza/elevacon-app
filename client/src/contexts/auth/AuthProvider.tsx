@@ -1,6 +1,6 @@
 import { createContext, useState, useContext, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import api from '../../hooks/usaAPI';
+import api from '../../hooks/useAPI';
 
 interface AuthContextData {
     signed: boolean;

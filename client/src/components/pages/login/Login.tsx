@@ -1,10 +1,10 @@
 import React, {useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../../../contexts/auth/ProvedorAutentica';
+import { useAuth } from '../../../contexts/auth/AuthProvider';
 
 const Login: React.FC = () => {
 
-  const { userAuth } = useAuth(); // ssando o hook 'useAuth' pra acessar o contexto de autenticação
+  const { userAuth } = useAuth(); 
   const navigate = useNavigate();
 
   const [login, setLogin] = useState('');
@@ -14,7 +14,7 @@ const Login: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await userAuth(login, senha); // chamando a função login do contexto de autenticação
+      await userAuth(login, senha); 
       navigate('/PaginaInicial'); 
     } catch (err) {
       setErro('Login falhou, verifique suas credenciais.');

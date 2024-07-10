@@ -1,34 +1,35 @@
 import React, { useState } from "react";
-import { ClienteData } from "../../../types/Cliente";
+import { IClient } from "../../../types/IClient";
 import { Link } from "react-router-dom";
 
-// const [clienteData, setClienteData] = useState<ClienteData>({
-const [ ] = useState<ClienteData>({
-    nome: '',
-    data_nascimento: '',
-    ocupacao_principal: '',
-    email: '',
-    titulo_eleitoral: '',
-    cpf: '',
-    telefone: '',
-    logradouro: '',
-    numero: '',
-    bairro: '',
-    cidade: '',
-    estado: '',
-    cep: '',
-    nome_conjugue: '',
-    cpf_conjugue: '',
-    observacao: '',
-  });
+// const client[] = useState<IClient>();
 
-interface FormDadosClienteProps {
-    clienteData: ClienteData;
+// const [ ] = useState<IClient>({
+//     nome: '',
+//     data_nascimento: '',
+//     ocupacao_principal: '',
+//     email: '',
+//     titulo_eleitoral: '',
+//     cpf: '',
+//     telefone: '',
+//     logradouro: '',
+//     numero: '',
+//     bairro: '',
+//     cidade: '',
+//     estado: '',
+//     cep: '',
+//     nome_conjugue: '',
+//     cpf_conjugue: '',
+//     observacao: '',
+//   });
+
+interface ClientProps {
+    clientData: IClient;
     handleChange: (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
     handleSubmit: (event: React.FormEvent<HTMLFormElement>) => void;
 }
 
-const FormDadosCliente: React.FC<FormDadosClienteProps> = ({ clienteData, handleChange, handleSubmit }) => {
+const FormDadosCliente: React.FC<ClientProps> = ({ clientData, handleChange, handleSubmit }) => {
     return (
         <form className="space-y-10 p-4 pl-8 pr-8 pb-6" onSubmit={handleSubmit}>
             <div className="border-b border-gray-900/10 pb-6">
@@ -41,7 +42,7 @@ const FormDadosCliente: React.FC<FormDadosClienteProps> = ({ clienteData, handle
                             id="nome"
                             type="text"
                             onChange={handleChange}
-                            value={clienteData.nome}
+                            value={clientData.nome}
                             className="p-4 block w-full mt-2 rounded-md border border-slate-400 bg-white py-1.5 text-gray-900 placeholder-gray-500  placeholder:text-sm focus:ring-2 focus:outline-none focus:border-blue-300 "
                             placeholder='nome completo...'
                             required
@@ -55,7 +56,7 @@ const FormDadosCliente: React.FC<FormDadosClienteProps> = ({ clienteData, handle
                         <input
                             id="data_nascimento"
                             type="date"
-                            value={clienteData.data_nascimento}
+                            value={clientData.data_nascimento}
                             onChange={handleChange}
                             className="p-4 block w-full mt-2 rounded-md border border-slate-400 bg-white py-1.5 text-gray-900 placeholder-gray-500 focus:ring-2 focus:outline-none focus:border-blue-300 "
                         />
@@ -68,7 +69,7 @@ const FormDadosCliente: React.FC<FormDadosClienteProps> = ({ clienteData, handle
                         <input
                             id="ocupacao_principal"
                             type="text"
-                            value={clienteData.ocupacao_principal}
+                            value={clientData.ocupacao_principal}
                             onChange={handleChange}
                             className="p-4 block w-full mt-2 rounded-md border border-slate-400 bg-white py-1.5 text-gray-900 placeholder-gray-500 focus:ring-2 focus:outline-none focus:border-blue-300 "
                             placeholder="Informe a ocupação principal"
@@ -82,7 +83,7 @@ const FormDadosCliente: React.FC<FormDadosClienteProps> = ({ clienteData, handle
                         <input
                             id="email"
                             type="email"
-                            value={clienteData.email}
+                            value={clientData.email}
                             onChange={handleChange}
                             className="p-4 block w-full mt-2 rounded-md border border-slate-400 bg-white py-1.5 text-gray-900 placeholder-gray-500 focus:ring-2 focus:outline-none focus:border-blue-300 "
                             placeholder='exemplo@email.com'
@@ -97,7 +98,7 @@ const FormDadosCliente: React.FC<FormDadosClienteProps> = ({ clienteData, handle
                         <input
                             id="titulo_eleitoral"
                             type="text"
-                            value={clienteData.titulo_eleitoral}
+                            value={clientData.titulo_eleitoral}
                             onChange={handleChange}
                             className="p-4 block w-full mt-2 rounded-md border border-slate-400 bg-white py-1.5 text-gray-900 placeholder-gray-500 focus:ring-2 focus:outline-none focus:border-blue-300 "
                             placeholder="Informe o título de eleitor"
@@ -111,7 +112,7 @@ const FormDadosCliente: React.FC<FormDadosClienteProps> = ({ clienteData, handle
                         <input
                             id="cpf"
                             type="text"
-                            value={clienteData.cpf}
+                            value={clientData.cpf}
                             onChange={handleChange}
                             className="p-4 block w-full mt-2 rounded-md border border-slate-400 bg-white py-1.5 text-gray-900 placeholder-gray-500 focus:ring-2 focus:outline-none focus:border-blue-300 "
                             placeholder="Informe o CPF"
@@ -126,7 +127,7 @@ const FormDadosCliente: React.FC<FormDadosClienteProps> = ({ clienteData, handle
                         <input
                             id="telefone"
                             type="text"
-                            value={clienteData.telefone}
+                            value={clientData.telefone}
                             onChange={handleChange}
                             className="p-4 block w-full mt-2 rounded-md border border-slate-400 bg-white py-1.5 text-gray-900 placeholder-gray-500 focus:ring-2 focus:outline-none focus:border-blue-300 "
                             placeholder='(xx)xxxxx-xxxx'
@@ -140,7 +141,7 @@ const FormDadosCliente: React.FC<FormDadosClienteProps> = ({ clienteData, handle
                         <input
                             id="logradouro"
                             type="text"
-                            value={clienteData.logradouro}
+                            value={clientData.logradouro}
                             onChange={handleChange}
                             className="p-4 block w-full mt-2 rounded-md border border-slate-400 bg-white py-1.5 text-gray-900 placeholder-gray-500 focus:ring-2 focus:outline-none focus:border-blue-300 "
                         />
@@ -153,7 +154,7 @@ const FormDadosCliente: React.FC<FormDadosClienteProps> = ({ clienteData, handle
                         <input
                             id="numero"
                             type="text"
-                            value={clienteData.numero}
+                            value={clientData.numero}
                             onChange={handleChange}
                             className="p-4 block w-full mt-2 rounded-md border border-slate-400 bg-white py-1.5 text-gray-900 placeholder-gray-500 focus:ring-2 focus:outline-none focus:border-blue-300 "
                         />
@@ -166,7 +167,7 @@ const FormDadosCliente: React.FC<FormDadosClienteProps> = ({ clienteData, handle
                         <input
                             id="bairro"
                             type="text"
-                            value={clienteData.bairro}
+                            value={clientData.bairro}
                             onChange={handleChange}
                             className="p-4 block w-full mt-2 rounded-md border border-slate-400 bg-white py-1.5 text-gray-900 placeholder-gray-500 focus:ring-2 focus:outline-none focus:border-blue-300 "
                         />
@@ -179,7 +180,7 @@ const FormDadosCliente: React.FC<FormDadosClienteProps> = ({ clienteData, handle
                         <input
                             id="cidade"
                             type="text"
-                            value={clienteData.cidade}
+                            value={clientData.cidade}
                             onChange={handleChange}
                             className="p-4 block w-full mt-2 rounded-md border border-slate-400 bg-white py-1.5 text-gray-900 placeholder-gray-500 focus:ring-2 focus:outline-none focus:border-blue-300 "
                         />
@@ -192,7 +193,7 @@ const FormDadosCliente: React.FC<FormDadosClienteProps> = ({ clienteData, handle
                         <input
                             id="estado"
                             type="text"
-                            value={clienteData.estado}
+                            value={clientData.estado}
                             onChange={handleChange}
                             className="p-4 block w-full mt-2 rounded-md border border-slate-400 bg-white py-1.5 text-gray-900 placeholder-gray-500 focus:ring-2 focus:outline-none focus:border-blue-300 "
                         />
@@ -205,7 +206,7 @@ const FormDadosCliente: React.FC<FormDadosClienteProps> = ({ clienteData, handle
                         <input
                             id="cep"
                             type="text"
-                            value={clienteData.cep}
+                            value={clientData.cep}
                             onChange={handleChange}
                             className="p-4 block w-full mt-2 rounded-md border border-slate-400 bg-white py-1.5 text-gray-900 placeholder-gray-500 focus:ring-2 focus:outline-none focus:border-blue-300 "
                         />
@@ -224,7 +225,7 @@ const FormDadosCliente: React.FC<FormDadosClienteProps> = ({ clienteData, handle
                                     <input
                                         id="nome_conjugue"
                                         type="text"
-                                        value={clienteData.nome_conjugue}
+                                        value={clientData.nome_conjugue}
                                         onChange={handleChange}
                                         className="p-4 w-full mt-2 rounded-md border border-slate-400 bg-white py-1.5 text-gray-900 placeholder-gray-500 placeholder:text-sm focus:ring-2 focus:outline-none focus:border-blue-300 "
                                         placeholder="Informe o nome do cônjuge"
@@ -239,7 +240,7 @@ const FormDadosCliente: React.FC<FormDadosClienteProps> = ({ clienteData, handle
                                     <input
                                         id="cpf_conjugue"
                                         type="text"
-                                        value={clienteData.cpf_conjugue}
+                                        value={clientData.cpf_conjugue}
                                         onChange={handleChange}
                                         className=" p-4 w-full mt-2 rounded-md border border-slate-400 bg-white py-1.5 text-gray-900 placeholder-gray-500 focus:ring-2 focus:outline-none focus:border-blue-300 "
                                         placeholder="Informe o CPF do cônjuge"
@@ -255,7 +256,7 @@ const FormDadosCliente: React.FC<FormDadosClienteProps> = ({ clienteData, handle
                             </label>
                             <textarea
                                 id="observacao"
-                                value={clienteData.observacao}
+                                value={clientData.observacao}
                                 onChange={handleChange}
                                 className="p-4 w-full h-4/5 mt-2 rounded-md border border-slate-400 bg-white py-1.5 text-gray-900 placeholder-gray-500 focus:ring-2 focus:outline-none focus:border-blue-300"
                                 placeholder="Digite suas observações aqui"

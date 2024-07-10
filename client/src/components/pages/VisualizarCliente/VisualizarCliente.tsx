@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { useAuth } from "../../../contexts/auth/ProvedorAutentica";
-import api from "../../../hooks/usaAPI";
+import { useAuth } from "../../../contexts/auth/AuthProvider";
+import api from "../../../hooks/useAPI";
 import NavBar from "../../ui/Header/Header";
 import { Button } from "@radix-ui/themes";
 
