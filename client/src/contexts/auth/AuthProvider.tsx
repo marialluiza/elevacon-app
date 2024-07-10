@@ -20,36 +20,37 @@ export const AuthProvider = ({ children }: { children: JSX.Element }) => {
     const navigate = useNavigate();
 
     useEffect(() => {
-        const fetchData = async () => {
-            const storagedToken = await localStorage.getItem('token');
-            if (storagedToken) {
-                setToken(storagedToken);
-            }
-            setLoading(false);
-        };
+        const storagedToken = localStorage.getItem('token');
+        const storagedUserId = localStorage.getItem('userId');
 
-        fetchData();
+        if (storagedToken && storagedUserId) {
+            setToken(storagedToken);
+            setUserId(Number(storagedUserId));
+        }
+
+        setLoading(false);
     }, []);
 
-    // useEffect(() => {
-    //     const storagedToken = localStorage.getItem('token');
-    //     if (storagedToken) {
-    //         setToken(storagedToken);
-    //     }
-    //     setLoading(false);
-    // }, []);
-
     const userAuth = async (login: string, senha: string) => {
-        const response = await api.post('/autentica/login', { login, senha });
-        const { token, id_usuario } = response.data;
-        localStorage.setItem('token', token);
-        setToken(token);
-        setUserId(id_usuario);
-        setLoading(false);
+        setLoading(true);
+        try {
+            const response = await api.post('/autentica/login', { login, senha });
+            const { token, id_usuario } = response.data;
+            localStorage.setItem('token', token);
+            localStorage.setItem('userId', id_usuario);
+            setToken(token);
+            setUserId(id_usuario);
+            navigate('/PaginaInicial');
+        } catch (error) {
+            console.error('Erro na autenticação:', error);
+        } finally {
+            setLoading(false);
+        }
     };
 
     const logout = () => {
         localStorage.removeItem('token');
+        localStorage.removeItem('userId');
         setToken(null);
         setUserId(null);
         navigate('/Login');

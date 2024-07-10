@@ -4,7 +4,7 @@ import PrivateRoute from './components/PrivateRoute';
 import { AuthProvider } from './contexts/auth/AuthProvider';
 import { PaginaInicial } from './components/pages/Home/PaginaInicial';
 import ListaCliente from './components/ListaCliente';
-import Login from './components/pages/Login/Login';
+import Login from './components/pages/login/Login';
 import VisualizarCliente from './components/pages/VisualizarCliente/VisualizarCliente';
 import EditarCliente from './components/pages/Client/Edit/EditarCliente';
 import InserirCliente from './components/pages/Client/Create/InserirCliente';
