@@ -10,5 +10,5 @@ import com.elevacon.elevacon.repository.customs.ClienteRepositoryCustom;
 
 public interface ClienteRepository extends JpaRepository<Cliente, Long>, ClienteRepositoryCustom{
     List<Cliente> findByContador(Contador contador);
-    
+    Cliente findByUsuarioLogin(String login);
 }

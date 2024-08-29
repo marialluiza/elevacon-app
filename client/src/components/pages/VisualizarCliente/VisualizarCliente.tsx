@@ -4,13 +4,16 @@ import { useAuth } from "../../../contexts/auth/AuthProvider";
 import api from "../../../hooks/useAPI";
 import NavBar from "../../ui/Header/Header";
 import { Button } from "@radix-ui/themes";
+import ModalAccess from "./ModalAccess";
 
 
 const VisualizarCliente = () => {
+    const [isOpen, setOpen] = useState<boolean>(false);
+    const [cancel, setCancel] = useState(false);
+
     const { id } = useParams();
     // const navigate = useNavigate();
     const { token } = useAuth();
-
     const [clienteData, setClienteData] = useState({
         nome: '',
         data_nascimento: '',
@@ -28,7 +31,15 @@ const VisualizarCliente = () => {
         nome_conjugue: '',
         cpf_conjugue: '',
         observacao: '',
+        usuario: {
+            login: '',
+            senha: ''
+        }
     });
+
+    console.log("DADOS:::", clienteData.usuario.login)
+    console.log("DADOS:::", clienteData.usuario.senha)
+
 
     useEffect(() => {
         const fetchClienteData = async () => {
@@ -47,16 +58,33 @@ const VisualizarCliente = () => {
         fetchClienteData();
     }, [id, token]);
 
+    const showClientAccess = () => {
+        setOpen(true);
+    };
+
+    const handleCancel = () => {
+        setCancel(true);
+        setOpen(false); 
+    };
+
     return (
         <>
             <NavBar />
             <div className="p-10 bg-white rounded-lg shadow-md">
                 <div className="flex justify-between">
                     <h2 className="text-2xl font-semibold text-blue-950 mb-6">Informações do cliente</h2>
-                    <Button className="">Gerar acesso</Button>
-
+                    <Button style={{ cursor: "pointer", backgroundColor: "#363f4b" }} onClick={showClientAccess}>Gerar acesso</Button>
+                    {/* Renderiza o modal baseado no estado */}
+                    {isOpen && (
+                        <ModalAccess
+                            clienteData={clienteData} 
+                            onClose={() => setOpen(false)} 
+                            onCancel={handleCancel}
+                            isOpen={isOpen}
+                        />
+                    )}
                 </div>
-                <div className="mt-6 border-t border-gray-200">
+                <div className="mt-6 border-t">
                     <dl className="divide-y divide-gray-200">
                         <div className="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
                             <dt className="text-sm font-medium text-gray-900">Nome completo</dt>

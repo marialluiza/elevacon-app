@@ -3,11 +3,12 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../../../contexts/auth/AuthProvider';
 import api from '../../../../hooks/useAPI';
 import NavBar from '../../../ui/Header/Header';
+import { isValidCPF } from '../../../../utils/validateCpf';
 
 
 const InserirCliente = () => {
 
-  
+
   const [clienteData, setClienteData] = useState({
     nome: '',
     data_nascimento: '',
@@ -29,11 +30,18 @@ const InserirCliente = () => {
 
   const navigate = useNavigate();
   const { token, userId } = useAuth();
+  // const isValid = isValidCPF(clienteData.cpf);
+  const [cpfError, setCpfError] = useState<string | null>(null);
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     console.log('Token utilizado:', token);
     try {
+      if (!isValidCPF(clienteData.cpf)) {
+        setCpfError('CPF inválido.');
+        return;
+      }
+
       const response = await api.post('/cliente/cadastrar-cliente', {
         ...clienteData,
         id_usuario: userId
@@ -141,10 +149,12 @@ const InserirCliente = () => {
                 type="text"
                 value={clienteData.cpf}
                 onChange={handleChange}
-                className="p-4 block w-full mt-2 rounded-md border border-slate-400 bg-white py-1.5 text-gray-900 placeholder:text-sm placeholder-gray-500 focus:ring-2 focus:outline-none focus:border-blue-300 "
+                className={`p-4 block w-full mt-2 rounded-md border ${cpfError ? 'border-red-500' : 'border-slate-400'} bg-white py-1.5 text-gray-900 placeholder:text-sm placeholder-gray-500 focus:ring-2 focus:outline-none ${cpfError ? 'focus:border-red-500' : 'focus:border-blue-300'}`}
                 placeholder="Informe o CPF"
                 required
               />
+              {cpfError && <p className="text-red-500 text-sm mt-1">{cpfError}</p>}
+
             </div>
 
             <div className="sm:col-span-3">

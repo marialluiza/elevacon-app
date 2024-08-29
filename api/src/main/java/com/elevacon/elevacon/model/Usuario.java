@@ -3,6 +3,7 @@ package com.elevacon.elevacon.model;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -12,14 +13,14 @@ import com.elevacon.elevacon.model.DTOs.reqUsuarioDTO;
 import com.elevacon.elevacon.security.Roles.UsuarioRole;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
@@ -51,14 +52,16 @@ public class Usuario implements UserDetails {
     @Column(nullable = false)
     private UsuarioRole role;
 
-    // @OneToOne(fetch = FetchType.LAZY)
-    // @JoinColumn(name = "pessoa_id")
-    // private Pessoa pessoa;
-
     @PrePersist
     protected void onCreate() {
         data_criacao = new Date();
     }
+
+    @OneToMany(mappedBy = "enviadoPor", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private Set<Documento> documentosEnviados;
+
+    @OneToMany(mappedBy = "recebidoPor", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private Set<Documento> documentosRecebidos;
 
     public Usuario(reqUsuarioDTO dados) {
         this.id_usuario = dados.id_usuario();
@@ -99,16 +102,6 @@ public class Usuario implements UserDetails {
             return List.of(new SimpleGrantedAuthority("ROLE_USUARIO"));
         }
     }
-    // @Override
-    // public Collection<? extends GrantedAuthority> getAuthorities() {
-    // if (this.role == UsuarioRole.ADMIN) return List.of(new
-    // SimpleGrantedAuthority("ROLE_ADMIN"),
-    // new SimpleGrantedAuthority("ROLE_USUARIO"),
-    // new SimpleGrantedAuthority("ROLE_CONTADOR"),
-    // new SimpleGrantedAuthority("ROLE_CLIENTE"));
-
-    // else return List.of( new SimpleGrantedAuthority("ROLE_USUARIO"));
-    // }
 
     @Override
     public String getPassword() {

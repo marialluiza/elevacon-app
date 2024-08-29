@@ -40,6 +40,8 @@ public class ConfigSeguranca {
                 .requestMatchers(HttpMethod.POST, "/autentica/login").permitAll()
                 // .requestMatchers(HttpMethod.POST, "/pessoa/cadastrar-pessoa").permitAll()
 
+                .requestMatchers(HttpMethod.POST, "/documentos/upload").hasRole("USUARIO")
+
                 .requestMatchers(HttpMethod.POST, "/autentica/cadastrar").hasRole("ADMIN")
                 
                 .requestMatchers(HttpMethod.GET, "/usuario/listar-usuarios").hasRole("ADMIN")
@@ -59,7 +61,11 @@ public class ConfigSeguranca {
                 .requestMatchers(HttpMethod.PUT, "/cliente/editar-cliente").hasRole("CONTADOR")
                 .requestMatchers(HttpMethod.GET, "/cliente/buscar-cliente").hasRole("CONTADOR")
                 .requestMatchers(HttpMethod.DELETE, "/cliente/excluir-cliente").hasRole("CONTADOR")
+
+                .requestMatchers(HttpMethod.POST, "/tipo-documentos/cadastrar").hasRole("CONTADOR")
+
                 
+
                 .anyRequest().authenticated()
             )
             .addFilterBefore(filtroSeguranca, UsernamePasswordAuthenticationFilter.class )

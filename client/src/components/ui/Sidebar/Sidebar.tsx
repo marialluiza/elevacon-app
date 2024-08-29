@@ -3,12 +3,28 @@ import { Link } from "react-router-dom";
 import { useAuth } from "../../../contexts/auth/AuthProvider";
 
 import styles from './style.module.css';
+import { useState } from "react";
 const Sidebar = () => {
 
     const { logout } = useAuth();
+    const [isOpen, setIsOpen] = useState<Boolean>(false);
+
+    const handleSideBar = () => {
+        setIsOpen(true)
+    }
 
     return (
         <>
+            {isOpen ? (
+                <>
+                
+                
+                
+                </>
+            ): (
+                <></>
+            )}
+
             <aside id="separator-sidebar" className="fixed top-0 left-0 z-20 w-64 h-screen transition-transform -translate-x-full sm:translate-x-0" aria-label="Sidebar">
                 <div className="h-full pt-20 px-3 py-4 overflow-y-auto bg-gray-50 dark:bg-gray-800">
                     <ul className="space-y-2 font-medium">
@@ -80,8 +96,6 @@ const Sidebar = () => {
                     </ul>
                 </div>
             </aside>
-
-
         </>
     )
 }

@@ -1,6 +1,7 @@
 import { AlignJustify, CircleUserRound } from 'lucide-react';
 import React, { useState } from 'react';
 import Sidebar from '../Sidebar/Sidebar';
+import { Link } from 'react-router-dom';
 
 const NavBar: React.FC = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -15,7 +16,7 @@ const NavBar: React.FC = () => {
     <div>
       <AlignJustify className="text-white cursor-pointer z-50" onClick={handleClick} />
     </div>
-    <div className="text-white font-bold">Elevacon</div>
+    <div className="text-white font-bold cursor-pointer"><Link to="/">Elevacon</Link></div>
     <div className="flex items-center space-x-4">
       <CircleUserRound className="text-white cursor-pointer" />
     </div>
