@@ -84,7 +84,7 @@ public class UsuarioService {
     }
 
 
-    private boolean usuarioPode(String atualUsuario, Usuario usuario){
+    private boolean usuarioPode(String atualUsuario, Usuario usuario) {
         Collection<? extends GrantedAuthority> authorities = SecurityContextHolder.getContext().getAuthentication().getAuthorities();
 
         for (GrantedAuthority autorizacao : authorities) {
@@ -109,7 +109,29 @@ public class UsuarioService {
         System.out.println("Não possui permissão para realizar essa ação referente a este usuário.");
         return false;
     }
+
+    private boolean usuarioPodeDocumento(String atualUsuario, Usuario usuario) {
+        // Obtém as authorities do usuário autenticado
+        Collection<? extends GrantedAuthority> authorities = SecurityContextHolder.getContext().getAuthentication().getAuthorities();
+
+        // Verifica se o usuário possui a role permitida
+        for (GrantedAuthority autorizacao : authorities) {
+            String role = autorizacao.getAuthority();
+
+            // Apenas os roles CONTADOR e CLIENTE podem realizar ações
+            if (role.equals("ROLE_CONTADOR") || role.equals("ROLE_CLIENTE")) {
+                if (atualUsuario.equals(usuario.getLogin())) {
+                    return true; // O contador ou cliente pode realizar ações se for o próprio usuário
+                }
+            }
+        }
+
+        System.out.println("Não possui permissão para realizar essa ação.");
+        return false; // Caso o usuário não tenha permissão
+    }
 }
+
+
 
 // -----------------------------------------------------------------------------------------------------
 // lógica, regras de negócio

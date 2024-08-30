@@ -2,6 +2,7 @@ package com.elevacon.elevacon.controller;
 
 import java.util.List;
 
+import com.elevacon.elevacon.model.DTOs.reqContdorDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -32,10 +33,10 @@ public class ContadorController{
         return new ResponseEntity<>(novContador, HttpStatus.CREATED);
     }
 
-    // public void cadastrarContador(@RequestBody reqContdorDTO dados){
-    //     Contador dadosContador = new Contador(dados);
-    //     contadorRepository.save(dadosContador);
-    // } 
+    //public void cadastrarContador(@RequestBody reqContdorDTO dados){
+     //   Contador dadosContador = new Contador(dados);
+    //    contadorRepository.save(dadosContador);
+  //  }
 }
 
 //rotas

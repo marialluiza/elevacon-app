@@ -7,7 +7,8 @@ import ListaCliente from './components/pages/Client/List/ListaCliente';
 import VisualizarCliente from './components/pages/VisualizarCliente/VisualizarCliente';
 import EditarCliente from './components/pages/Client/Edit/EditarCliente';
 import InserirCliente from './components/pages/Client/Create/InserirCliente';
-import Login from './components/pages/Login/Login';
+import Login from './components/pages/login/Login'
+import ListaDocumentos from './components/pages/Documents/List/ListaDocumentos';
 
 const App: React.FC = () => {
   return (
@@ -15,12 +16,13 @@ const App: React.FC = () => {
       <AuthProvider> 
         <Routes>
           <Route path="/Login" element={<Login/>} />
-          <Route element={<PrivateRoute />}>
             <Route path="/PaginaInicial" element={<PaginaInicial />} />
             <Route path="/ListaCliente" element={<ListaCliente />} />
             <Route path="/InserirCliente" element={<InserirCliente/>} />
             <Route path="/EditarCliente/:id" element={<EditarCliente/>} />
             <Route path="/VisualizarCliente/:id" element={<VisualizarCliente />} />
+            <Route path="/ListaDocumentos" element={<ListaDocumentos/>} />
+          <Route element={<PrivateRoute />}>
           </Route>
           <Route path="/" element={<Navigate to="/PaginaInicial" />} />
         </Routes>

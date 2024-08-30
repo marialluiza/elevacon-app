@@ -28,14 +28,14 @@
 //         Pessoa novaPessoa = pessoaService.inserirPessoa(pessoa);
 //         return new ResponseEntity<>(novaPessoa, HttpStatus.CREATED);
 //     }
-    
+
 //     @GetMapping("/listar-pessoas")
 //     public List<Pessoa> listarPessoas(){
 //         return pessoaService.listarPessoas();
 //     }
 
-    // @PutMapping("/atualiza/{id}")
-    // public ResponseEntity<Pessoa> atualizarPessoa(@PathVariable Long id, @RequestBody Pessoa pessoaAtualizada){
-    //     
-    // }
+// @PutMapping("/atualiza/{id}")
+// public ResponseEntity<Pessoa> atualizarPessoa(@PathVariable Long id, @RequestBody Pessoa pessoaAtualizada){
+//
+// }
 // }
