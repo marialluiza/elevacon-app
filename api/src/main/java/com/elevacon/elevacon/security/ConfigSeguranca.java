@@ -30,39 +30,25 @@ public class ConfigSeguranca {
     // para fazer determinada requisição
 
     // nome de método já pré-definido para o springSecurtiy
-    @Bean //pra que o spring consiga instanciar a classe
-    public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception{
+    @Bean
+    public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         return httpSecurity
                 .csrf(csrf -> csrf.disable())
-                .sessionManagement(session-> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) //indica que será autenticação STATELESS(autenticação por token)
-                .authorizeHttpRequests(autoriza -> autoriza //define requisições http que serão autorizadas e a aprtir de quais roles
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .authorizeHttpRequests(autoriza -> autoriza
+                        // Liberando todas as rotas
+                        .requestMatchers(HttpMethod.GET, "/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/**").permitAll()
+                        .requestMatchers(HttpMethod.PUT, "/**").permitAll()
+                        .requestMatchers(HttpMethod.DELETE, "/**").permitAll()
 
-                        .requestMatchers(HttpMethod.POST, "/autentica/login").permitAll()
-                        // .requestMatchers(HttpMethod.POST, "/pessoa/cadastrar-pessoa").permitAll()
+                        // Outras permissões específicas, se necessário
+                        // .requestMatchers(HttpMethod.GET, "/alguma-rota").permitAll()
+                        // .requestMatchers(HttpMethod.POST, "/outra-rota").permitAll()
 
-                        .requestMatchers(HttpMethod.POST, "/autentica/cadastrar").hasRole("ADMIN")
-
-                        .requestMatchers(HttpMethod.GET, "/usuario/listar-usuarios").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.POST, "/usuario").hasRole("ADMIN")
-
-                        .requestMatchers(HttpMethod.GET, "/pessoa/listar-pessoas").hasRole("ADMIN")
-
-                        .requestMatchers(HttpMethod.POST, "/contador/cadastrar-contador").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.GET, "/contador/listar-contadores").hasRole("ADMIN")
-
-                        .requestMatchers(HttpMethod.DELETE, "/usuario/remover").hasRole("ADMIN")
-
-                        .requestMatchers(HttpMethod.DELETE, "/usuario/remover").hasRole("CONTADOR")
-                        .requestMatchers(HttpMethod.GET, "/cliente/listar-clientes").hasRole("CONTADOR")
-                        .requestMatchers(HttpMethod.POST, "/cliente/cadastrar-cliente").hasRole("CONTADOR")
-
-                        .requestMatchers(HttpMethod.PUT, "/cliente/editar-cliente").hasRole("CONTADOR")
-                        .requestMatchers(HttpMethod.GET, "/cliente/buscar-cliente").hasRole("CONTADOR")
-                        .requestMatchers(HttpMethod.DELETE, "/cliente/excluir-cliente").hasRole("CONTADOR")
-
-                        .anyRequest().authenticated()
+                        .anyRequest().permitAll() // Garantir que todas as outras requisições também sejam permitidas
                 )
-                .addFilterBefore(filtroSeguranca, UsernamePasswordAuthenticationFilter.class )
+                .addFilterBefore(filtroSeguranca, UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
     @Bean

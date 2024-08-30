@@ -50,24 +50,24 @@ public class DocumentoController {
 
     // Endpoint para exibir documentos recebidos por um contador
     @GetMapping("/contador/{contadorId}")
-    public ResponseEntity<List<DocumentoDTO>> exibirDocumentosContador(@PathVariable Long contadorId) {
-        List<DocumentoDTO> documentos = documentoService.exibirDocumentosContador(contadorId);
+    public ResponseEntity<List<Documento>> exibirDocumentosContador(@PathVariable Long contadorId) {
+        List<Documento> documentos = documentoService.exibirDocumentosContador(contadorId);
         return ResponseEntity.ok(documentos);
     }
 
     // Endpoint para exibir documentos específicos de um cliente, filtrados pelo contador
     @GetMapping("/contador/{contadorId}/cliente/{clienteId}")
-    public ResponseEntity<List<DocumentoDTO>> exibirDocumentosContadorID(
+    public ResponseEntity<List<Documento>> exibirDocumentosContadorID(
             @PathVariable Long contadorId,
             @PathVariable Long clienteId) {
-        List<DocumentoDTO> documentos = documentoService.exibirDocumentosContadorID(contadorId, clienteId);
+        List<Documento> documentos = documentoService.exibirDocumentosContadorID(contadorId, clienteId);
         return ResponseEntity.ok(documentos);
     }
 
     // Endpoint para exibir documentos enviados por um cliente
     @GetMapping("/cliente/{clienteId}")
-    public ResponseEntity<List<DocumentoDTO>> exibirDocumentosCliente(@PathVariable Long clienteId) {
-        List<DocumentoDTO> documentos = documentoService.exibirDocumentosCliente(clienteId);
+    public ResponseEntity<List<Documento>> exibirDocumentosCliente(@PathVariable Long clienteId) {
+        List<Documento> documentos = documentoService.exibirDocumentosCliente(clienteId);
         return ResponseEntity.ok(documentos);
     }
 

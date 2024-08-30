@@ -1,5 +1,6 @@
 package com.elevacon.elevacon.controller;
 
+import com.elevacon.elevacon.services.AutenticaService;
 import jakarta.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,10 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.elevacon.elevacon.model.Usuario;
 import com.elevacon.elevacon.model.DTOs.AutenticaDTO;
@@ -33,6 +31,9 @@ public class AutenticaController {
     @Autowired
     private TokenService tokenService;
 
+    @Autowired
+    private AutenticaService autenticaService;
+
     @PostMapping("/login")
     public ResponseEntity login(@RequestBody @Valid AutenticaDTO dados) {
         // hash para criptografar senha
@@ -45,7 +46,6 @@ public class AutenticaController {
 
         var response = new LoginTokenDTO(token, usuario.getId_usuario(), usuario.getLogin(), usuario.getRole());
         return ResponseEntity.ok(response);
-
     }
 
     @PostMapping("/cadastrar")
@@ -71,6 +71,19 @@ public class AutenticaController {
         }
     }
 
+    @GetMapping("/usuarioLogado")
+    public ResponseEntity<Long> usuarioLogado () {
+        try {
+            Long idUsuario = autenticaService.getUsuarioLogado();
+            return ResponseEntity.ok(idUsuario);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(-1L);
+        }
+    }
+
+
+
+
     // @PostMapping("/cadastrar")
     // public ResponseEntity cadastrar(@RequestBody @Valid RegistroDTO dados){
     // if (this.usuarioRepository.findByLogin(dados.login()) != null) return
@@ -85,4 +98,6 @@ public class AutenticaController {
 
     // return ResponseEntity.ok().build();
     // }
+
+
 }
