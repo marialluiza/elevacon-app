@@ -21,7 +21,7 @@ import com.elevacon.elevacon.repository.UsuarioRepository;
 import com.elevacon.elevacon.services.TokenService;
 
 @RestController
-@RequestMapping("autentica")
+@RequestMapping("/autentica")
 public class AutenticaController {
 
     @Autowired
@@ -55,7 +55,6 @@ public class AutenticaController {
 
         String senhaCriptografada = new BCryptPasswordEncoder().encode(dados.senha());
         Usuario novoUsuario = new Usuario(dados.login(), senhaCriptografada, dados.dataCriacao(), dados.role());
-
         this.usuarioRepository.save(novoUsuario);
 
         return ResponseEntity.ok().build();
