@@ -20,8 +20,6 @@ import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static java.util.stream.Nodes.collect;
-
 @Service
 public class DocumentoService {
 
@@ -107,7 +105,7 @@ public class DocumentoService {
         }
     }
 
-    public List<DocumentoDTO> exibirDocumentosContador(Long contadorId) {
+    public List<Documento> exibirDocumentosContador(Long contadorId) {
         if (isAdmin()) {
             throw new RuntimeException("Admins não têm permissão para visualizar documentos.");
         }
@@ -115,21 +113,10 @@ public class DocumentoService {
         Contador contador = contadorRepository.findById(contadorId)
                 .orElseThrow(() -> new RuntimeException("Contador não encontrado"));
 
-        List<Documento> documentos = documentoRepository.findByContador(contador);
-
-        // Converte a lista de documentos para uma lista de DocumentoDTO, incluindo as informações do cliente
-        return documentos.stream()
-                .map(documento -> new DocumentoDTO(
-                        documento.getNome(),
-                        documento.getTipo(),
-                        documento.getCliente().getId_cliente(),
-                        documento.getCliente().getNome()
-                ))
-                .collect(Collectors.toList());
+        return documentoRepository.findByContador(contador);
     }
 
-
-    public List<DocumentoDTO> exibirDocumentosContadorID(Long contadorId, Long clienteId) {
+    public List<Documento> exibirDocumentosContadorID(Long contadorId, Long clienteId) {
         if (isAdmin()) {
             throw new RuntimeException("Admins não têm permissão para visualizar documentos.");
         }
@@ -140,21 +127,10 @@ public class DocumentoService {
         Cliente cliente = clienteRepository.findById(clienteId)
                 .orElseThrow(() -> new RuntimeException("Cliente não encontrado"));
 
-        List<Documento> documentos = documentoRepository.findByContadorAndCliente(contador, cliente);
-
-        // Converte a lista de documentos para uma lista de DocumentoDTO, incluindo as informações do cliente
-        return documentos.stream()
-                .map(documento -> new DocumentoDTO(
-                        documento.getNome(),
-                        documento.getTipo(),
-                        documento.getCliente().getId_cliente(),
-                        documento.getCliente().getNome()
-                ))
-                .collect(Collectors.toList());
+        return documentoRepository.findByContadorAndCliente(contador, cliente);
     }
 
-    // Função para exibir documentos enviados por um cliente, incluindo informações sobre o contador que recebeu
-    public List<DocumentoDTO> exibirDocumentosCliente(Long clienteId) {
+    public List<Documento> exibirDocumentosCliente(Long clienteId) {
         if (isAdmin()) {
             throw new RuntimeException("Admins não têm permissão para visualizar documentos.");
         }
@@ -162,17 +138,7 @@ public class DocumentoService {
         Cliente cliente = clienteRepository.findById(clienteId)
                 .orElseThrow(() -> new RuntimeException("Cliente não encontrado"));
 
-        List<Documento> documentos = documentoRepository.findByCliente(cliente);
-
-        // Converte a lista de documentos para uma lista de DocumentoDTO, incluindo as informações do contador
-        return documentos.stream()
-                .map(documento -> new DocumentoDTO(
-                        documento.getNome(),
-                        documento.getTipo(),
-                        documento.getContador().getId_contador(),
-                        documento.getContador().getPessoa().getNome()
-                ))
-                .collect(Collectors.toList());
+        return documentoRepository.findByCliente(cliente);
     }
 
     public byte[] downloadDocumentosRecebidoDoContador(Long contadorId, Long documentoId) {
@@ -193,13 +159,16 @@ public class DocumentoService {
         Authentication usuarioAutenticado = SecurityContextHolder.getContext().getAuthentication();
         if (usuarioAutenticado != null && usuarioAutenticado.getPrincipal() instanceof UserDetails) {
             UserDetails userDetails = (UserDetails) usuarioAutenticado.getPrincipal();
-            Long userId = Long.valueOf(userDetails.getUsername());
+            Long clienteId = Long.valueOf(userDetails.getUsername());
 
-            if (!contador.getId_contador().equals(userId)) {
-                throw new RuntimeException("Usuário não tem permissão para acessar este documento.");
+            Cliente cliente = clienteRepository.findById(clienteId)
+                    .orElseThrow(() -> new RuntimeException("Cliente não encontrado"));
+
+            if (documento.getCliente().getId_cliente().equals(cliente.getId_cliente())) {
+                return documento.getDados();
+            } else {
+                throw new RuntimeException("Documento não pertence ao cliente autenticado.");
             }
-
-            return documento.getDados();
         } else {
             throw new RuntimeException("Usuário autenticado não encontrado.");
         }
@@ -223,13 +192,16 @@ public class DocumentoService {
         Authentication usuarioAutenticado = SecurityContextHolder.getContext().getAuthentication();
         if (usuarioAutenticado != null && usuarioAutenticado.getPrincipal() instanceof UserDetails) {
             UserDetails userDetails = (UserDetails) usuarioAutenticado.getPrincipal();
-            Long userId = Long.valueOf(userDetails.getUsername());
+            Long contadorId = Long.valueOf(userDetails.getUsername());
 
-            if (!cliente.getId_cliente().equals(userId)) {
-                throw new RuntimeException("Usuário não tem permissão para acessar este documento.");
+            Contador contador = contadorRepository.findById(contadorId)
+                    .orElseThrow(() -> new RuntimeException("Contador não encontrado"));
+
+            if (documento.getContador().getId_contador().equals(contador.getId_contador())) {
+                return documento.getDados();
+            } else {
+                throw new RuntimeException("Documento não pertence ao contador autenticado.");
             }
-
-            return documento.getDados();
         } else {
             throw new RuntimeException("Usuário autenticado não encontrado.");
         }

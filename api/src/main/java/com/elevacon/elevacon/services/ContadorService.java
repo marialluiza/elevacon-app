@@ -30,7 +30,6 @@ public class ContadorService {
             throw new RuntimeException("Usuário com o ID fornecido não encontrado.");
         }
     }
-
     public List<Contador> listarContadores() {
         return contadorRepository.findAll();
     }

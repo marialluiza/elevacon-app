@@ -14,6 +14,10 @@ public class DocumentoDTO {
         this.nomeUsuario = nomeUsuario;
     }
 
+    public DocumentoDTO() {
+    }
+
+
     public String getTipoDocumento() {
         return tipoDocumento;
     }
