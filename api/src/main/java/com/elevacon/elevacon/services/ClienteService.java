@@ -1,6 +1,5 @@
 package com.elevacon.elevacon.services;
 
-import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 
@@ -43,7 +42,7 @@ public class ClienteService {
         if (usuarioAutenticado != null && usuarioAutenticado.getPrincipal() instanceof UserDetails) {
             UserDetails userDetails = (UserDetails) usuarioAutenticado.getPrincipal();
 
-            if (userDetails.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_CONTADOR" ))) {
+            if (userDetails.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_CONTADOR"))) {
                 Contador contador = contadorRepository.findByUsuarioLogin(userDetails.getUsername());
 
                 if (contador != null) {
@@ -52,7 +51,7 @@ public class ClienteService {
                     // Cria o novo usuário para o cliente
                     Usuario usuario = new Usuario();
                     usuario.setLogin(cliente.getEmail());
-                    usuario.setSenha(passwordEncoder.encode("senhaPadrão")); 
+                    usuario.setSenha(passwordEncoder.encode("senhaPadrão"));
                     usuario.setUsuarioAtivo(false);
                     usuario.setRole(UsuarioRole.CLIENTE);
                     usuario = usuarioRepository.save(usuario);

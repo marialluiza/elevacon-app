@@ -38,28 +38,26 @@ public class DocumentoService {
         this.tipoDocumentoRepository = tipoDocumentoRepository;
     }
 
-    public Documento uploadDocumento(MultipartFile file, Long tipoDocumentoId, Usuario enviadoPor, Usuario recebidoPor)
-            throws IOException {
+    public Documento uploadDocumento(MultipartFile file, Long tipoDocumentoId, Usuario recebidoPor) throws IOException {
 
-        // Traz o usuario AUTENTICADO e sua ROLE
+        // Traz o usuário AUTENTICADO e sua ROLE
         Authentication usuarioAutenticado = SecurityContextHolder.getContext().getAuthentication();
 
-        if (usuarioAutenticado != null && usuarioAutenticado.getPrincipal() instanceof UserDetails) {
-            UserDetails userDetails = (UserDetails) usuarioAutenticado.getPrincipal();
-
-            Collection<? extends GrantedAuthority> authorities = userDetails.getAuthorities();
-
-            if (authorities != null && !authorities.isEmpty()) {
-                for (GrantedAuthority authority : authorities) {
-                    System.out.println("Role do usuário autenticado: " + authority.getAuthority());
-                }
-            } else {
-                System.out.println("O usuário autenticado não possui roles atribuídas.");
-            }
-        } else {
-            System.out.println("Usuário autenticado não encontrado ou não é uma instância de UserDetails.");
+        if (usuarioAutenticado == null || !(usuarioAutenticado.getPrincipal() instanceof Usuario)) {
+            throw new IllegalArgumentException("Usuário não autenticado ou inválido.");
         }
 
+        // Faz o cast para Usuario, já que o Usuario implementa UserDetails
+        Usuario enviadoPor = (Usuario) usuarioAutenticado.getPrincipal();
+
+        // Obtém o token do usuário autenticado
+        String token = usuarioAutenticado.getCredentials() != null ? usuarioAutenticado.getCredentials().toString()
+                : "Token não disponível";
+
+        // Armazena o token para uso posterior
+        setTokenUsuarioAutenticado(token);
+
+        // Valida o tipo do arquivo
         String contentType = file.getContentType();
         if (!isValidFileType(contentType)) {
             throw new IllegalArgumentException("Tipo de arquivo não suportado");
@@ -85,21 +83,28 @@ public class DocumentoService {
         // Salva o arquivo no sistema de arquivos
         Files.copy(file.getInputStream(), path);
 
-        System.out.println("arquivoName:::" + fileName);
-
-        System.out.println("caminho:::" + path);
-
         // Cria e salva a entidade Documento
         Documento documento = new Documento();
         documento.setNome(fileName);
         documento.setCaminho(path.toString());
         documento.setTipoDocumento(tipoDocumento);
         documento.setDataEnvio(new Date());
-        documento.setEnviadoPor(enviadoPor);
+        documento.setEnviadoPor(enviadoPor); // O usuário autenticado
         documento.setRecebidoPor(recebidoPor);
         documento.setStatus(StatusDocumento.ENVIADO);
 
         return documentoRepository.save(documento);
+    }
+
+    // Armazena o token do usuário autenticado (simulação)
+    private static String tokenUsuarioAutenticado;
+
+    public String getTokenUsuarioAutenticado() {
+        return tokenUsuarioAutenticado;
+    }
+
+    private void setTokenUsuarioAutenticado(String token) {
+        tokenUsuarioAutenticado = token;
     }
 
     private boolean isValidFileType(String contentType) {

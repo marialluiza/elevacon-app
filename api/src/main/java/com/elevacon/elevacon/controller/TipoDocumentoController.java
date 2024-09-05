@@ -21,6 +21,7 @@ public class TipoDocumentoController {
 
     /**
      * Cria ou atualiza um TipoDocumento.
+     * 
      * @param tipoDocumento Objeto TipoDocumento a ser salvo.
      * @return Resposta com o TipoDocumento salvo e código HTTP 201 (Created).
      */
@@ -37,6 +38,7 @@ public class TipoDocumentoController {
      * @return Resposta com a lista de TipoDocumentos e código HTTP 200 (OK).
      */
     @GetMapping
+    @RequestMapping("/listar")
     public ResponseEntity<List<TipoDocumento>> getAllTipoDocumentos() {
         List<TipoDocumento> tipoDocumentos = tipoDocumentoService.getAllTipoDocumentos();
         return new ResponseEntity<>(tipoDocumentos, HttpStatus.OK);
@@ -46,7 +48,8 @@ public class TipoDocumentoController {
      * Obtém um TipoDocumento pelo seu ID.
      *
      * @param id ID do TipoDocumento a ser buscado.
-     * @return Resposta com o TipoDocumento encontrado ou código HTTP 404 (Not Found) se não encontrado.
+     * @return Resposta com o TipoDocumento encontrado ou código HTTP 404 (Not
+     *         Found) se não encontrado.
      */
     @GetMapping("/{id}")
     public ResponseEntity<TipoDocumento> getTipoDocumentoById(@PathVariable("id") Long id) {
@@ -59,7 +62,8 @@ public class TipoDocumentoController {
      * Exclui um TipoDocumento pelo seu ID.
      *
      * @param id ID do TipoDocumento a ser excluído.
-     * @return Resposta com código HTTP 204 (No Content) se excluído com sucesso, ou código HTTP 404 (Not Found) se não encontrado.
+     * @return Resposta com código HTTP 204 (No Content) se excluído com sucesso, ou
+     *         código HTTP 404 (Not Found) se não encontrado.
      */
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteTipoDocumento(@PathVariable("id") Long id) {

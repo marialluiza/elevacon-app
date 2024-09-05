@@ -2,10 +2,6 @@ package com.elevacon.elevacon.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -20,7 +16,6 @@ import com.elevacon.elevacon.services.DocumentoService;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -41,30 +36,24 @@ public class DocumentoController {
     public ResponseEntity<String> uploadDocumento(
             @RequestParam("file") MultipartFile file,
             @RequestParam("tipoDocumentoId") Long tipoDocumentoId,
-            @RequestParam("enviadoPorId") Long enviadoPorId,
             @RequestParam("recebidoPorId") Long recebidoPorId) {
 
         try {
-
-            // Obtém os usuários que enviaram e receberam o documento
-            Usuario enviadoPor = usuarioRepository.findById(enviadoPorId)
-                    .orElseThrow(() -> new IllegalArgumentException("Usuário que enviou o documento não encontrado"));
-
-            System.out.println("enviadoPor:::" + enviadoPor);
-            System.out.println("enviadoPorID:::" + enviadoPorId);
-
+            // Obtém o usuário que receberá o documento
             Usuario recebidoPor = usuarioRepository.findById(recebidoPorId)
                     .orElseThrow(() -> new IllegalArgumentException("Usuário que receberá o documento não encontrado"));
 
-            System.out.println("recebidoPor:::" + recebidoPor);
-            System.out.println("recebidoPorID:::" + recebidoPorId);
+            // Obtém o usuário autenticado e o token dentro da camada de serviço
+            Documento documento = documentoService.uploadDocumento(file, tipoDocumentoId, recebidoPor);
 
-            System.out.println("Nome do arquivo: " + file.getOriginalFilename());
-            System.out.println("Tipo do conteúdo: " + file.getContentType());
-            System.out.println("Tamanho do arquivo: " + file.getSize() + " bytes");
+            // Imprime o ID e o token do usuário autenticado no console
+            // ID do usuário autenticado
+            System.out.println("ID do usuário autenticado: " + documento.getEnviadoPor().getId_usuario());
 
-            // Faz o upload do documento
-            Documento documento = documentoService.uploadDocumento(file, tipoDocumentoId, enviadoPor, recebidoPor);
+            // Token do usuário autenticado
+            String token = documentoService.getTokenUsuarioAutenticado();
+            System.out.println("Token do usuário autenticado: " + token);
+
             return ResponseEntity.ok("Documento enviado com sucesso! ID do documento: " + documento.getId());
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
