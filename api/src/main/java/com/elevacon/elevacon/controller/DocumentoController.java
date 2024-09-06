@@ -9,6 +9,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.elevacon.elevacon.model.Documento;
 import com.elevacon.elevacon.model.Usuario;
+import com.elevacon.elevacon.model.DTOs.DocumentoDTO;
 import com.elevacon.elevacon.repository.DocumentoRepository;
 import com.elevacon.elevacon.repository.UsuarioRepository;
 import com.elevacon.elevacon.services.DocumentoService;
@@ -18,6 +19,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/documentos")
@@ -94,9 +96,28 @@ public class DocumentoController {
         }
     }
 
-    @GetMapping
-    public ResponseEntity<List<Documento>> listarDocumentos() {
-        List<Documento> documentos = documentoRepository.findAll();
-        return ResponseEntity.ok(documentos);
+    @GetMapping("/enviados")
+    public ResponseEntity<List<DocumentoDTO>> listarDocumentosEnviados() {
+        List<Documento> documentos = documentoService.listarDocumentosEnviados();
+
+        // Converte a lista de documentos em uma lista de DTOs
+        List<DocumentoDTO> documentosDTO = documentos.stream()
+                .map(DocumentoDTO::new)
+                .collect(Collectors.toList());
+
+        return ResponseEntity.ok(documentosDTO);
     }
+
+    @GetMapping("/recebidos")
+    public ResponseEntity<List<DocumentoDTO>> listarDocumentosRecebidos() {
+        List<Documento> documentos = documentoService.listarDocumentosRecebidos();
+
+        // Converte a lista de documentos em uma lista de DTOs
+        List<DocumentoDTO> documentosDTO = documentos.stream()
+                .map(DocumentoDTO::new)
+                .collect(Collectors.toList());
+
+        return ResponseEntity.ok(documentosDTO);
+    }
+
 }

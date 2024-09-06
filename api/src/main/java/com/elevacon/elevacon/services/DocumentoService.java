@@ -22,6 +22,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -113,5 +114,26 @@ public class DocumentoService {
                 contentType.equals("application/pdf") ||
                 contentType.equals("text/plain") ||
                 contentType.equals("application/zip");
+    }
+
+    // Listar documentos enviados pelo usuário logado
+    public List<Documento> listarDocumentosEnviados() {
+        Usuario usuarioLogado = getUsuarioLogado();
+        return documentoRepository.findByEnviadoPor(usuarioLogado);
+    }
+
+    // Listar documentos recebidos pelo usuário logado
+    public List<Documento> listarDocumentosRecebidos() {
+        Usuario usuarioLogado = getUsuarioLogado();
+        return documentoRepository.findByRecebidoPor(usuarioLogado);
+    }
+
+    // Método utilitário para obter o usuário logado
+    private Usuario getUsuarioLogado() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth != null && auth.getPrincipal() instanceof Usuario) {
+            return (Usuario) auth.getPrincipal();
+        }
+        throw new IllegalArgumentException("Usuário não autenticado");
     }
 }
