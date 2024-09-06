@@ -1,57 +1,79 @@
-import axios, { AxiosError } from "axios";
-
-import { useState } from "react";
-import { useAuth } from "../../../../contexts/auth/AuthProvider";
+import { useState, useEffect } from 'react';
+import { Autocomplete, TextField, Button, CircularProgress } from '@mui/material';
 import api from "../../../../hooks/useAPI";
 import NavBar from "../../../ui/Header/Header";
-import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../../../contexts/auth/AuthProvider";
+
+interface TipoDocumento {
+    id: number;
+    nome: string;
+}
 
 const EnviarDocumento: React.FC = () => {
-    const { token } = useAuth();
+    const { userId, token, loading } = useAuth();
+    const [tipoDocumentos, setTipoDocumentos] = useState<TipoDocumento[]>([]);
+    const [selectedTipoDocumento, setSelectedTipoDocumento] = useState<TipoDocumento | null>(null);
+    const [recebidoPorId, setRecebidoPorId] = useState<number | ''>('');
     const [file, setFile] = useState<File | null>(null);
-    const [tipoDocumentoId, setTipoDocumentoId] = useState<number | null>(null);
-    const [recebidoPorId, setRecebidoPorId] = useState<number | null>(null);
-    const [mensagem, setMensagem] = useState<string | null>(null);
-    const navigate = useNavigate();
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [error, setError] = useState<string | null>(null);
 
-    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        if (e.target.files && e.target.files.length > 0) {
-            setFile(e.target.files[0]);
+    useEffect(() => {
+        const fetchTipoDocumentos = async () => {
+            try {
+                const response = await api.get('/tipo-documentos/listar', {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                });
+                setTipoDocumentos(response.data);
+            } catch (err) {
+                console.error('Erro ao buscar tipos de documentos:', err);
+            }
+        };
+
+        if (token) {
+            fetchTipoDocumentos();
         }
-    };
+    }, [token]);
 
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
+    const handleSubmit = async (event: React.FormEvent) => {
+        event.preventDefault();
 
-        if (!file || !tipoDocumentoId || !recebidoPorId) {
-            setMensagem("Todos os campos são obrigatórios!");
+        if (!file || !selectedTipoDocumento || !recebidoPorId) {
+            setError('Todos os campos são obrigatórios.');
             return;
         }
 
         const formData = new FormData();
-        formData.append("file", file);
-        formData.append("tipoDocumentoId", tipoDocumentoId.toString());
-        formData.append("recebidoPorId", recebidoPorId.toString());
+        formData.append('file', file);
+        formData.append('tipoDocumentoId', selectedTipoDocumento.id.toString());
+        formData.append('recebidoPorId', String(recebidoPorId));
+
+        setIsSubmitting(true);
 
         try {
-            const response = await api.post(`/documentos/upload`, formData, {
+            const response = await api.post('/documentos/upload', formData, {
                 headers: {
-                    "Content-Type": "multipart/form-data",
+                    'Content-Type': 'multipart/form-data',
                     Authorization: `Bearer ${token}`,
                 },
             });
-            setMensagem(response.data);
+            alert(response.data);
             setFile(null);
-            setTipoDocumentoId(null);
-            setRecebidoPorId(null);
-        } catch (error: unknown) {
-            if (axios.isAxiosError(error)) {
-                setMensagem(`Erro ao enviar documento: ${error.message}`);
-            } else {
-                setMensagem('Erro desconhecido ao enviar documento.');
-            }
+            setSelectedTipoDocumento(null);
+            setRecebidoPorId('');
+        } catch (err) {
+            console.error('Erro ao enviar documento:', err);
+            setError('Erro ao enviar o documento.');
+        } finally {
+            setIsSubmitting(false);
         }
     };
+
+    if (loading) {
+        return <div>Carregando...</div>;
+    }
 
     return (
         <>
@@ -59,46 +81,49 @@ const EnviarDocumento: React.FC = () => {
             <div className="min-h-screen bg-gray-100 p-4">
                 <div className="bg-white p-6 rounded-lg shadow-lg">
                     <h2 className="text-2xl font-bold mb-4">Enviar Documento</h2>
-                    {mensagem && <p className="text-red-600 mb-4">{mensagem}</p>}
-                    <form onSubmit={handleSubmit} encType="multipart/form-data">
+                    <form onSubmit={handleSubmit}>
                         <div className="mb-4">
-                            <label className="block text-gray-700 mb-2" htmlFor="file">Arquivo</label>
                             <input
                                 type="file"
-                                id="file"
-                                name="file"
-                                onChange={handleFileChange}
-                                className="w-full px-3 py-2 border rounded-md border-blue-800 focus:outline-none focus:ring focus:border-blue-300"
+                                accept=".pdf,.doc,.docx,.txt"
+                                onChange={(e) => setFile(e.target.files ? e.target.files[0] : null)}
+                                className="border border-gray-300 p-2 rounded-md"
                             />
                         </div>
                         <div className="mb-4">
-                            <label className="block text-gray-700 mb-2" htmlFor="tipoDocumentoId">Tipo de Documento ID</label>
-                            <input
-                                type="number"
-                                id="tipoDocumentoId"
-                                name="tipoDocumentoId"
-                                value={tipoDocumentoId || ""}
-                                onChange={(e) => setTipoDocumentoId(Number(e.target.value))}
-                                className="w-full px-3 py-2 border rounded-md border-blue-800 focus:outline-none focus:ring focus:border-blue-300"
+                            <Autocomplete
+                                options={tipoDocumentos}
+                                getOptionLabel={(option) => option.nome}
+                                value={selectedTipoDocumento}
+                                onChange={(event, newValue) => setSelectedTipoDocumento(newValue)}
+                                renderInput={(params) => (
+                                    <TextField {...params} label="Tipo de Documento" variant="outlined" fullWidth />
+                                )}
                             />
                         </div>
                         <div className="mb-4">
-                            <label className="block text-gray-700 mb-2" htmlFor="recebidoPorId">Recebido Por ID</label>
-                            <input
+                            <TextField
                                 type="number"
-                                id="recebidoPorId"
-                                name="recebidoPorId"
-                                value={recebidoPorId || ""}
+                                label="ID do Usuário a Receber"
+                                value={recebidoPorId}
                                 onChange={(e) => setRecebidoPorId(Number(e.target.value))}
-                                className="w-full px-3 py-2 border rounded-md border-blue-800 focus:outline-none focus:ring focus:border-blue-300"
+                                fullWidth
+                                variant="outlined"
+                                margin="normal"
                             />
                         </div>
-                        <button
-                            type="submit"
-                            className="py-2 px-4 w-full text-sm font-medium text-center text-white bg-blue-500 rounded-lg hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-300"
-                        >
-                            Enviar Documento
-                        </button>
+                        {error && <p className="text-red-600">{error}</p>}
+                        <div className="mt-4">
+                            <Button
+                                type="submit"
+                                variant="contained"
+                                color="primary"
+                                disabled={isSubmitting}
+                                fullWidth
+                            >
+                                {isSubmitting ? <CircularProgress size={24} /> : 'Enviar Documento'}
+                            </Button>
+                        </div>
                     </form>
                 </div>
             </div>
