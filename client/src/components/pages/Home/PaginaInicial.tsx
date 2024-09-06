@@ -3,7 +3,7 @@ import NavBar from "../../ui/Header/Header";
 import Card from "./Card/Card";
 
 export const PaginaInicial = () => {
-  
+
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -20,7 +20,7 @@ export const PaginaInicial = () => {
           <Link to="/ListaCliente" className="bg-gray-200 p-4 rounded-lg text-center hover:bg-gray-300 transition-colors duration-300">
             Clientes
           </Link>
-          <Link to="/Documentos" className="bg-gray-200 p-4 rounded-lg text-center hover:bg-gray-300 transition-colors duration-300">
+          <Link to="/ListaDocumento" className="bg-gray-200 p-4 rounded-lg text-center hover:bg-gray-300 transition-colors duration-300">
             Documentos
           </Link>
         </div>
