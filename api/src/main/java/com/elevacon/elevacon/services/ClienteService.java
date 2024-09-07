@@ -37,15 +37,20 @@ public class ClienteService {
     private PasswordEncoder passwordEncoder;
 
     public Cliente inserirCliente(Cliente cliente) {
+        // Obtém o usuário autenticado
         Authentication usuarioAutenticado = SecurityContextHolder.getContext().getAuthentication();
 
         if (usuarioAutenticado != null && usuarioAutenticado.getPrincipal() instanceof UserDetails) {
             UserDetails userDetails = (UserDetails) usuarioAutenticado.getPrincipal();
 
+            // Verifica se o usuário tem a role ROLE_CONTADOR
             if (userDetails.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_CONTADOR"))) {
-                Contador contador = contadorRepository.findByUsuarioLogin(userDetails.getUsername());
+                // Obtém o contador associado ao usuário autenticado
+                Optional<Contador> contadorOptional = contadorRepository.findByUsuarioLogin(userDetails.getUsername());
 
-                if (contador != null) {
+                // Se o contador estiver presente
+                if (contadorOptional.isPresent()) {
+                    Contador contador = contadorOptional.get();
                     cliente.setContador(contador);
 
                     // Cria o novo usuário para o cliente
@@ -70,15 +75,21 @@ public class ClienteService {
     }
 
     public List<Cliente> listarClientes() {
+        // Obtém o usuário autenticado
         Authentication usuarioAutenticado = SecurityContextHolder.getContext().getAuthentication();
 
         if (usuarioAutenticado != null && usuarioAutenticado.getPrincipal() instanceof UserDetails) {
             UserDetails userDetails = (UserDetails) usuarioAutenticado.getPrincipal();
 
+            // Verifica se o usuário tem a role ROLE_CONTADOR
             if (userDetails.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_CONTADOR"))) {
-                Contador contador = contadorRepository.findByUsuarioLogin(userDetails.getUsername());
+                // Obtém o contador associado ao usuário autenticado
+                Optional<Contador> contadorOptional = contadorRepository.findByUsuarioLogin(userDetails.getUsername());
 
-                if (contador != null) {
+                // Se o contador estiver presente
+                if (contadorOptional.isPresent()) {
+                    Contador contador = contadorOptional.get();
+                    // Retorna a lista de clientes associados ao contador
                     return clienteRepository.findByContador(contador);
                 } else {
                     throw new RuntimeException("Contador não encontrado para o usuário autenticado.");
@@ -92,19 +103,31 @@ public class ClienteService {
     }
 
     public Cliente editarCliente(Long idCliente, Cliente clienteAtualizado) {
+        // Obtém o usuário autenticado
         Authentication usuarioAutenticado = SecurityContextHolder.getContext().getAuthentication();
 
         if (usuarioAutenticado != null && usuarioAutenticado.getPrincipal() instanceof UserDetails) {
             UserDetails userDetails = (UserDetails) usuarioAutenticado.getPrincipal();
 
+            // Verifica se o usuário tem a role ROLE_CONTADOR
             if (userDetails.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_CONTADOR"))) {
-                Contador contador = contadorRepository.findByUsuarioLogin(userDetails.getUsername());
+                // Obtém o contador associado ao usuário autenticado
+                Optional<Contador> contadorOptional = contadorRepository.findByUsuarioLogin(userDetails.getUsername());
 
-                if (contador != null) {
+                // Se o contador estiver presente
+                if (contadorOptional.isPresent()) {
+                    Contador contador = contadorOptional.get();
+
+                    // Obtém o cliente pelo ID
                     Optional<Cliente> clienteOptional = clienteRepository.findById(idCliente);
+
+                    // Se o cliente estiver presente
                     if (clienteOptional.isPresent()) {
                         Cliente clienteExistente = clienteOptional.get();
+
+                        // Verifica se o cliente pertence ao contador autenticado
                         if (clienteExistente.getContador().getId_contador().equals(contador.getId_contador())) {
+                            // Atualiza os dados do cliente
                             clienteExistente.setNome(clienteAtualizado.getNome());
                             clienteExistente.setTelefone(clienteAtualizado.getTelefone());
                             clienteExistente.setEmail(clienteAtualizado.getEmail());
@@ -118,6 +141,8 @@ public class ClienteService {
                             clienteExistente.setCpf_conjugue(clienteAtualizado.getCpf_conjugue());
                             clienteExistente.setUsuario(clienteAtualizado.getUsuario());
                             clienteExistente.setPessoa(clienteAtualizado.getPessoa());
+
+                            // Salva e retorna o cliente atualizado
                             return clienteRepository.save(clienteExistente);
                         } else {
                             throw new RuntimeException(
@@ -138,19 +163,31 @@ public class ClienteService {
     }
 
     public void excluirCliente(Long idCliente) {
+        // Obtém o usuário autenticado
         Authentication usuarioAutenticado = SecurityContextHolder.getContext().getAuthentication();
 
         if (usuarioAutenticado != null && usuarioAutenticado.getPrincipal() instanceof UserDetails) {
             UserDetails userDetails = (UserDetails) usuarioAutenticado.getPrincipal();
 
+            // Verifica se o usuário tem a role ROLE_CONTADOR
             if (userDetails.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_CONTADOR"))) {
-                Contador contador = contadorRepository.findByUsuarioLogin(userDetails.getUsername());
+                // Obtém o contador associado ao usuário autenticado
+                Optional<Contador> contadorOptional = contadorRepository.findByUsuarioLogin(userDetails.getUsername());
 
-                if (contador != null) {
+                // Se o contador estiver presente
+                if (contadorOptional.isPresent()) {
+                    Contador contador = contadorOptional.get();
+
+                    // Obtém o cliente pelo ID
                     Optional<Cliente> clienteOptional = clienteRepository.findById(idCliente);
+
+                    // Se o cliente estiver presente
                     if (clienteOptional.isPresent()) {
                         Cliente cliente = clienteOptional.get();
+
+                        // Verifica se o cliente pertence ao contador autenticado
                         if (cliente.getContador().getId_contador().equals(contador.getId_contador())) {
+                            // Exclui o cliente
                             clienteRepository.delete(cliente);
                         } else {
                             throw new RuntimeException(
@@ -163,7 +200,6 @@ public class ClienteService {
                     throw new RuntimeException("Contador não encontrado para o usuário autenticado.");
                 }
             } else {
-                // throw new RuntimeException("Acesso negado: Contador apenas.");
                 throw new RuntimeException("Acesso apenas para contadores.");
             }
         } else {
@@ -172,18 +208,29 @@ public class ClienteService {
     }
 
     public Cliente buscarClientePorId(Long idCliente) {
+        // Obtém o usuário autenticado
         Authentication usuarioAutenticado = SecurityContextHolder.getContext().getAuthentication();
 
         if (usuarioAutenticado != null && usuarioAutenticado.getPrincipal() instanceof UserDetails) {
             UserDetails userDetails = (UserDetails) usuarioAutenticado.getPrincipal();
 
+            // Verifica se o usuário tem a role ROLE_CONTADOR
             if (userDetails.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_CONTADOR"))) {
-                Contador contador = contadorRepository.findByUsuarioLogin(userDetails.getUsername());
+                // Obtém o contador associado ao usuário autenticado
+                Optional<Contador> contadorOptional = contadorRepository.findByUsuarioLogin(userDetails.getUsername());
 
-                if (contador != null) {
+                // Se o contador estiver presente
+                if (contadorOptional.isPresent()) {
+                    Contador contador = contadorOptional.get();
+
+                    // Obtém o cliente pelo ID
                     Optional<Cliente> clienteOptional = clienteRepository.findById(idCliente);
+
+                    // Se o cliente estiver presente
                     if (clienteOptional.isPresent()) {
                         Cliente clienteExistente = clienteOptional.get();
+
+                        // Verifica se o cliente pertence ao contador autenticado
                         if (clienteExistente.getContador().getId_contador().equals(contador.getId_contador())) {
                             return clienteExistente;
                         } else {
@@ -206,18 +253,26 @@ public class ClienteService {
 
     @Transactional
     public void ativarUsuario(Long clienteId) {
+        // Obtém o usuário autenticado
         Authentication usuarioAutenticado = SecurityContextHolder.getContext().getAuthentication();
 
         if (usuarioAutenticado != null && usuarioAutenticado.getPrincipal() instanceof UserDetails) {
             UserDetails userDetails = (UserDetails) usuarioAutenticado.getPrincipal();
 
+            // Verifica se o usuário tem a role ROLE_CONTADOR
             if (userDetails.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_CONTADOR"))) {
-                Contador contador = contadorRepository.findByUsuarioLogin(userDetails.getUsername());
+                // Obtém o contador associado ao usuário autenticado
+                Optional<Contador> contadorOptional = contadorRepository.findByUsuarioLogin(userDetails.getUsername());
 
-                if (contador != null) {
+                // Se o contador estiver presente
+                if (contadorOptional.isPresent()) {
+                    Contador contador = contadorOptional.get();
+
+                    // Obtém o cliente pelo ID
                     Cliente cliente = clienteRepository.findById(clienteId)
                             .orElseThrow(() -> new RuntimeException("Cliente não encontrado"));
 
+                    // Verifica se o cliente pertence ao contador autenticado
                     if (cliente.getContador().equals(contador)) {
                         Usuario usuario = cliente.getUsuario();
 

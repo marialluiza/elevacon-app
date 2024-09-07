@@ -45,80 +45,97 @@ public class DocumentoService {
 
     public Documento uploadDocumento(MultipartFile file, Long tipoDocumentoId, Usuario recebidoPor) throws IOException {
 
-        // Traz o usuário AUTENTICADO e sua ROLE
+        // Obtém o usuário autenticado e suas credenciais
         Authentication usuarioAutenticado = SecurityContextHolder.getContext().getAuthentication();
-
         if (usuarioAutenticado == null || !(usuarioAutenticado.getPrincipal() instanceof Usuario)) {
             throw new IllegalArgumentException("Usuário não autenticado ou inválido.");
         }
 
-        // Faz o cast para Usuario, já que o Usuario implementa UserDetails
         Usuario enviadoPor = (Usuario) usuarioAutenticado.getPrincipal();
-
-        // Obtém o token do usuário autenticado
         String token = usuarioAutenticado.getCredentials() != null ? usuarioAutenticado.getCredentials().toString()
                 : "Token não disponível";
-
-        // Armazena o token para uso posterior
         setTokenUsuarioAutenticado(token);
 
-        // Valida o tipo do arquivo
+        // Validação de tipo de arquivo
         String contentType = file.getContentType();
         if (!isValidFileType(contentType)) {
             throw new IllegalArgumentException("Tipo de arquivo não suportado");
         }
 
-        // Valida o tipo de documento
+        // Validação do tipo de documento
         TipoDocumento tipoDocumento = tipoDocumentoRepository.findById(tipoDocumentoId)
                 .orElseThrow(() -> new IllegalArgumentException("Tipo de documento inválido"));
 
-        // Obtém o contador associado ao usuário autenticado
-        Contador contadorAutenticado = contadorRepository.findByUsuarioLogin(enviadoPor.getLogin());
-        if (contadorAutenticado == null) {
-            throw new IllegalArgumentException("Usuário autenticado não é um contador.");
+        // Verifica se o usuário autenticado é contador ou cliente
+        Optional<Contador> contadorOptional = contadorRepository.findByUsuarioLogin(enviadoPor.getLogin());
+        Optional<Cliente> clienteOptional = clienteRepository.findByUsuario(enviadoPor);
+
+        if (contadorOptional.isPresent()) {
+            validarEnvioDeContador(contadorOptional.get(), recebidoPor);
+        } else if (clienteOptional.isPresent()) {
+            validarEnvioDeCliente(clienteOptional.get(), recebidoPor);
+        } else {
+            throw new IllegalArgumentException("Usuário autenticado não é um cliente nem um contador.");
         }
 
-        // Verifica se o usuário recebidoPor é um cliente
-        Optional<Cliente> clienteOptional = clienteRepository.findByUsuario(recebidoPor);
-        if (!clienteOptional.isPresent()) {
-            throw new IllegalArgumentException("O usuário destino não é um cliente.");
-        }
-
-        Cliente cliente = clienteOptional.get();
-
-        // Verifica se o cliente está associado ao contador autenticado
-        if (!cliente.getContador().getId_contador().equals(contadorAutenticado.getId_contador())) {
-            throw new IllegalArgumentException(
-                    "Você não pode enviar documentos para um cliente que não está associado a você.");
-        }
-
-        // Define o diretório de upload
-        String uploadDir = "uploads/";
-        Path uploadPath = Paths.get(uploadDir);
-
-        // Cria o diretório de upload se não existir
-        if (!Files.exists(uploadPath)) {
-            Files.createDirectories(uploadPath);
-        }
-
-        // Gera um nome de arquivo único usando UUID
-        String fileName = UUID.randomUUID().toString() + "_" + file.getOriginalFilename();
-        Path path = uploadPath.resolve(fileName);
-
-        // Salva o arquivo no sistema de arquivos
-        Files.copy(file.getInputStream(), path);
+        // Processo de upload de arquivo
+        String fileName = processarUpload(file);
 
         // Cria e salva a entidade Documento
         Documento documento = new Documento();
         documento.setNome(fileName);
-        documento.setCaminho(path.toString());
+        documento.setCaminho("uploads/" + fileName);
         documento.setTipoDocumento(tipoDocumento);
         documento.setDataEnvio(new Date());
-        documento.setEnviadoPor(enviadoPor); // O usuário autenticado
+        documento.setEnviadoPor(enviadoPor);
         documento.setRecebidoPor(recebidoPor);
         documento.setStatus(StatusDocumento.ENVIADO);
 
         return documentoRepository.save(documento);
+    }
+
+    // Método auxiliar para validar envio de contador
+    private void validarEnvioDeContador(Contador contadorAutenticado, Usuario recebidoPor) {
+        Optional<Cliente> clienteDestino = clienteRepository.findByUsuario(recebidoPor);
+        if (!clienteDestino.isPresent()) {
+            throw new IllegalArgumentException("O usuário destino não é um cliente.");
+        }
+
+        Cliente cliente = clienteDestino.get();
+        if (!cliente.getContador().getId_contador().equals(contadorAutenticado.getId_contador())) {
+            throw new IllegalArgumentException(
+                    "Você não pode enviar documentos para um cliente que não está associado a você.");
+        }
+    }
+
+    // Método auxiliar para validar envio de cliente
+    private void validarEnvioDeCliente(Cliente clienteAutenticado, Usuario recebidoPor) {
+        Optional<Contador> contadorDestino = contadorRepository.findByUsuario(recebidoPor);
+        if (!contadorDestino.isPresent()) {
+            throw new IllegalArgumentException("O usuário destino não é um contador.");
+        }
+
+        Contador contador = contadorDestino.get();
+        if (!clienteAutenticado.getContador().getId_contador().equals(contador.getId_contador())) {
+            throw new IllegalArgumentException(
+                    "Você não pode enviar documentos para um contador que não está associado a você.");
+        }
+    }
+
+    // Método auxiliar para processar o upload do arquivo
+    private String processarUpload(MultipartFile file) throws IOException {
+        String uploadDir = "uploads/";
+        Path uploadPath = Paths.get(uploadDir);
+
+        if (!Files.exists(uploadPath)) {
+            Files.createDirectories(uploadPath);
+        }
+
+        String fileName = UUID.randomUUID().toString() + "_" + file.getOriginalFilename();
+        Path path = uploadPath.resolve(fileName);
+        Files.copy(file.getInputStream(), path);
+
+        return fileName;
     }
 
     // Armazena o token do usuário autenticado (simulação)
