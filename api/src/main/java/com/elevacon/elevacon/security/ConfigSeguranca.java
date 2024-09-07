@@ -51,6 +51,7 @@ public class ConfigSeguranca {
                         .requestMatchers(HttpMethod.POST, "/documentos/upload").hasRole("USUARIO")
                         .requestMatchers(HttpMethod.POST, "/documentos/enviados").hasRole("USUARIO")
                         .requestMatchers(HttpMethod.POST, "/documentos/recebidos").hasRole("USUARIO")
+                        .requestMatchers(HttpMethod.POST, "/documentos/download/{documentoId}").hasRole("USUARIO")
 
                         .requestMatchers(HttpMethod.POST, "/autentica/cadastrar").hasRole("ADMIN")
 

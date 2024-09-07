@@ -1,10 +1,16 @@
 package com.elevacon.elevacon.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.Resource;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 
 import com.elevacon.elevacon.model.Cliente;
 import com.elevacon.elevacon.model.Contador;
@@ -25,6 +31,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+
+import jakarta.transaction.Transactional;
 
 @Service
 public class DocumentoService {
@@ -176,5 +184,39 @@ public class DocumentoService {
             return (Usuario) auth.getPrincipal();
         }
         throw new IllegalArgumentException("Usuário não autenticado");
+    }
+
+    @Transactional
+    public ResponseEntity<Resource> downloadDocumento(Long documentoId) throws IOException {
+        // Obtém o usuário autenticado
+        Usuario usuarioAutenticado = getUsuarioLogado();
+        System.out.println("Usuário autenticado: " + usuarioAutenticado.getId_usuario());
+
+        // Verifica se o documento existe
+        Documento documento = documentoRepository.findById(documentoId)
+                .orElseThrow(() -> new IllegalArgumentException("Documento não encontrado"));
+
+        System.out.println(
+                "Documento encontrado. Destinatário do documento: " + documento.getRecebidoPor().getId_usuario());
+
+        // Verifica se o usuário autenticado é o destinatário do documento
+        if (!documento.getRecebidoPor().getId_usuario().equals(usuarioAutenticado.getId_usuario())) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(null);
+        }
+
+        // Obtém o caminho do arquivo
+        Path filePath = Paths.get(documento.getCaminho());
+        Resource resource = new FileSystemResource(filePath.toFile());
+
+        if (resource.exists()) {
+            // Retorna o arquivo como resposta
+            return ResponseEntity.ok()
+                    .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"")
+                    .body(resource);
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(null); // ou uma mensagem de erro apropriada
+        }
     }
 }
