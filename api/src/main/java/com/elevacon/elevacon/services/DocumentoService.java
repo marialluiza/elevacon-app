@@ -2,34 +2,38 @@ package com.elevacon.elevacon.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.elevacon.elevacon.model.Cliente;
+import com.elevacon.elevacon.model.Contador;
 import com.elevacon.elevacon.model.Documento;
 import com.elevacon.elevacon.model.StatusDocumento;
 import com.elevacon.elevacon.model.TipoDocumento;
 import com.elevacon.elevacon.model.Usuario;
+import com.elevacon.elevacon.repository.ClienteRepository;
+import com.elevacon.elevacon.repository.ContadorRepository;
 import com.elevacon.elevacon.repository.DocumentoRepository;
 import com.elevacon.elevacon.repository.TipoDocumentoRepository;
-import com.elevacon.elevacon.repository.UsuarioRepository;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
 public class DocumentoService {
 
     @Autowired
-    private UsuarioRepository usuarioRepository;
+    private ContadorRepository contadorRepository;
+
+    @Autowired
+    private ClienteRepository clienteRepository;
 
     private final DocumentoRepository documentoRepository;
     private final TipoDocumentoRepository tipoDocumentoRepository;
@@ -67,6 +71,26 @@ public class DocumentoService {
         // Valida o tipo de documento
         TipoDocumento tipoDocumento = tipoDocumentoRepository.findById(tipoDocumentoId)
                 .orElseThrow(() -> new IllegalArgumentException("Tipo de documento inválido"));
+
+        // Obtém o contador associado ao usuário autenticado
+        Contador contadorAutenticado = contadorRepository.findByUsuarioLogin(enviadoPor.getLogin());
+        if (contadorAutenticado == null) {
+            throw new IllegalArgumentException("Usuário autenticado não é um contador.");
+        }
+
+        // Verifica se o usuário recebidoPor é um cliente
+        Optional<Cliente> clienteOptional = clienteRepository.findByUsuario(recebidoPor);
+        if (!clienteOptional.isPresent()) {
+            throw new IllegalArgumentException("O usuário destino não é um cliente.");
+        }
+
+        Cliente cliente = clienteOptional.get();
+
+        // Verifica se o cliente está associado ao contador autenticado
+        if (!cliente.getContador().getId_contador().equals(contadorAutenticado.getId_contador())) {
+            throw new IllegalArgumentException(
+                    "Você não pode enviar documentos para um cliente que não está associado a você.");
+        }
 
         // Define o diretório de upload
         String uploadDir = "uploads/";

@@ -48,5 +48,4 @@ public class Documento {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private StatusDocumento status;
-
 }

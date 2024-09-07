@@ -17,11 +17,12 @@ import jakarta.persistence.OneToOne;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name="cliente")
-@Entity(name="cliente")
+@Table(name = "cliente")
+@Entity(name = "cliente")
 public class Cliente {
 
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id_cliente;
     private String nome;
     private String email;
@@ -54,13 +55,5 @@ public class Cliente {
     @OneToOne
     @JoinColumn(name = "id_pessoa")
     private Pessoa pessoa;
-
-    // @OneToOne
-    // @JoinColumn(name = "id_acesso_cliente")
-    // private AcessoCliente acessoCliente;
-
-    // @OneToMany
-    // @JoinColumn(name = "id_dependente")
-    // private Dependente dependente;
 
 }
