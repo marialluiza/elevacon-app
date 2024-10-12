@@ -55,12 +55,4 @@ public class Cliente {
     @JoinColumn(name = "id_pessoa")
     private Pessoa pessoa;
 
-    // @OneToOne
-    // @JoinColumn(name = "id_acesso_cliente")
-    // private AcessoCliente acessoCliente;
-
-    // @OneToMany
-    // @JoinColumn(name = "id_dependente")
-    // private Dependente dependente;
-
 }

@@ -26,9 +26,6 @@ public class ClienteController {
     @Autowired
     private ClienteService clienteService;
 
-    // @Autowired
-    // private UsuarioRepository usuarioRepository;
-
     @PostMapping("/cadastrar-cliente")
     public ResponseEntity<Cliente> inserirCliente(@RequestBody Cliente cliente) {
         Cliente novoCliente = clienteService.inserirCliente(cliente);

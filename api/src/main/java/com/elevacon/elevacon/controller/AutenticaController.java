@@ -34,7 +34,7 @@ public class AutenticaController {
     private TokenService tokenService;
 
     @PostMapping("/login")
-    public ResponseEntity login(@RequestBody @Valid AutenticaDTO dados) {
+    public ResponseEntity<LoginTokenDTO> login(@RequestBody @Valid AutenticaDTO dados) {
         // hash para criptografar senha
         var loginSenha = new UsernamePasswordAuthenticationToken(dados.login(), dados.senha());
         var autentica = this.authenticationManager.authenticate(loginSenha);
@@ -43,13 +43,16 @@ public class AutenticaController {
         // var token = tokenService.geraToken((Usuario) autentica.getPrincipal());
         var token = tokenService.geraToken(usuario);
 
+        System.out.println("ID do usuário: " + usuario.getId_usuario());
+        System.out.println("Token gerado: " + token);
+
         var response = new LoginTokenDTO(token, usuario.getId_usuario(), usuario.getLogin(), usuario.getRole());
         return ResponseEntity.ok(response);
 
     }
 
     @PostMapping("/cadastrar")
-    public ResponseEntity cadastrar(@RequestBody @Valid reqUsuarioDTO dados) {
+    public ResponseEntity<Void> cadastrar(@RequestBody @Valid reqUsuarioDTO dados) {
         if (this.usuarioRepository.findByLogin(dados.login()) != null)
             return ResponseEntity.badRequest().build();
 
@@ -71,19 +74,4 @@ public class AutenticaController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Token inválido ou expirado.");
         }
     }
-
-    // @PostMapping("/cadastrar")
-    // public ResponseEntity cadastrar(@RequestBody @Valid RegistroDTO dados){
-    // if (this.usuarioRepository.findByLogin(dados.login()) != null) return
-    // ResponseEntity.badRequest().build();
-
-    // String senhaCriptografada = new
-    // BCryptPasswordEncoder().encode(dados.senha());
-    // Usuario novoUsuario = new Usuario(dados.login(), senhaCriptografada,
-    // dados.role());
-
-    // this.usuarioRepository.save(novoUsuario);
-
-    // return ResponseEntity.ok().build();
-    // }
 }

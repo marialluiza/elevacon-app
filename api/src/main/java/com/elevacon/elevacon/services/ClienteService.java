@@ -1,6 +1,5 @@
 package com.elevacon.elevacon.services;
 
-import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 
@@ -9,7 +8,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -52,9 +50,9 @@ public class ClienteService {
 
                     // Cria o novo usuário para o cliente
                     Usuario usuario = new Usuario();
-                    usuario.setLogin(cliente.getEmail()); // ou outro atributo único
-                    usuario.setSenha(passwordEncoder.encode("senhaPadrão")); // define uma senha padrão ou gerada
-                    usuario.setUsuarioAtivo(false); // desativa o usuário inicialmente
+                    usuario.setLogin(cliente.getEmail());
+                    usuario.setSenha(passwordEncoder.encode("senhaPadrão"));
+                    usuario.setUsuarioAtivo(false);
                     usuario.setRole(UsuarioRole.CLIENTE);
                     usuario = usuarioRepository.save(usuario);
 
@@ -70,34 +68,6 @@ public class ClienteService {
             throw new RuntimeException("Usuário autenticado não encontrado.");
         }
     }
-
-    // public Cliente inserirCliente(Cliente cliente) {
-    // Authentication usuarioAutenticado =
-    // SecurityContextHolder.getContext().getAuthentication();
-
-    // if (usuarioAutenticado != null && usuarioAutenticado.getPrincipal()
-    // instanceof UserDetails) {
-    // UserDetails userDetails = (UserDetails) usuarioAutenticado.getPrincipal();
-
-    // if (userDetails.getAuthorities().contains(new
-    // SimpleGrantedAuthority("ROLE_CONTADOR"))) {
-    // Contador contador =
-    // contadorRepository.findByUsuarioLogin(userDetails.getUsername());
-
-    // if (contador != null) {
-    // cliente.setContador(contador);
-    // return clienteRepository.save(cliente);
-    // } else {
-    // throw new RuntimeException("Contador não encontrado para o usuário
-    // autenticado.");
-    // }
-    // } else {
-    // throw new RuntimeException("Acesso negado: Contador apenas.");
-    // }
-    // } else {
-    // throw new RuntimeException("Usuário autenticado não encontrado.");
-    // }
-    // }
 
     public List<Cliente> listarClientes() {
         Authentication usuarioAutenticado = SecurityContextHolder.getContext().getAuthentication();
@@ -143,7 +113,14 @@ public class ClienteService {
                             clienteExistente.setCpf(clienteAtualizado.getCpf());
                             clienteExistente.setData_nascimento(clienteAtualizado.getData_nascimento());
                             clienteExistente.setDependente(clienteAtualizado.isDependente());
-                            clienteExistente.setOcupacao_principal(clienteAtualizado.getOcupacao_principal());
+                            clienteExistente.setOcupacao_principal(clienteAtualizado.getOcupacao_principal
+                            ());
+                            clienteExistente.setLogradouro(clienteAtualizado.getLogradouro());
+                            clienteExistente.setNumero(clienteAtualizado.getNumero());
+                            clienteExistente.setBairro(clienteAtualizado.getBairro());
+                            clienteExistente.setCidade(clienteAtualizado.getCidade());
+                            clienteExistente.setEstado(clienteAtualizado.getEstado());
+                            clienteExistente.setCep(clienteAtualizado.getCep());
                             clienteExistente.setNome_conjugue(clienteAtualizado.getNome_conjugue());
                             clienteExistente.setCpf_conjugue(clienteAtualizado.getCpf_conjugue());
                             clienteExistente.setUsuario(clienteAtualizado.getUsuario());
@@ -193,7 +170,6 @@ public class ClienteService {
                     throw new RuntimeException("Contador não encontrado para o usuário autenticado.");
                 }
             } else {
-                // throw new RuntimeException("Acesso negado: Contador apenas.");
                 throw new RuntimeException("Acesso apenas para contadores.");
             }
         } else {
