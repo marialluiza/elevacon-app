@@ -113,7 +113,14 @@ public class ClienteService {
                             clienteExistente.setCpf(clienteAtualizado.getCpf());
                             clienteExistente.setData_nascimento(clienteAtualizado.getData_nascimento());
                             clienteExistente.setDependente(clienteAtualizado.isDependente());
-                            clienteExistente.setOcupacao_principal(clienteAtualizado.getOcupacao_principal());
+                            clienteExistente.setOcupacao_principal(clienteAtualizado.getOcupacao_principal
+                            ());
+                            clienteExistente.setLogradouro(clienteAtualizado.getLogradouro());
+                            clienteExistente.setNumero(clienteAtualizado.getNumero());
+                            clienteExistente.setBairro(clienteAtualizado.getBairro());
+                            clienteExistente.setCidade(clienteAtualizado.getCidade());
+                            clienteExistente.setEstado(clienteAtualizado.getEstado());
+                            clienteExistente.setCep(clienteAtualizado.getCep());
                             clienteExistente.setNome_conjugue(clienteAtualizado.getNome_conjugue());
                             clienteExistente.setCpf_conjugue(clienteAtualizado.getCpf_conjugue());
                             clienteExistente.setUsuario(clienteAtualizado.getUsuario());
@@ -163,7 +170,6 @@ public class ClienteService {
                     throw new RuntimeException("Contador não encontrado para o usuário autenticado.");
                 }
             } else {
-                // throw new RuntimeException("Acesso negado: Contador apenas.");
                 throw new RuntimeException("Acesso apenas para contadores.");
             }
         } else {

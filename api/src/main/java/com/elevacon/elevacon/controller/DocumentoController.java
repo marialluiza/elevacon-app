@@ -112,7 +112,6 @@ public class DocumentoController {
     public ResponseEntity<List<DocumentoDTO>> listarDocumentosRecebidos() {
         List<Documento> documentos = documentoService.listarDocumentosRecebidos();
 
-        // Converte a lista de documentos em uma lista de DTOs
         List<DocumentoDTO> documentosDTO = documentos.stream()
                 .map(DocumentoDTO::new)
                 .collect(Collectors.toList());
