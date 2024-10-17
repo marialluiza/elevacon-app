@@ -2,6 +2,9 @@ package com.elevacon.elevacon.services;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
@@ -36,6 +39,12 @@ public class ClienteService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    @Autowired
+    private TokenService tokenService;
+
+    @Autowired
+    private EmailService emailService;
+
     public Cliente inserirCliente(Cliente cliente) {
         Authentication usuarioAutenticado = SecurityContextHolder.getContext().getAuthentication();
 
@@ -48,13 +57,28 @@ public class ClienteService {
                 if (contador != null) {
                     cliente.setContador(contador);
 
-                    // Cria o novo usuário para o cliente
+                    // Gera uma senha temporária
+                    String senhaTemporaria = UUID.randomUUID().toString().replace("-",
+                            "").substring(0, 8);
+
                     Usuario usuario = new Usuario();
                     usuario.setLogin(cliente.getEmail());
-                    usuario.setSenha(passwordEncoder.encode("senhaPadrão"));
+                    usuario.setSenha(passwordEncoder.encode(senhaTemporaria));
                     usuario.setUsuarioAtivo(false);
                     usuario.setRole(UsuarioRole.CLIENTE);
                     usuario = usuarioRepository.save(usuario);
+
+                    // String tokenGerado = tokenService.geraToken(usuario);
+
+                    // String linkAcesso = "http://localhost:5173/alterar-senha?token=" +
+                    // tokenGerado;
+                    // String conteudoEmail = "Olá, " + cliente.getNome()
+                    // + "\n\nSeu acesso foi gerado. Acesse o sistema usando o seguinte link para
+                    // alterar sua senha:"
+                    // + linkAcesso;
+
+                    // emailService.enviarEmail(cliente.getEmail(), "Dados de Acesso",
+                    // conteudoEmail);
 
                     cliente.setUsuario(usuario);
                     return clienteRepository.save(cliente);
@@ -113,8 +137,7 @@ public class ClienteService {
                             clienteExistente.setCpf(clienteAtualizado.getCpf());
                             clienteExistente.setData_nascimento(clienteAtualizado.getData_nascimento());
                             clienteExistente.setDependente(clienteAtualizado.isDependente());
-                            clienteExistente.setOcupacao_principal(clienteAtualizado.getOcupacao_principal
-                            ());
+                            clienteExistente.setOcupacao_principal(clienteAtualizado.getOcupacao_principal());
                             clienteExistente.setLogradouro(clienteAtualizado.getLogradouro());
                             clienteExistente.setNumero(clienteAtualizado.getNumero());
                             clienteExistente.setBairro(clienteAtualizado.getBairro());
@@ -246,4 +269,58 @@ public class ClienteService {
             throw new RuntimeException("Usuário autenticado não encontrado");
         }
     }
+
+    public Map<String, String> gerarAcessoParaCliente(String login) {
+        Usuario usuario = usuarioRepository.findUsuarioByLogin(login);
+        System.out.println("user::::" + usuario);
+        System.out.println("login::::" + login);
+
+        if (usuario == null) {
+            throw new RuntimeException("Usuário não encontrado.");
+        }
+
+        if (usuario.isUsuarioAtivo()) {
+            throw new RuntimeException("Usuário já está ativo.");
+        }
+
+        String senhaTemporaria = UUID.randomUUID().toString().replace("-", "").substring(0, 8);
+
+        String senhaCriptografada = passwordEncoder.encode(senhaTemporaria);
+        usuario.setSenha(senhaCriptografada);
+        // usuario.setUsuarioAtivo(true);
+
+        usuarioRepository.save(usuario);
+        System.out.println("user2222::::" + usuario);
+
+        String linkAcesso = "http://localhost:5173/Login";
+        String conteudoEmail = String.format(
+                "Olá, %s\n\nSeu acesso ao sistema foi gerado. Use as seguintes credenciais para acessar o sistema:\n\n"
+                        +
+                        "Login: %s\n" +
+                        "Senha temporária: %s\n\n" +
+                        "Por favor, para segurança da sua conta acesse o sistema e altere sua senha: %s",
+                usuario.getLogin(), usuario.getLogin(), senhaTemporaria, linkAcesso);
+
+        emailService.enviarEmail(usuario.getLogin(), "Dados de Acesso", conteudoEmail);
+
+        Map<String, String> loginInfo = new HashMap<>();
+        loginInfo.put("login", usuario.getLogin());
+        loginInfo.put("senhaTemporaria", senhaTemporaria);
+
+        System.out.println("login infosss::" + loginInfo);
+        return loginInfo;
+    }
+
+    public void alterarSenha(String token, String novaSenha) {
+        String login = tokenService.getLoginFromToken(token);
+        Usuario usuario = usuarioRepository.findUsuarioByLogin(login);
+
+        if (usuario != null) {
+            usuario.setSenha(passwordEncoder.encode(novaSenha));
+            usuarioRepository.save(usuario);
+        } else {
+            throw new RuntimeException("Usuário não encontrado ou inativo.");
+        }
+    }
+
 }

@@ -9,12 +9,14 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.elevacon.elevacon.model.Usuario;
+import com.elevacon.elevacon.model.DTOs.AlteracaoSenhaDTO;
 import com.elevacon.elevacon.services.UsuarioService;
 
 @RestController // mapeia como controller
@@ -55,5 +57,16 @@ public class UsuarioController {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
         }
     }
+
+    @PostMapping("/alterar-senha")
+    public ResponseEntity<?> alterarSenha(@RequestBody AlteracaoSenhaDTO alteracaoSenhaDTO) {
+        try {
+            String mensagem = usuarioService.alterarSenha(alteracaoSenhaDTO);
+            return ResponseEntity.ok(mensagem);
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+    
 
 }

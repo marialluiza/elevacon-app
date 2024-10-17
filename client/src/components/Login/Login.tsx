@@ -1,10 +1,10 @@
-import React, {useState } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../infra/context/AuthProvider';
 
 const Login: React.FC = () => {
 
-  const { userAuth } = useAuth(); 
+  const { userAuth } = useAuth();
   const navigate = useNavigate();
 
   const [login, setLogin] = useState('');
@@ -13,13 +13,16 @@ const Login: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setErro('');
     try {
-      await userAuth(login, senha); 
-      navigate('/PaginaInicial'); 
+      await userAuth(login, senha);
+      navigate('/PaginaInicial');
     } catch (err) {
+      console.log(err);
       setErro('Login falhou, verifique suas credenciais.');
     }
   };
+
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-slate-900">

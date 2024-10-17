@@ -10,10 +10,12 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import com.elevacon.elevacon.model.Usuario;
+import com.elevacon.elevacon.model.DTOs.AlteracaoSenhaDTO;
 import com.elevacon.elevacon.model.DTOs.reqUsuarioDTO;
 import com.elevacon.elevacon.repository.UsuarioRepository;
 
@@ -25,6 +27,9 @@ public class UsuarioService {
 
     // @Autowired
     // private AutenticaService autenticaService;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     public Usuario inserirUsuario(@RequestBody reqUsuarioDTO dados) {
         Usuario usuario = new Usuario(dados);
@@ -109,6 +114,24 @@ public class UsuarioService {
         System.out.println("Não possui permissão para realizar essa ação referente a este usuário.");
         return false;
     }
+
+    public String alterarSenha(AlteracaoSenhaDTO alteracaoSenhaDTO) {
+    
+        Usuario usuario = usuarioRepository.findUsuarioByLogin(alteracaoSenhaDTO.getLogin());
+    
+        if (usuario != null) {
+            if (usuario.verificarSenha(alteracaoSenhaDTO.getSenhaAtual())) {
+                usuario.setSenha(passwordEncoder.encode(alteracaoSenhaDTO.getNovaSenha()));
+                usuarioRepository.save(usuario);
+                return "Senha alterada com sucesso.";
+            } else {
+                throw new RuntimeException("Senha atual incorreta.");
+            }
+        }
+    
+        throw new RuntimeException("Usuário não encontrado.");
+    }
+
 }
 
 // -----------------------------------------------------------------------------------------------------

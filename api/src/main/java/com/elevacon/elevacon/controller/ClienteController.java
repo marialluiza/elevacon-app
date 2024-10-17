@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.elevacon.elevacon.model.Cliente;
+import com.elevacon.elevacon.model.DTOs.AlteracaoSenhaDTO;
 // import com.elevacon.elevacon.model.Usuario;
 // import com.elevacon.elevacon.repository.UsuarioRepository;
 import com.elevacon.elevacon.services.ClienteService;
@@ -51,7 +52,6 @@ public class ClienteController {
     public ResponseEntity<Void> excluirCliente(@PathVariable Long id) {
         try {
             clienteService.excluirCliente(id);
-            System.out.println("Cliente com o id " + id + " foi excluído com sucesso");
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         } catch (RuntimeException e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -72,6 +72,28 @@ public class ClienteController {
     public ResponseEntity<?> ativarUsuario(@PathVariable Long clienteId) {
         clienteService.ativarUsuario(clienteId);
         return ResponseEntity.ok("Usuário ativado com sucesso");
+    }
+
+    @PostMapping("/gerar-acesso")
+    public ResponseEntity<String> gerarAcesso(@RequestBody String email) {
+        try {
+            System.out.println("controller 1: Email recebido - " + email);
+            clienteService.gerarAcessoParaCliente(email.replace("\"", ""));
+            System.out.println("email email::::" + email);
+            return ResponseEntity.ok("Acesso gerado com sucesso.");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @PostMapping("/alterar-senha")
+    public ResponseEntity<String> alterarSenha(@RequestBody AlteracaoSenhaDTO alteracaoSenhaDTO) {
+        try {
+            clienteService.alterarSenha(alteracaoSenhaDTO.getToken(), alteracaoSenhaDTO.getNovaSenha());
+            return ResponseEntity.ok("Senha alterada com sucesso.");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Erro ao alterar a senha: " + e.getMessage());
+        }
     }
 
 }

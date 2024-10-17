@@ -8,6 +8,7 @@ import java.util.Set;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import com.elevacon.elevacon.model.DTOs.reqUsuarioDTO;
 import com.elevacon.elevacon.security.Roles.UsuarioRole;
@@ -20,7 +21,9 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
@@ -57,17 +60,17 @@ public class Usuario implements UserDetails {
         data_criacao = new Date();
     }
 
-    @OneToMany(mappedBy = "enviadoPor", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "enviadoPor", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     private Set<Documento> documentosEnviados;
 
-    @OneToMany(mappedBy = "recebidoPor", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "recebidoPor", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     private Set<Documento> documentosRecebidos;
 
     public Usuario(reqUsuarioDTO dados) {
         this.id_usuario = dados.id_usuario();
         this.login = dados.login();
         this.senha = dados.senha();
-        // this.usuarioAtivo = dados.usuarioAtivo();
+        this.usuarioAtivo = dados.usuarioAtivo();
         this.data_criacao = dados.dataCriacao();
         this.role = dados.role();
     }
@@ -142,6 +145,10 @@ public class Usuario implements UserDetails {
     public boolean isEnabled() {
         return true;
         // throw new UnsupportedOperationException("Unimplemented method 'isEnabled'");
+    }
+
+    public boolean verificarSenha(String senha) {
+        return new BCryptPasswordEncoder().matches(senha, this.senha);
     }
 
 }

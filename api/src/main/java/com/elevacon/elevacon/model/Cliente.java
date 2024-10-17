@@ -2,6 +2,7 @@ package com.elevacon.elevacon.model;
 
 import java.util.Date;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
@@ -47,8 +48,8 @@ public class Cliente {
     @JoinColumn(name = "id_contador")
     private Contador contador;
 
-    @OneToOne
-    @JoinColumn(name = "id_usuario")
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "id_usuario", referencedColumnName = "id_usuario")
     private Usuario usuario;
 
     @OneToOne

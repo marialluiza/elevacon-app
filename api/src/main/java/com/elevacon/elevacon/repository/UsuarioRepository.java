@@ -11,8 +11,9 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Long>, Usuario
 
     //está sendo declarado aqui com 'UserDetails' para utilização do Spring Security .
     UserDetails findByLogin(String login);
-    
+    Usuario findUsuarioByLogin(String login); 
+ 
 }
-//métodos basicos com o banco 
+//métodos basicos com o banco   
 //custom: métodos diferentes de busca: desativar por id
 //impl: select 

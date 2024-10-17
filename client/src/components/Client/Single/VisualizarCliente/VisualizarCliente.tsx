@@ -36,17 +36,45 @@ const VisualizarCliente = () => {
 
     const showClientAccess = async () => {
         try {
-          const response = await api.post(`/cliente/cadastrar-cliente`, clienteData, {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          });
-          setOpen(true);
-          console.log('Acesso gerado com sucesso:', response.data);
+            const response = await api.post(
+                `/cliente/gerar-acesso`,
+                { email: clienteData.email }, // Enviar como objeto JSON
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                        'Content-Type': 'application/json',
+                    },
+                }
+            );
+            // const response = await api.post(
+            //     `/cliente/gerar-acesso`,
+            //     JSON.stringify(clienteData.email),
+
+            //     {
+            //         headers: {
+            //             Authorization: `Bearer ${token}`,
+            //             'Content-Type': 'application/json',
+            //         },
+            //     }
+            // );
+
+            const loginInfo = response.data;
+            console.log("Dados recebidos:", loginInfo);
+
+            if (loginInfo && loginInfo.senhaTemporaria) {
+                setClienteData((prevData) => ({
+                    ...prevData,
+                    senhaGerada: loginInfo.senhaTemporaria,
+                }));
+            } else {
+                console.error("A senha temporária não foi gerada corretamente.");
+            }
+
+            setOpen(true);
         } catch (error) {
-          console.error('Erro ao gerar acesso:', error);
+            console.error("Erro ao gerar acesso:", error);
         }
-      };
+    };
 
     const handleCancel = () => {
         setCancel(true);
@@ -154,7 +182,6 @@ const VisualizarCliente = () => {
                         </div>
                     </dl>
                 </div>
-
 
                 {/* <Link to="/ListaCliente" className=" right-4 bg-blue-500 text-white px-4 py-2 rounded-md shadow-lg hover:bg-blue-700">
             Página anterior
