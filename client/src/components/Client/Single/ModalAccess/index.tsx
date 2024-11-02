@@ -9,13 +9,9 @@ interface ModalAccessProps {
 }
 
 const ModalAccess: React.FC<ModalAccessProps> = ({ clienteData, onClose, onCancel, isOpen }) => {
-  console.log("daodss::", clienteData)
   const userName = clienteData.usuario.login;
   const password = clienteData.senhaGerada;
   
-  console.log("username:::", userName)
-  console.log("senha:::", password)
-
   const copyToClipboard = (text: string ) => {
     navigator.clipboard.writeText(text);
     toast.message("Copiado para a área de transferência!");

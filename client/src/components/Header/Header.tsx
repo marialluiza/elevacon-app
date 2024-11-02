@@ -22,7 +22,7 @@ const NavBar: React.FC = () => {
     </div>
   </nav>
 
-  <div className="pt-16"> {/* Adiciona um padding top para compensar a altura da header fixa */}
+  <div className="pt-16"> 
     {isSidebarOpen && (
       <div className="">
         <Sidebar />

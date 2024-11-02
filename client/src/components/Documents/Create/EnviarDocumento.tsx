@@ -1,29 +1,29 @@
 import { useState, useEffect } from 'react';
-import { Autocomplete, TextField, Button, CircularProgress } from '@mui/material';
+import { Autocomplete, TextField, Button, CircularProgress, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, IconButton } from '@mui/material';
 import { useAuth } from "../../../infra/context/AuthProvider";
 import api from '../../../infra/hooks/useAPI';
 import NavBar from '../../Header/Header';
 import { toast } from 'sonner';
+import CreateDocumentNewType from '../CreateType';
+import { IClient } from '../../../interfaces/IClient';
+import { Trash2 } from 'lucide-react';
 
 interface TipoDocumento {
     id: number;
     nome: string;
 }
 
-interface Usuario {
-    id_cliente: number;
-    nome: string;
-}
-
 const EnviarDocumento: React.FC = () => {
-    const { token, loading } = useAuth();
+    const { token, loading, userRole } = useAuth();
     const [tipoDocumentos, setTipoDocumentos] = useState<TipoDocumento[]>([]);
-    const [usuarios, setUsuarios] = useState<Usuario[]>([]);
+    const [usuarios, setUsuarios] = useState<IClient[]>([]);
     const [selectedTipoDocumento, setSelectedTipoDocumento] = useState<TipoDocumento | null>(null);
-    const [selectedUsuario, setSelectedUsuario] = useState<Usuario | null>(null); 
+    const [selectedUsuario, setSelectedUsuario] = useState<IClient | null>(null);
     const [file, setFile] = useState<File | null>(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const [isOpen, setOpen] = useState<boolean>(false);
+    const [confirmDeleteOpen, setConfirmDeleteOpen] = useState<boolean>(false);
 
     useEffect(() => {
         const fetchTipoDocumentos = async () => {
@@ -39,24 +39,54 @@ const EnviarDocumento: React.FC = () => {
             }
         };
 
-        const fetchUsuarios = async () => {
-            try {
-                const response = await api.get('/cliente/listar-clientes', {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
-                });
-                setUsuarios(response.data);
-            } catch (err) {
-                console.error('Erro ao buscar usuários:', err);
+        if (userRole == "CONTADOR") {
+
+            const fetchUsuarios = async () => {
+                try {
+                    const response = await api.get('/cliente/listar-clientes', {
+                        headers: {
+                            Authorization: `Bearer ${token}`,
+                        },
+                    });
+                    setUsuarios(response.data);
+                } catch (err) {
+                    console.error('Erro ao buscar usuários:', err);
+                }
+            };
+
+            if (token) {
+                fetchUsuarios();
             }
-        };
+        }
 
         if (token) {
             fetchTipoDocumentos();
-            fetchUsuarios();
         }
     }, [token]);
+
+    const handleDeleteTipoDocumento = async () => {
+        if (!selectedTipoDocumento) return;
+
+        try {
+            await api.delete(`/tipo-documentos/${selectedTipoDocumento.id}`, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+            toast.success('Tipo de documento excluído com sucesso.');
+            setTipoDocumentos((prev) => prev.filter((doc) => doc.id !== selectedTipoDocumento.id));
+            setSelectedTipoDocumento(null);
+            setConfirmDeleteOpen(false);
+        } catch (err) {
+            console.error('Erro ao excluir tipo de documento:', err);
+            toast.error('Erro ao excluir tipo de documento.');
+        }
+    };
+
+    const handleDelete = (tipoDocumento: TipoDocumento) => {
+        setSelectedTipoDocumento(tipoDocumento);
+        setConfirmDeleteOpen(true);
+    };
 
     const handleSubmit = async (event: React.FormEvent) => {
         event.preventDefault();
@@ -69,7 +99,7 @@ const EnviarDocumento: React.FC = () => {
         const formData = new FormData();
         formData.append('file', file);
         formData.append('tipoDocumentoId', selectedTipoDocumento.id.toString());
-        formData.append('recebidoPorId', selectedUsuario.id_cliente.toString());
+        formData.append('recebidoPorId', selectedUsuario.usuario.id_usuario.toString());
 
         setIsSubmitting(true);
 
@@ -80,7 +110,7 @@ const EnviarDocumento: React.FC = () => {
                     Authorization: `Bearer ${token}`,
                 },
             });
-            toast.success('Documento enviado com sucesso.', response.data)
+            toast.success('Documento enviado com sucesso.', response.data);
             setFile(null);
             setSelectedTipoDocumento(null);
             setSelectedUsuario(null);
@@ -90,6 +120,10 @@ const EnviarDocumento: React.FC = () => {
         } finally {
             setIsSubmitting(false);
         }
+    };
+
+    const handleCreateTipoDocumento = (novoTipoDocumento: TipoDocumento) => {
+        setTipoDocumentos((prevTipos) => [...prevTipos, novoTipoDocumento]);
     };
 
     if (loading) {
@@ -103,37 +137,96 @@ const EnviarDocumento: React.FC = () => {
                 <div className="bg-white p-6 rounded-lg shadow-lg">
                     <h2 className="text-2xl font-bold mb-4">Enviar Documento</h2>
                     <form onSubmit={handleSubmit}>
-                        <div className="mb-4">
+                        <div className="mb-4 flex justify-between">
                             <input
                                 type="file"
                                 accept=".pdf,.doc,.docx,.txt"
                                 onChange={(e) => setFile(e.target.files ? e.target.files[0] : null)}
                                 className="border border-gray-300 p-2 rounded-md"
                             />
+                            {userRole === "CONTADOR" && (
+                                <>
+                                    <button
+                                        onClick={() => { setOpen(true) }}
+                                        type="button"
+                                        className="right-4 px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition duration-300">
+                                        Criar novo tipo
+                                    </button>
+                                    <CreateDocumentNewType isOpen={isOpen} onClose={() => setOpen(false)} onCreate={handleCreateTipoDocumento} />
+                                </>
+                            )}
                         </div>
                         <div className="mb-4">
                             <Autocomplete
                                 options={tipoDocumentos}
                                 getOptionLabel={(option) => option.nome}
                                 value={selectedTipoDocumento}
-                                onChange={(event, newValue) => setSelectedTipoDocumento(newValue)}
+                                onChange={(_, newValue) => setSelectedTipoDocumento(newValue)}
+                                renderOption={(props, option) => (
+                                    <li {...props} key={option.id} className="flex justify-center">
+                                        <div className='w-[95%]'>
+                                            {option.nome}
+                                        </div>
+                                        <div className="flex justify-end">
+                                            {
+                                                userRole === "CONTADOR" && (
+                                                    <IconButton
+                                                        edge="end"
+                                                        color="secondary"
+                                                        onClick={(e) => {
+                                                            e.stopPropagation();
+                                                            handleDelete(option);
+                                                        }}
+                                                        className="flex justify-end"
+                                                    >
+                                                        <Trash2 width={15} color="red" />
+                                                    </IconButton>
+                                                )
+                                            }
+                                        </div>
+                                    </li>
+                                )}
                                 renderInput={(params) => (
                                     <TextField {...params} label="Tipo de Documento" variant="outlined" fullWidth />
                                 )}
                             />
+                            <Dialog
+                                open={confirmDeleteOpen}
+                                onClose={() => setConfirmDeleteOpen(false)}
+                            >
+                                <DialogTitle>Confirmar Exclusão</DialogTitle>
+                                <DialogContent>
+                                    <DialogContentText>
+                                        Tem certeza de que deseja excluir o tipo de documento "{selectedTipoDocumento?.nome}"?
+                                    </DialogContentText>
+                                </DialogContent>
+                                <DialogActions>
+                                    <Button onClick={() => setConfirmDeleteOpen(false)} color="primary">
+                                        Cancelar
+                                    </Button>
+                                    <Button onClick={handleDeleteTipoDocumento} color='error' autoFocus>
+                                        Excluir
+                                    </Button>
+                                </DialogActions>
+                            </Dialog>
                         </div>
-                        <div className="mb-4">
-                            <Autocomplete
-                                options={usuarios}
-                                getOptionLabel={(option) => option.nome}
-                                value={selectedUsuario}
-                                onChange={(event, newValue) => setSelectedUsuario(newValue)}
-                                renderInput={(params) => (
-                                    <TextField {...params} label="Enviar para" variant="outlined" fullWidth />
-                                )}
-                            />
-                        </div>
-                        {error && <p className="text-red-600">{error}</p>}
+                        {userRole === "CONTADOR" && (
+                            <>
+                                <div className="mb-4">
+                                    <Autocomplete
+                                        options={usuarios}
+                                        getOptionLabel={(option) => option.nome}
+                                        value={selectedUsuario}
+                                        onChange={(_, newValue) => setSelectedUsuario(newValue)}
+                                        renderInput={(params) => (
+                                            <TextField {...params} label="Enviar para" variant="outlined" fullWidth />
+                                        )}
+                                    />
+                                </div>
+                                {error && <p className="text-red-600">{error}</p>}
+                            </>
+                        )}
+
                         <div className="mt-4">
                             <Button
                                 type="submit"
@@ -146,8 +239,8 @@ const EnviarDocumento: React.FC = () => {
                             </Button>
                         </div>
                     </form>
-                </div>
-            </div>
+                </div >
+            </div >
         </>
     );
 };

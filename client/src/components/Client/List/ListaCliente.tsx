@@ -7,6 +7,7 @@ import { Edit, SearchIcon, SquareArrowOutUpRight, Trash2Icon } from 'lucide-reac
 import api from "../../../infra/hooks/useAPI";
 import NavBar from "../../Header/Header";
 import { toast } from "sonner";
+import { Pagination, Stack } from "@mui/material";
 
 interface Cliente {
   id_cliente: number;
@@ -19,12 +20,17 @@ interface Cliente {
 }
 
 const ListaCliente: React.FC = () => {
+
   const { userId, token, loading } = useAuth();
   const [clientes, setClientes] = useState<Cliente[]>([]);
-  const [clientesFiltrados, setClientesFiltrados] = useState<Cliente[]>([]); // Para armazenar os clientes filtrados
+  const [clientesFiltrados, setClientesFiltrados] = useState<Cliente[]>([]);
   const [clienteIdParaExcluir, setClienteIdParaExcluir] = useState<number | null>(null);
   const [isOpen, setIsOpen] = useState(false);
-  const [searchQuery, setSearchQuery] = useState<string>(''); // Estado para armazenar a pesquisa
+  const [searchQuery, setSearchQuery] = useState<string>('');
+
+  const itemsPerPage = 7;
+  const [currentPage, setCurrentPage] = useState(1);
+
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -45,7 +51,15 @@ const ListaCliente: React.FC = () => {
     if (userId && token) {
       fetchClientes();
     }
-  }, [userId, token, setClientes]);
+  }, [userId, token]);
+
+  // Clientes da página atual
+  const currentClientes = clientesFiltrados.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+
+  // Mudar de página
+  const handleChangePage = (event: React.ChangeEvent<unknown>, value: number) => {
+    setCurrentPage(value);
+  };
 
   const formatarData = (data: string | undefined) => {
     if (!data) return 'N/A';
@@ -66,11 +80,11 @@ const ListaCliente: React.FC = () => {
     if (clienteIdParaExcluir === null) return;
     try {
       const response = await api.delete(`/cliente/excluir-cliente/${clienteIdParaExcluir}`);
-      
+
       const novosClientes = clientes.filter(cliente => cliente.id_cliente !== clienteIdParaExcluir);
       setClientes(novosClientes);
       setClientesFiltrados(novosClientes);
-  
+
       setIsOpen(false);
       setClienteIdParaExcluir(null);
       toast.success("Cliente excluido com sucesso.")
@@ -105,6 +119,7 @@ const ListaCliente: React.FC = () => {
     });
 
     setClientesFiltrados(clientesFiltrados);
+    setCurrentPage(1);
   };
 
   if (loading) {
@@ -117,17 +132,23 @@ const ListaCliente: React.FC = () => {
       <div className="min-h-screen bg-gray-100 p-4">
         <div className="bg-white p-6 rounded-lg shadow-lg">
           <h2 className="text-2xl font-bold mb-4">Lista de Clientes</h2>
-          <div className="mb-4 flex items-center gap-4">
-            <input
-              type="text"
-              placeholder="Pesquisar por nome ou CPF..."
-              value={searchQuery}
-              onChange={handleSearch}
-              className="w-1/2 px-3 py-2 border rounded-md border-blue-800 focus:outline-none focus:ring focus:border-blue-300"
-            />
-            <div className="p-2 cursor-pointer border rounded-md border-blue-800 focus:outline-none focus:ring focus:border-blue-300">
-              <SearchIcon className="cursor-pointer text-blue-800" />
+          <div className="mb-4 flex justify-between gap-4">
+            <div className="flex w-[80%] gap-5">
+              <input
+                type="text"
+                placeholder="Pesquisar por nome ou CPF..."
+                value={searchQuery}
+                onChange={handleSearch}
+                className="w-1/2 px-3 py-2 border rounded-md border-blue-800 focus:outline-none focus:ring focus:border-blue-300"
+              />
+              {/* <div className="p-2 cursor-pointer border rounded-md border-blue-800 focus:outline-none focus:ring focus:border-blue-300">
+                <SearchIcon className="cursor-pointer text-blue-800" />
+              </div> */}
             </div>
+
+            <Link to="/InserirCliente" className="justify-end bottom-4 right-4 bg-blue-500 text-white px-4 py-2 rounded-md shadow-lg hover:bg-blue-700 z-50">
+              Inserir Cliente
+            </Link>
           </div>
           <div className="overflow-y-auto max-h-[70vh]">
             <Table.Root>
@@ -146,7 +167,7 @@ const ListaCliente: React.FC = () => {
               </Table.Header>
 
               <Table.Body>
-                {clientesFiltrados.map(cliente => (
+                {currentClientes.map(cliente => (
                   <Table.Row key={cliente.id_cliente}>
                     <Table.Cell>{cliente.nome ? cliente.nome : 'N/A'}</Table.Cell>
                     <Table.Cell>{cliente.telefone ? cliente.telefone : 'N/A'}</Table.Cell>
@@ -208,13 +229,14 @@ const ListaCliente: React.FC = () => {
                 ))}
               </Table.Body>
             </Table.Root>
-          </div>
-
-          <div className="mt-4 flex justify-between">
-
-            <Link to="/InserirCliente" className="fixed bottom-4 right-4 bg-blue-500 text-white px-4 py-2 rounded-md shadow-lg hover:bg-blue-700 z-50">
-              Inserir Cliente
-            </Link>
+            <Stack spacing={2} className="mt-4">
+              <Pagination
+                count={Math.ceil(clientesFiltrados.length / itemsPerPage)}
+                page={currentPage}
+                onChange={handleChangePage}
+                shape="rounded"
+              />
+            </Stack>
           </div>
         </div>
       </div>

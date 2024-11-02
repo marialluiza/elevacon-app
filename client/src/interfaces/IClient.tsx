@@ -10,6 +10,7 @@ export type IClient = {
     titulo_eleitoral: string;
     cpf: string;
     telefone: string;
+    id_contador: string;
     logradouro: string;
     numero: string;
     bairro: string;

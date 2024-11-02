@@ -91,17 +91,17 @@ public class DocumentoService {
         return tokenUsuarioAutenticado;
     }
 
-    private void setTokenUsuarioAutenticado(String token) {
-        tokenUsuarioAutenticado = token;
-    }
+    // private void setTokenUsuarioAutenticado(String token) {
+    //     tokenUsuarioAutenticado = token;
+    // }
 
-    private boolean isValidFileType(String contentType) {
-        return contentType.equals("image/jpeg") ||
-                contentType.equals("image/png") ||
-                contentType.equals("application/pdf") ||
-                contentType.equals("text/plain") ||
-                contentType.equals("application/zip");
-    }
+    // private boolean isValidFileType(String contentType) {
+    //     return contentType.equals("image/jpeg") ||
+    //             contentType.equals("image/png") ||
+    //             contentType.equals("application/pdf") ||
+    //             contentType.equals("text/plain") ||
+    //             contentType.equals("application/zip");
+    // }
 
     // lista documentos enviados pelo usuário logado
     public List<Documento> listarDocumentosEnviados() {

@@ -60,18 +60,19 @@ const ListaDocumento: React.FC = () => {
             <div className="min-h-screen bg-gray-100 p-4">
                 <div className="bg-white p-6 rounded-lg shadow-lg">
                     <h2 className="text-2xl font-bold mb-4">Documentos Recebidos</h2>
-                    <div className="mb-4 flex items-center justify-between mb-8">
+                    <div className="flex items-center justify-between mb-8">
                         <div className=" flex items-center gap-4 w-1/2">
                             <input
                                 type="text"
                                 placeholder="Pesquisar documento..."
-                                className="w-1/2 px-3 py-2 border rounded-md border-blue-800 focus:outline-none focus:ring focus:border-blue-300 w-full"
+                                className="w-1/2 px-3 py-2 border rounded-md border-blue-800 focus:outline-none focus:ring focus:border-blue-300 "
                             />
                             <div className="p-2 cursor-pointer border rounded-md border-blue-800 focus:outline-none focus:ring focus:border-blue-300">
                                 <SearchIcon className="cursor-pointer text-blue-800" />
-                            </div>
+                            </div> 
                         </div>
-                        <div>
+                        <div className="flex gap-10">
+                          
                             <a href="/EnviarDocumento">
                                 <button
                                     type="submit"
