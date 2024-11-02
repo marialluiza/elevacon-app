@@ -4,6 +4,12 @@ import api from "../../../../hooks/useAPI";
 import NavBar from "../../../ui/Header/Header";
 import { useAuth } from "../../../../contexts/auth/AuthProvider";
 
+interface Cliente {
+    id_cliente: number;
+    nome: string;
+    id_usuario: number;
+}
+
 interface TipoDocumento {
     id: number;
     nome: string;
@@ -12,13 +18,15 @@ interface TipoDocumento {
 const EnviarDocumento: React.FC = () => {
     const { userId, token, loading } = useAuth();
     const [tipoDocumentos, setTipoDocumentos] = useState<TipoDocumento[]>([]);
+    const [clientes, setClientes] = useState<Cliente[]>([]);
     const [selectedTipoDocumento, setSelectedTipoDocumento] = useState<TipoDocumento | null>(null);
-    const [recebidoPorId, setRecebidoPorId] = useState<number | ''>('');
+    const [selectedCliente, setSelectedCliente] = useState<Cliente | null>(null);
     const [file, setFile] = useState<File | null>(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
+        // Buscar tipos de documento
         const fetchTipoDocumentos = async () => {
             try {
                 const response = await api.get('/tipo-documentos/listar', {
@@ -32,15 +40,30 @@ const EnviarDocumento: React.FC = () => {
             }
         };
 
+        // Buscar clientes associados ao contador
+        const fetchClientes = async () => {
+            try {
+                const response = await api.get('/cliente/listar-clientes', {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                });
+                setClientes(response.data);
+            } catch (err) {
+                console.error('Erro ao buscar clientes:', err);
+            }
+        };
+
         if (token) {
             fetchTipoDocumentos();
+            fetchClientes();
         }
     }, [token]);
 
     const handleSubmit = async (event: React.FormEvent) => {
         event.preventDefault();
 
-        if (!file || !selectedTipoDocumento || !recebidoPorId) {
+        if (!file || !selectedTipoDocumento || !selectedCliente) {
             setError('Todos os campos são obrigatórios.');
             return;
         }
@@ -48,7 +71,7 @@ const EnviarDocumento: React.FC = () => {
         const formData = new FormData();
         formData.append('file', file);
         formData.append('tipoDocumentoId', selectedTipoDocumento.id.toString());
-        formData.append('recebidoPorId', String(recebidoPorId));
+        formData.append('recebidoPorId', selectedCliente.id_usuario.toString()); // Envia o id_usuario do cliente
 
         setIsSubmitting(true);
 
@@ -62,7 +85,7 @@ const EnviarDocumento: React.FC = () => {
             alert(response.data);
             setFile(null);
             setSelectedTipoDocumento(null);
-            setRecebidoPorId('');
+            setSelectedCliente(null);
         } catch (err) {
             console.error('Erro ao enviar documento:', err);
             setError('Erro ao enviar o documento.');
@@ -102,14 +125,14 @@ const EnviarDocumento: React.FC = () => {
                             />
                         </div>
                         <div className="mb-4">
-                            <TextField
-                                type="number"
-                                label="ID do Usuário a Receber"
-                                value={recebidoPorId}
-                                onChange={(e) => setRecebidoPorId(Number(e.target.value))}
-                                fullWidth
-                                variant="outlined"
-                                margin="normal"
+                            <Autocomplete
+                                options={clientes}
+                                getOptionLabel={(option) => option.nome}
+                                value={selectedCliente}
+                                onChange={(event, newValue) => setSelectedCliente(newValue)}
+                                renderInput={(params) => (
+                                    <TextField {...params} label="Cliente" variant="outlined" fullWidth />
+                                )}
                             />
                         </div>
                         {error && <p className="text-red-600">{error}</p>}

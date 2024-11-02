@@ -11,7 +11,9 @@ export const PaginaInicial = () => {
       <div className="flex-grow p-4">
         <h2 className="text-xl font-bold">Atualizações</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 my-4">
-          <Card color="bg-blue-500" title="x documentos recebidos" description="" />
+          <Link to="/ListaDocumento">
+            <Card color="bg-blue-500" title="x documentos recebidos" description="" />
+          </Link>
           <Card color="bg-yellow-500" title="x documentos pendentes" description="x clientes" />
           <Card color="bg-green-500" title="" description="Visualizar tudo" />
         </div>
