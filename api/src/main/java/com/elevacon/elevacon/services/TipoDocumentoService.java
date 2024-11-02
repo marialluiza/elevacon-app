@@ -2,7 +2,7 @@ package com.elevacon.elevacon.services;
 
 import com.elevacon.elevacon.model.TipoDocumento;
 import com.elevacon.elevacon.repository.TipoDocumentoRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+// import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -13,7 +13,7 @@ public class TipoDocumentoService {
 
     private final TipoDocumentoRepository tipoDocumentoRepository;
 
-    @Autowired
+    // @Autowired
     public TipoDocumentoService(TipoDocumentoRepository tipoDocumentoRepository) {
         this.tipoDocumentoRepository = tipoDocumentoRepository;
     }
@@ -50,9 +50,15 @@ public class TipoDocumentoService {
     /**
      * Exclui um TipoDocumento pelo seu ID.
      *
-     * @param id ID do TipoDocumento a ser excluído.
+     * @param id ID do TipoDocumento a ser arquivado(ao invés da exlusão pois por
+     *           conta do relacionamento com documentos é melhor arqiuvar do que
+     *           excluir de fato).
      */
-    public void deleteTipoDocumento(Long id) {
-        tipoDocumentoRepository.deleteById(id);
+    public void arquivarTipoDocumento(Long id) {
+        tipoDocumentoRepository.findById(id).ifPresent(tipoDocumento -> {
+            tipoDocumento.setEsta_arquivado(true); 
+            tipoDocumentoRepository.save(tipoDocumento);
+        });
     }
+
 }

@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/tipo-documentos")
@@ -37,10 +38,12 @@ public class TipoDocumentoController {
      *
      * @return Resposta com a lista de TipoDocumentos e código HTTP 200 (OK).
      */
-    @GetMapping
-    @RequestMapping("/listar")
-    public ResponseEntity<List<TipoDocumento>> getAllTipoDocumentos() {
-        List<TipoDocumento> tipoDocumentos = tipoDocumentoService.getAllTipoDocumentos();
+    @GetMapping("/listar")
+    public ResponseEntity<List<TipoDocumento>> getAllActiveTipoDocumentos() {
+        List<TipoDocumento> tipoDocumentos = tipoDocumentoService.getAllTipoDocumentos()
+                .stream()
+                .filter(tipoDocumento -> !tipoDocumento.isEsta_arquivado())
+                .collect(Collectors.toList());
         return new ResponseEntity<>(tipoDocumentos, HttpStatus.OK);
     }
 
@@ -66,9 +69,9 @@ public class TipoDocumentoController {
      *         código HTTP 404 (Not Found) se não encontrado.
      */
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteTipoDocumento(@PathVariable("id") Long id) {
+    public ResponseEntity<Void> arquivarTipoDocumento(@PathVariable("id") Long id) {
         if (tipoDocumentoService.getTipoDocumentoById(id).isPresent()) {
-            tipoDocumentoService.deleteTipoDocumento(id);
+            tipoDocumentoService.arquivarTipoDocumento(id);
             return ResponseEntity.noContent().build();
         } else {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();

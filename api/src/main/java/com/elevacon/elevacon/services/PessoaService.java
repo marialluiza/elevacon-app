@@ -32,19 +32,6 @@ public class PessoaService {
         }
     }
 
-
-    // public Pessoa inserirPessoa(Pessoa pessoa) {
-    //     Long idUsuario = pessoa.getUsuario().getId_usuario();
-    //     Optional<Usuario> usuarioOptional = usuarioRepository.findById(idUsuario);
-    //     if (usuarioOptional.isPresent()) {
-    //         Usuario usuario = usuarioOptional.get();
-    //         pessoa.setUsuario(usuario);
-    //         return pessoaRepository.save(pessoa);
-    //     } else {
-    //         throw new RuntimeException("Usuário com o ID fornecido não encontrado.");
-    //     }
-    // }
-
     public List<Pessoa> listarPessoas() {
         return pessoaRepository.findAll();
     }

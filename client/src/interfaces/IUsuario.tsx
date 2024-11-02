@@ -1,5 +1,5 @@
 export type IUsuario = {
-    id: number;
+    id_usuario: number;
     login: string;
     senha: string;
 }

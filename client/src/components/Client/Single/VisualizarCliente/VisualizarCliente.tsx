@@ -38,7 +38,7 @@ const VisualizarCliente = () => {
         try {
             const response = await api.post(
                 `/cliente/gerar-acesso`,
-                { email: clienteData.email }, // Enviar como objeto JSON
+                { login: clienteData.email },
                 {
                     headers: {
                         Authorization: `Bearer ${token}`,
@@ -46,35 +46,24 @@ const VisualizarCliente = () => {
                     },
                 }
             );
-            // const response = await api.post(
-            //     `/cliente/gerar-acesso`,
-            //     JSON.stringify(clienteData.email),
-
-            //     {
-            //         headers: {
-            //             Authorization: `Bearer ${token}`,
-            //             'Content-Type': 'application/json',
-            //         },
-            //     }
-            // );
-
             const loginInfo = response.data;
-            console.log("Dados recebidos:", loginInfo);
-
+            
             if (loginInfo && loginInfo.senhaTemporaria) {
                 setClienteData((prevData) => ({
                     ...prevData,
                     senhaGerada: loginInfo.senhaTemporaria,
+                    usuario: { ...prevData.usuario, login: loginInfo.login }
                 }));
             } else {
                 console.error("A senha temporária não foi gerada corretamente.");
             }
-
+    
             setOpen(true);
         } catch (error) {
             console.error("Erro ao gerar acesso:", error);
         }
     };
+    
 
     const handleCancel = () => {
         setCancel(true);
@@ -91,7 +80,7 @@ const VisualizarCliente = () => {
             <div className="p-10 bg-white rounded-lg shadow-md">
                 <div className="flex justify-between">
                     <h2 className="text-2xl font-semibold text-blue-950 mb-6 w-1/2">Informações do cliente</h2>
-                    <div className="flex w-1/5 justify-between">
+                    <div className="flex justify-between gap-10">
                         <Button
                             className=" hover:bg-blue-400 transition duration-300"
                             style={{ cursor: "pointer" }}

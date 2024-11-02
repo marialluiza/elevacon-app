@@ -1,6 +1,8 @@
 package com.elevacon.elevacon.controller;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -16,8 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.elevacon.elevacon.model.Cliente;
 import com.elevacon.elevacon.model.DTOs.AlteracaoSenhaDTO;
-// import com.elevacon.elevacon.model.Usuario;
-// import com.elevacon.elevacon.repository.UsuarioRepository;
+import com.elevacon.elevacon.model.DTOs.ClienteDTO;
 import com.elevacon.elevacon.services.ClienteService;
 
 @RestController
@@ -75,14 +76,15 @@ public class ClienteController {
     }
 
     @PostMapping("/gerar-acesso")
-    public ResponseEntity<String> gerarAcesso(@RequestBody String email) {
+    public ResponseEntity<Map<String, String>> gerarAcesso(@RequestBody Map<String, String> payload) {
         try {
-            System.out.println("controller 1: Email recebido - " + email);
-            clienteService.gerarAcessoParaCliente(email.replace("\"", ""));
-            System.out.println("email email::::" + email);
-            return ResponseEntity.ok("Acesso gerado com sucesso.");
+            String login = payload.get("login");
+
+            Map<String, String> loginInfo = clienteService.gerarAcessoParaCliente(login);
+
+            return ResponseEntity.ok(loginInfo);
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+            return ResponseEntity.badRequest().body(Collections.singletonMap("error", e.getMessage()));
         }
     }
 
@@ -96,4 +98,16 @@ public class ClienteController {
         }
     }
 
+    // @GetMapping("/usuario/{id_usuario}")
+    // public ResponseEntity<ClienteDTO> getClienteByUsuarioId(@PathVariable Long id_usuario) {
+    //     Cliente cliente = clienteService.findByUsuarioId(id_usuario);
+    //     if (cliente != null) {
+    //         return ResponseEntity.ok(new ClienteDTO(cliente));
+    //     } else {
+    //         return ResponseEntity.notFound().build();
+    //     }
+    // }
+
 }
+
+

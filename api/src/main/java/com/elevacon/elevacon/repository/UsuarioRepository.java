@@ -1,6 +1,8 @@
 package com.elevacon.elevacon.repository;
 
 
+import java.util.Optional;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -12,6 +14,7 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Long>, Usuario
     //está sendo declarado aqui com 'UserDetails' para utilização do Spring Security .
     UserDetails findByLogin(String login);
     Usuario findUsuarioByLogin(String login); 
+    Optional<Usuario> findUsuarioOptionalByLogin(String login);
  
 }
 //métodos basicos com o banco   

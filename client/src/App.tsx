@@ -10,14 +10,39 @@ import PrivateRoute from './components/PrivateRoute/PrivateRoute';
 import Login from './components/Login/Login';
 import ListaDocumentos from './components/Documents/List/ListaDocumentos';
 import EnviarDocumento from './components/Documents/Create/EnviarDocumento';
-import { Toaster} from 'sonner'
+import { Toaster } from 'sonner'
+import CreateDocumentNewType from './components/Documents/CreateType';
 
 const App: React.FC = () => {
   return (
     <Router>
       <Toaster richColors position="top-right" />
       <AuthProvider>
+
         <Routes>
+          <Route path="/Login" element={<Login />} />
+
+          <Route element={<PrivateRoute allowedRoles={['CONTADOR', 'CLIENTE']} />}>
+            <Route path="/PaginaInicial" element={<PaginaInicial />} />
+            <Route path="/ListaDocumento" element={<ListaDocumentos />} />
+            <Route path="/EnviarDocumento" element={<EnviarDocumento />} />
+          </Route>
+
+          <Route element={<PrivateRoute allowedRoles={['CONTADOR']} />}>
+            <Route path="/ListaCliente" element={<ListaCliente />} />
+            <Route path="/VisualizarCliente/:id" element={<VisualizarCliente />} />
+            <Route path="/InserirCliente" element={<InserirCliente />} />
+            <Route path="/EditarCliente/:id" element={<EditarCliente />} />
+          </Route>
+
+          <Route element={<PrivateRoute allowedRoles={['CLIENTE']} />}>
+          </Route>
+
+          <Route path="/" element={<Navigate to="/PaginaInicial" />} />
+        </Routes>
+
+
+        {/* <Routes>
           <Route path="/Login" element={<Login />} />
           <Route element={<PrivateRoute />}>
             <Route path="/PaginaInicial" element={<PaginaInicial />} />
@@ -29,10 +54,11 @@ const App: React.FC = () => {
             <Route path="/VisualizarCliente/:id" element={<VisualizarCliente />} />
           </Route>
           <Route path="/" element={<Navigate to="/PaginaInicial" />} />
-        </Routes>
+        </Routes> */}
       </AuthProvider>
     </Router>
   );
 };
 
 export default App;
+
