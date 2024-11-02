@@ -36,12 +36,16 @@ public class DocumentoController {
             @RequestParam("file") MultipartFile file,
             @RequestParam("tipoDocumentoId") Long tipoDocumentoId,
             @RequestParam("recebidoPorId") Long recebidoPorId) {
-
+        System.out.println("recebidoPorId: " + recebidoPorId);
         try {
             // Obtém o usuário que receberá o documento
+            System.out.println("bateu");
             Usuario recebidoPor = usuarioRepository.findById(recebidoPorId)
                     .orElseThrow(() -> new IllegalArgumentException("Usuário que receberá o documento não encontrado"));
-
+            System.out.println("RECEBIDO POR" + recebidoPorId);
+            // Usuario teste =  usuarioRepository.findById(84L);
+            // System.out.println("USUARIO MOCADO::"+ teste);
+ 
             // Obtém o usuário autenticado e o token dentro da camada de serviço
             Documento documento = documentoService.uploadDocumento(file, tipoDocumentoId, recebidoPor);
 

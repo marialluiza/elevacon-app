@@ -27,7 +27,7 @@ public class FiltroSeguranca extends OncePerRequestFilter{
     UsuarioRepository usuarioRepository;
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, @SuppressWarnings("null") FilterChain filterChain) throws ServletException, IOException {
         var token = this.recuperaToken(request);
         if (token != null) {
             var login = tokenService.validaToken(token);
@@ -44,7 +44,7 @@ public class FiltroSeguranca extends OncePerRequestFilter{
                 System.out.println("Token inválido: " + token);
             }
         } 
-        filterChain.doFilter(request, response); // Chama o próximo filtro
+        filterChain.doFilter(request, response);
     }
     
     private String recuperaToken(HttpServletRequest request){

@@ -1,5 +1,6 @@
 package com.elevacon.elevacon.services;
 
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
@@ -16,7 +17,6 @@ import com.elevacon.elevacon.model.Cliente;
 import com.elevacon.elevacon.model.Contador;
 import com.elevacon.elevacon.model.Documento;
 import com.elevacon.elevacon.model.StatusDocumento;
-import com.elevacon.elevacon.model.TipoDocumento;
 import com.elevacon.elevacon.model.Usuario;
 import com.elevacon.elevacon.repository.ClienteRepository;
 import com.elevacon.elevacon.repository.ContadorRepository;
@@ -29,6 +29,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Date;
 import java.util.List;
+
 import java.util.Optional;
 import java.util.UUID;
 
@@ -52,6 +53,10 @@ public class DocumentoService {
     }
 
     public Documento uploadDocumento(MultipartFile file, Long tipoDocumentoId, Usuario recebidoPor) throws IOException {
+
+        // Diretório de upload
+        String uploadDir = "uploads/";
+        Path uploadPath = Paths.get(uploadDir);
 
         // Obtém o usuário autenticado e suas credenciais
         Authentication usuarioAutenticado = SecurityContextHolder.getContext().getAuthentication();
@@ -86,22 +91,46 @@ public class DocumentoService {
             throw new IllegalArgumentException("Usuário autenticado não é um cliente nem um contador.");
         }
 
-        // Processo de upload de arquivo
-        String fileName = processarUpload(file);
+        // Nome original do arquivo
+        String originalFileName = file.getOriginalFilename();
+        if (originalFileName == null || originalFileName.isEmpty()) {
+            throw new IllegalArgumentException("Nome do arquivo inválido.");
+        }
+
+        // Gera um nome de arquivo único (se já existir, incrementa o sufixo)
+        String uniqueFileName = generateUniqueFileName(uploadPath, originalFileName);
+
+        // Caminho final para salvar o arquivo
+        Path filePath = uploadPath.resolve(uniqueFileName);
+
+        // Salva o arquivo no diretório de upload
+        Files.copy(file.getInputStream(), filePath);
 
         // Cria e salva a entidade Documento
         Documento documento = new Documento();
-        documento.setNome(fileName);
-        documento.setCaminho("uploads/" + fileName);
-        documento.setTipoDocumento(tipoDocumento);
+        documento.setNome(uniqueFileName);
+        documento.setCaminho(filePath.toString());
+        documento.setTipoDocumento(tipoDocumentoRepository.findById(tipoDocumentoId).orElseThrow(
+                () -> new IllegalArgumentException("Tipo de documento inválido")));
         documento.setDataEnvio(new Date());
-        documento.setEnviadoPor(enviadoPor);
+        documento.setEnviadoPor((Usuario) SecurityContextHolder.getContext().getAuthentication().getPrincipal());
         documento.setRecebidoPor(recebidoPor);
         documento.setStatus(StatusDocumento.ENVIADO);
 
         return documentoRepository.save(documento);
     }
 
+
+    private String generateUniqueFileName(Path uploadPath, String originalFileName) throws IOException {
+        String fileName = originalFileName;
+        String baseName = fileName.substring(0, fileName.lastIndexOf('.'));
+        String extension = fileName.substring(fileName.lastIndexOf('.'));
+        int count = 0;
+
+        while (Files.exists(uploadPath.resolve(fileName))) {
+            count++;
+            fileName = baseName + "(" + count + ")" + extension;
+        }
     // Método auxiliar para validar envio de contador
     private void validarEnvioDeContador(Contador contadorAutenticado, Usuario recebidoPor) {
         Optional<Cliente> clienteDestino = clienteRepository.findByUsuario(recebidoPor);
@@ -146,26 +175,25 @@ public class DocumentoService {
         return fileName;
     }
 
-    // Armazena o token do usuário autenticado (simulação)
     private static String tokenUsuarioAutenticado;
 
     public String getTokenUsuarioAutenticado() {
         return tokenUsuarioAutenticado;
     }
 
-    private void setTokenUsuarioAutenticado(String token) {
-        tokenUsuarioAutenticado = token;
-    }
+    // private void setTokenUsuarioAutenticado(String token) {
+    //     tokenUsuarioAutenticado = token;
+    // }
 
-    private boolean isValidFileType(String contentType) {
-        return contentType.equals("image/jpeg") ||
-                contentType.equals("image/png") ||
-                contentType.equals("application/pdf") ||
-                contentType.equals("text/plain") ||
-                contentType.equals("application/zip");
-    }
+    // private boolean isValidFileType(String contentType) {
+    //     return contentType.equals("image/jpeg") ||
+    //             contentType.equals("image/png") ||
+    //             contentType.equals("application/pdf") ||
+    //             contentType.equals("text/plain") ||
+    //             contentType.equals("application/zip");
+    // }
 
-    // Listar documentos enviados pelo usuário logado
+    // lista documentos enviados pelo usuário logado
     public List<Documento> listarDocumentosEnviados() {
         Usuario usuarioLogado = getUsuarioLogado();
         return documentoRepository.findByEnviadoPor(usuarioLogado);

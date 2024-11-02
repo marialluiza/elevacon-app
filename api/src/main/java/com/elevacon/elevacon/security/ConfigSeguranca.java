@@ -35,15 +35,10 @@ public class ConfigSeguranca {
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         return httpSecurity
                 .csrf(csrf -> csrf.disable())
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // indica
-                                                                                                              // que
-                                                                                                              // será
-                                                                                                              // autenticação
-                                                                                                              // STATELESS(autenticação
-                                                                                                              // por
-                                                                                                              // token)
-                .authorizeHttpRequests(autoriza -> autoriza // define requisições http que serão autorizadas e a aprtir
-                                                            // de quais roles
+                // indica que será autenticação STATELESS(autenticação por token)
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) 
+                // define requisições http que serão autorizadas e a aprtir de quais roles
+                .authorizeHttpRequests(autoriza -> autoriza 
 
                         .requestMatchers(HttpMethod.POST, "/autentica/login").permitAll()
                         // .requestMatchers(HttpMethod.POST, "/pessoa/cadastrar-pessoa").permitAll()
@@ -52,6 +47,7 @@ public class ConfigSeguranca {
                         .requestMatchers(HttpMethod.POST, "/documentos/enviados").hasRole("USUARIO")
                         .requestMatchers(HttpMethod.POST, "/documentos/recebidos").hasRole("USUARIO")
                         .requestMatchers(HttpMethod.POST, "/documentos/download/{documentoId}").hasRole("USUARIO")
+
 
                         .requestMatchers(HttpMethod.POST, "/autentica/cadastrar").hasRole("ADMIN")
 

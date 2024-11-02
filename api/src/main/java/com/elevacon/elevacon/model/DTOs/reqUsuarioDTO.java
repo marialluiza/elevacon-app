@@ -8,7 +8,7 @@ public record reqUsuarioDTO(
         Long id_usuario,
         String login,
         String senha,
-        // boolean usuarioAtivo,
+        boolean usuarioAtivo,
         Date dataCriacao, 
         UsuarioRole role){
 

@@ -7,14 +7,13 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.elevacon.elevacon.model.Cliente;
 import com.elevacon.elevacon.model.Contador;
-import com.elevacon.elevacon.model.Usuario;
-import com.elevacon.elevacon.repository.customs.ClienteRepositoryCustom;
 
-public interface ClienteRepository extends JpaRepository<Cliente, Long>, ClienteRepositoryCustom {
+public interface ClienteRepository extends JpaRepository<Cliente, Long> {
 
     List<Cliente> findByContador(Contador contador);
 
-    Cliente findByUsuarioLogin(String login);
+    // Cliente findByUsuarioId(Long usuarioId);
 
-    Optional<Cliente> findByUsuario(Usuario usuario);
+    // Optional<Cliente> findByUsuario_Id_usuario(Long id_usuario);
+
 }

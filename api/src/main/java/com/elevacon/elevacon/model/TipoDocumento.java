@@ -17,5 +17,10 @@ public class TipoDocumento {
 
     private String nome;
 
+    private String formato;
+    
+    private boolean esta_arquivado = false;
+
     private String descricao;
+
 }
