@@ -21,7 +21,9 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
@@ -58,7 +60,11 @@ public class Usuario implements UserDetails {
         data_criacao = new Date();
     }
 
-    @OneToMany(mappedBy = "enviadoPor", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    @OneToOne
+    @JoinColumn(name = "id_cliente")
+    private Cliente cliente;
+
+    @OneToMany(mappedBy = "enviadoPor", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Set<Documento> documentosEnviados;
 
     @OneToMany(mappedBy = "recebidoPor", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)

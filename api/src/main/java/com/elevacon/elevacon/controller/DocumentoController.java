@@ -1,7 +1,8 @@
 package com.elevacon.elevacon.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -10,15 +11,14 @@ import org.springframework.web.multipart.MultipartFile;
 import com.elevacon.elevacon.model.Documento;
 import com.elevacon.elevacon.model.Usuario;
 import com.elevacon.elevacon.model.DTOs.DocumentoDTO;
-import com.elevacon.elevacon.repository.DocumentoRepository;
 import com.elevacon.elevacon.repository.UsuarioRepository;
 import com.elevacon.elevacon.services.DocumentoService;
 
-import java.io.File;
-import java.io.FileInputStream;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
-import java.util.Optional;
+
 import java.util.stream.Collectors;
 
 @RestController
@@ -27,9 +27,6 @@ public class DocumentoController {
 
     @Autowired
     private DocumentoService documentoService;
-
-    @Autowired
-    private DocumentoRepository documentoRepository;
 
     @Autowired
     private UsuarioRepository usuarioRepository;
@@ -67,39 +64,6 @@ public class DocumentoController {
         }
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<byte[]> downloadDocumento(@PathVariable Long id) {
-        Optional<Documento> documentoOpt = documentoRepository.findById(id);
-
-        if (documentoOpt.isPresent()) {
-            Documento documento = documentoOpt.get();
-            File file = new File(documento.getCaminho());
-
-            if (file.exists()) {
-                try {
-                    FileInputStream fileInputStream = new FileInputStream(file);
-                    byte[] fileContent = fileInputStream.readAllBytes();
-                    fileInputStream.close();
-
-                    HttpHeaders headers = new HttpHeaders();
-                    headers.add(HttpHeaders.CONTENT_DISPOSITION,
-                            "attachment; filename=\"" + documento.getNome() + "\"");
-
-                    return new ResponseEntity<>(fileContent, headers, HttpStatus.OK);
-                } catch (IOException e) {
-                    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                            .body(null);
-                }
-            } else {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                        .body(null);
-            }
-        } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(null);
-        }
-    }
-
     @GetMapping("/enviados")
     public ResponseEntity<List<DocumentoDTO>> listarDocumentosEnviados() {
         List<Documento> documentos = documentoService.listarDocumentosEnviados();
@@ -121,6 +85,24 @@ public class DocumentoController {
                 .collect(Collectors.toList());
 
         return ResponseEntity.ok(documentosDTO);
+    }
+
+    @GetMapping("/download/{documentoId}")
+    public ResponseEntity<Resource> downloadDocumento(@PathVariable Long documentoId) {
+        try {
+            return documentoService.downloadDocumento(documentoId);
+        } catch (IOException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(null);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest()
+                    .body(null);
+        } catch (SecurityException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body(new InputStreamResource(new ByteArrayInputStream(
+                            "Você não tem permissão para acessar este documento.".getBytes(StandardCharsets.UTF_8))));
+
+        }
     }
 
 }
