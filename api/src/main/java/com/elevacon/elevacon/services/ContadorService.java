@@ -20,7 +20,7 @@ public class ContadorService {
     private UsuarioRepository usuarioRepository;
 
     public Contador cadastrarContador(Contador contador) {
-        Long idUsuario = contador.getUsuario().getId_usuario();
+        Long idUsuario = contador.getUsuario().getIdUsuario();
         Optional<Usuario> usuarioOptional = usuarioRepository.findById(idUsuario);
         if (usuarioOptional.isPresent()) {
             Usuario usuario = usuarioOptional.get();

@@ -31,6 +31,43 @@ public class DocumentoController {
     @Autowired
     private UsuarioRepository usuarioRepository;
 
+    // @PostMapping("/upload")
+    // public ResponseEntity<String> uploadDocumento(
+    // @RequestParam("file") MultipartFile file,
+    // @RequestParam("tipoDocumentoId") Long tipoDocumentoId,
+    // @RequestParam("recebidoPorId") Long recebidoPorId) {
+    // System.out.println("recebidoPorId: " + recebidoPorId);
+    // try {
+    // // Obtém o usuário que receberá o documento
+    // System.out.println("bateu");
+    // Usuario recebidoPor = usuarioRepository.findById(recebidoPorId)
+    // .orElseThrow(() -> new IllegalArgumentException("Usuário que receberá o
+    // documento não encontrado"));
+    // System.out.println("RECEBIDO POR" + recebidoPorId);
+    // // Usuario teste = usuarioRepository.findById(84L);
+    // // System.out.println("USUARIO MOCADO::"+ teste);
+
+    // // Obtém o usuário autenticado e o token dentro da camada de serviço
+    // Documento documento = documentoService.uploadDocumento(file, tipoDocumentoId,
+    // recebidoPor);
+
+    // // Imprime o ID e o token do usuário autenticado no console
+    // // ID do usuário autenticado
+    // System.out.println("ID do usuário autenticado: " +
+    // documento.getEnviadoPor().getId_usuario());
+
+    // // Token do usuário autenticado
+    // String token = documentoService.getTokenUsuarioAutenticado();
+    // System.out.println("Token do usuário autenticado: " + token);
+
+    // return ResponseEntity.ok("Documento enviado com sucesso! ID do documento: " +
+    // documento.getId());
+    // } catch (Exception e) {
+    // return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+    // .body("Erro ao enviar o documento: " + e.getMessage());
+    // }
+    // }
+
     @PostMapping("/upload")
     public ResponseEntity<String> uploadDocumento(
             @RequestParam("file") MultipartFile file,
@@ -43,15 +80,15 @@ public class DocumentoController {
             Usuario recebidoPor = usuarioRepository.findById(recebidoPorId)
                     .orElseThrow(() -> new IllegalArgumentException("Usuário que receberá o documento não encontrado"));
             System.out.println("RECEBIDO POR" + recebidoPorId);
-            // Usuario teste =  usuarioRepository.findById(84L);
+            // Usuario teste = usuarioRepository.findById(84L);
             // System.out.println("USUARIO MOCADO::"+ teste);
- 
+
             // Obtém o usuário autenticado e o token dentro da camada de serviço
             Documento documento = documentoService.uploadDocumento(file, tipoDocumentoId, recebidoPor);
 
             // Imprime o ID e o token do usuário autenticado no console
             // ID do usuário autenticado
-            System.out.println("ID do usuário autenticado: " + documento.getEnviadoPor().getId_usuario());
+            System.out.println("ID do usuário autenticado: " + documento.getEnviadoPor().getIdUsuario());
 
             // Token do usuário autenticado
             String token = documentoService.getTokenUsuarioAutenticado();

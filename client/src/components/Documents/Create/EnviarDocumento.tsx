@@ -14,7 +14,7 @@ interface TipoDocumento {
 }
 
 const EnviarDocumento: React.FC = () => {
-    const { token, loading, userRole } = useAuth();
+    const { token, loading, userRole, client } = useAuth();
     const [tipoDocumentos, setTipoDocumentos] = useState<TipoDocumento[]>([]);
     const [usuarios, setUsuarios] = useState<IClient[]>([]);
     const [selectedTipoDocumento, setSelectedTipoDocumento] = useState<TipoDocumento | null>(null);
@@ -24,6 +24,8 @@ const EnviarDocumento: React.FC = () => {
     const [error, setError] = useState<string | null>(null);
     const [isOpen, setOpen] = useState<boolean>(false);
     const [confirmDeleteOpen, setConfirmDeleteOpen] = useState<boolean>(false);
+
+    // console.log("CLIENTE::", client)
 
     useEffect(() => {
         const fetchTipoDocumentos = async () => {
@@ -88,18 +90,30 @@ const EnviarDocumento: React.FC = () => {
         setConfirmDeleteOpen(true);
     };
 
+    if (loading || (userRole === "CLIENTE" && !client)) {
+        return <div>Carregando...</div>;
+    }
+
     const handleSubmit = async (event: React.FormEvent) => {
         event.preventDefault();
 
-        if (!file || !selectedTipoDocumento || !selectedUsuario) {
+        if (!file || !selectedTipoDocumento) {
             setError('Todos os campos são obrigatórios.');
+            toast.info('Todos os campos são obrigatórios.');
+            return;
+        }
+
+        const recebidoPorId = userRole === "CLIENTE" ? client?.contador?.usuario?.idUsuario : selectedUsuario?.usuario.idUsuario;
+
+        if (userRole === "CONTADOR" && !selectedUsuario) {
+            setError('Por favor, selecione um cliente.');
             return;
         }
 
         const formData = new FormData();
         formData.append('file', file);
         formData.append('tipoDocumentoId', selectedTipoDocumento.id.toString());
-        formData.append('recebidoPorId', selectedUsuario.usuario.id_usuario.toString());
+        formData.append('recebidoPorId', recebidoPorId!.toString());
 
         setIsSubmitting(true);
 
@@ -122,6 +136,7 @@ const EnviarDocumento: React.FC = () => {
         }
     };
 
+
     const handleCreateTipoDocumento = (novoTipoDocumento: TipoDocumento) => {
         setTipoDocumentos((prevTipos) => [...prevTipos, novoTipoDocumento]);
     };
@@ -129,6 +144,8 @@ const EnviarDocumento: React.FC = () => {
     if (loading) {
         return <div>Carregando...</div>;
     }
+
+    console.log("clientee::", client)
 
     return (
         <>

@@ -1,21 +1,15 @@
 import { Table } from "@radix-ui/themes";
 import { useAuth } from "../../../infra/context/AuthProvider";
 import { useEffect, useState } from "react";
-import { SearchIcon } from 'lucide-react';
+import { Download, SearchIcon } from 'lucide-react';
 import api from "../../../infra/hooks/useAPI";
 import NavBar from "../../Header/Header";
-
-interface Documento {
-    id_documento: number;
-    nome?: string;
-    dataEnvio?: string;
-    enviadoPor?: string;
-    tipoDocumento?: string;
-}
+import { toast } from "sonner";
+import { IDocumento } from "../../../interfaces/IDocumento";
 
 const ListaDocumento: React.FC = () => {
     const { userId, token, loading } = useAuth();
-    const [documentos, setDocumentos] = useState<Documento[]>([]);
+    const [documentos, setDocumentos] = useState<IDocumento[]>([]);
 
     useEffect(() => {
         const fetchDocumentos = async () => {
@@ -27,7 +21,6 @@ const ListaDocumento: React.FC = () => {
                     },
                 });
                 setDocumentos(response.data);
-                console.log('Documentos recebidos:', response.data);
             } catch (error) {
                 console.error('Erro ao buscar documentos:', error);
             }
@@ -37,6 +30,8 @@ const ListaDocumento: React.FC = () => {
             fetchDocumentos();
         }
     }, [userId, token]);
+    console.log("DOCUMENTOS::", documentos)
+
 
     const formatarData = (data: string | undefined) => {
         if (!data) return 'N/A';
@@ -49,6 +44,29 @@ const ListaDocumento: React.FC = () => {
         return `${dia}/${mes}/${ano}`;
     };
 
+    const handleDownload = async (documentoId: number) => {
+        try {
+            const response = await api.get(`/documentos/download/${documentoId}`, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+                responseType: 'blob', // Isso garante que a resposta seja tratada como arquivo binário
+            });
+
+            const url = window.URL.createObjectURL(new Blob([response.data]));
+            const link = document.createElement('a');
+            link.href = url;
+            link.setAttribute('download', `documento_${documentoId}.pdf`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        } catch (error) {
+            console.error("Erro ao baixar o documento:", error);
+            toast.error("Não foi possível baixar o documento.")
+        }
+    };
+
+
     if (loading) {
         return <div>Carregando...</div>;
 
@@ -59,7 +77,7 @@ const ListaDocumento: React.FC = () => {
             <NavBar />
             <div className="min-h-screen bg-gray-100 p-4">
                 <div className="bg-white p-6 rounded-lg shadow-lg">
-                    <h2 className="text-2xl font-bold mb-4">Documentos Recebidos</h2>
+                    <h2 className="text-2xl font-semibold mb-6">Documentos Recebidos</h2>
                     <div className="flex items-center justify-between mb-8">
                         <div className=" flex items-center gap-4 w-1/2">
                             <input
@@ -69,10 +87,10 @@ const ListaDocumento: React.FC = () => {
                             />
                             <div className="p-2 cursor-pointer border rounded-md border-blue-800 focus:outline-none focus:ring focus:border-blue-300">
                                 <SearchIcon className="cursor-pointer text-blue-800" />
-                            </div> 
+                            </div>
                         </div>
                         <div className="flex gap-10">
-                          
+
                             <a href="/EnviarDocumento">
                                 <button
                                     type="submit"
@@ -91,16 +109,24 @@ const ListaDocumento: React.FC = () => {
                                     <Table.ColumnHeaderCell>Data de Envio</Table.ColumnHeaderCell>
                                     <Table.ColumnHeaderCell>Recebido de</Table.ColumnHeaderCell>
                                     <Table.ColumnHeaderCell>Tipo de Documento</Table.ColumnHeaderCell>
+                                    <Table.ColumnHeaderCell>Ações</Table.ColumnHeaderCell>
                                 </Table.Row>
                             </Table.Header>
 
                             <Table.Body>
                                 {documentos.map((documento) => (
-                                    <Table.Row key={documento.id_documento}>
+                                    <Table.Row key={documento.id}>
                                         <Table.Cell>{documento.nome ? documento.nome : 'N/A'}</Table.Cell>
                                         <Table.Cell>{formatarData(documento.dataEnvio)}</Table.Cell>
                                         <Table.Cell>{documento.enviadoPor ? documento.enviadoPor : 'N/A'}</Table.Cell>
                                         <Table.Cell>{documento.tipoDocumento ? documento.tipoDocumento : 'N/A'}</Table.Cell>
+                                        <Table.Cell className="flex justify-center">
+                                            <button
+                                                onClick={() => handleDownload(documento.id)}
+                                            >
+                                                <Download className="text-blue-500" />
+                                            </button>
+                                        </Table.Cell>
                                     </Table.Row>
                                 ))}
                             </Table.Body>

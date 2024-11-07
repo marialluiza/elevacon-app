@@ -3,6 +3,7 @@ package com.elevacon.elevacon.model.DTOs;
 import java.util.Date;
 
 import com.elevacon.elevacon.model.Cliente;
+import com.elevacon.elevacon.model.Contador;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -62,6 +63,8 @@ public class ClienteDTO {
     private Long id_contador;
     private Long id_usuario;
 
+    private Contador contador;
+
     public ClienteDTO(Cliente cliente) {
     this.nome = cliente.getNome();
     this.id_cliente = cliente.getId_cliente();
@@ -82,7 +85,8 @@ public class ClienteDTO {
     this.nome_conjugue = cliente.getNome_conjugue();
     this.cpf_conjugue = cliente.getCpf_conjugue();
     this.id_contador = cliente.getContador().getId_contador();
-    this.id_usuario = cliente.getUsuario().getId_usuario();
+    this.id_usuario = cliente.getUsuario().getIdUsuario();
+    this.contador = cliente.getContador();
 }
 
     

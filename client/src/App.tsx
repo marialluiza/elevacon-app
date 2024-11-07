@@ -11,7 +11,6 @@ import Login from './components/Login/Login';
 import ListaDocumentos from './components/Documents/List/ListaDocumentos';
 import EnviarDocumento from './components/Documents/Create/EnviarDocumento';
 import { Toaster } from 'sonner'
-import CreateDocumentNewType from './components/Documents/CreateType';
 
 const App: React.FC = () => {
   return (

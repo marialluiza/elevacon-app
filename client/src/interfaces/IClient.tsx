@@ -1,3 +1,4 @@
+import { IContador } from "./IContador";
 import { IUsuario } from "./IUsuario";
 
 export type IClient = {
@@ -22,4 +23,5 @@ export type IClient = {
     observacao: string;
 
     usuario: IUsuario;
+    contador: IContador;
 };

@@ -42,7 +42,7 @@ public class AutenticaController {
         var usuario = (Usuario) autentica.getPrincipal();
         var token = tokenService.geraToken(usuario);
 
-        var response = new LoginTokenDTO(token, usuario.getId_usuario(), usuario.getLogin(), usuario.getRole());
+        var response = new LoginTokenDTO(token, usuario.getIdUsuario(), usuario.getLogin(), usuario.getRole());
         return ResponseEntity.ok(response);
 
     }

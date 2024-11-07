@@ -39,7 +39,8 @@ public class Usuario implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id_usuario;
+    @Column(name = "id_usuario")
+    private Long idUsuario;
 
     @Column(nullable = false)
     private String login;
@@ -71,7 +72,7 @@ public class Usuario implements UserDetails {
     private Set<Documento> documentosRecebidos;
 
     public Usuario(reqUsuarioDTO dados) {
-        this.id_usuario = dados.id_usuario();
+        this.idUsuario = dados.id_usuario();
         this.login = dados.login();
         this.senha = dados.senha();
         this.usuarioAtivo = dados.usuarioAtivo();

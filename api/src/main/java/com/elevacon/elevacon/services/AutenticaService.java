@@ -31,7 +31,7 @@ public class AutenticaService implements UserDetailsService {
 
             if (userDetails instanceof Usuario) {
                 Usuario usuario = (Usuario) userDetails;
-                return usuario.getId_usuario();
+                return usuario.getIdUsuario();
             } else {
                 throw new RuntimeException("Usuário autenticado não é uma instância de Usuario.");
             }

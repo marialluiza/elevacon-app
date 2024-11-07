@@ -98,15 +98,15 @@ public class ClienteController {
         }
     }
 
-    // @GetMapping("/usuario/{id_usuario}")
-    // public ResponseEntity<ClienteDTO> getClienteByUsuarioId(@PathVariable Long id_usuario) {
-    //     Cliente cliente = clienteService.findByUsuarioId(id_usuario);
-    //     if (cliente != null) {
-    //         return ResponseEntity.ok(new ClienteDTO(cliente));
-    //     } else {
-    //         return ResponseEntity.notFound().build();
-    //     }
-    // }
+    @GetMapping("/cliente-logado/{id_usuario}")
+    public ResponseEntity<ClienteDTO> getClienteByUsuarioId(@PathVariable Long id_usuario) {
+        Cliente cliente = clienteService.findByUsuarioId(id_usuario);
+        if (cliente != null) {
+            return ResponseEntity.ok(new ClienteDTO(cliente));
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
 
 }
 

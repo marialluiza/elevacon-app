@@ -364,8 +364,8 @@ public class ClienteService {
         }
     }
 
-    // public Cliente findByUsuarioId(Long usuarioId) {
-    //     return clienteRepository.findByUsuario_Id_usuario(usuarioId).orElse(null);
-    // }
+    public Cliente findByUsuarioId(Long idUsuario) {
+        return clienteRepository.findByUsuarioIdUsuario(idUsuario).orElse(null);
+    }
 
 }
