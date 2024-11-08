@@ -1,8 +1,9 @@
-import { jwtDecode } from 'jwt-decode';
+import {jwtDecode} from 'jwt-decode';
 import { createContext, useState, useContext, useEffect, ReactNode } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../hooks/useAPI';
 import { IClient } from '../../interfaces/IClient';
+import { IContador } from '../../interfaces/IContador';
 
 interface AuthContextData {
   signed: boolean;
@@ -10,6 +11,7 @@ interface AuthContextData {
   userId: number | null;
   userRole: string;
   client?: IClient;
+  contador?: IContador;
   loading: boolean;
   userAuth(login: string, senha: string): Promise<void>;
   logout(): void;
@@ -22,6 +24,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [userId, setUserId] = useState<number | null>(null);
   const [userRole, setUserRole] = useState<string>('');
   const [client, setClient] = useState<IClient>();
+  const [contador, setContador] = useState<IContador>();
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
@@ -35,7 +38,17 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
-  // Efeito para verificar e configurar token e userId ao carregar a aplicação
+  // Função para buscar dados do contador
+  const fetchContadorData = async (userId: number) => {
+    try {
+      const response = await api.get(`/contador/contador-logado/${userId}`);
+      setContador(response.data);
+    } catch (error) {
+      console.error('Erro ao buscar dados do contador:', error);
+    }
+  };
+
+  // Efeito para carregar token e userId do localStorage ao iniciar a aplicação
   useEffect(() => {
     const storagedToken = localStorage.getItem('token');
     const storagedUserId = localStorage.getItem('userId');
@@ -46,8 +59,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       const decodedToken: any = jwtDecode(storagedToken);
       setUserRole(decodedToken.role);
 
+      // Verifica a role e busca os dados correspondentes
       if (decodedToken.role === 'CLIENTE') {
         fetchClientData(Number(storagedUserId));
+      } else if (decodedToken.role === 'CONTADOR') {
+        fetchContadorData(Number(storagedUserId));
       }
     }
 
@@ -68,8 +84,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       const decodedToken: any = jwtDecode(token);
       setUserRole(decodedToken.role);
 
+      // Busca os dados com base na role
       if (decodedToken.role === 'CLIENTE') {
         fetchClientData(id_usuario);
+      } else if (decodedToken.role === 'CONTADOR') {
+        fetchContadorData(id_usuario);
       }
 
       navigate('/PaginaInicial');
@@ -88,11 +107,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setUserId(null);
     setUserRole('');
     setClient(undefined);
+    setContador(undefined);
     navigate('/Login');
   };
 
   return (
-    <AuthContext.Provider value={{ signed: !!token, token, client, userId, userRole, loading, userAuth, logout }}>
+    <AuthContext.Provider value={{ signed: !!token, token, client, contador, userId, userRole, loading, userAuth, logout }}>
       {children}
     </AuthContext.Provider>
   );
@@ -107,7 +127,7 @@ export function useAuth() {
 }
 
 // import { jwtDecode } from 'jwt-decode';
-// import { createContext, useState, useContext, useEffect } from 'react';
+// import { createContext, useState, useContext, useEffect, ReactNode } from 'react';
 // import { useNavigate } from 'react-router-dom';
 // import api from '../hooks/useAPI';
 // import { IClient } from '../../interfaces/IClient';
@@ -125,13 +145,23 @@ export function useAuth() {
 
 // const AuthContext = createContext<AuthContextData>({} as AuthContextData);
 
-// export const AuthProvider = ({ children }: { children: JSX.Element }) => {
+// export const AuthProvider = ({ children }: { children: ReactNode }) => {
 //   const [token, setToken] = useState<string | null>(null);
 //   const [userId, setUserId] = useState<number | null>(null);
 //   const [userRole, setUserRole] = useState<string>('');
-//   const [loading, setLoading] = useState(true);
 //   const [client, setClient] = useState<IClient>();
+//   const [loading, setLoading] = useState(true);
 //   const navigate = useNavigate();
+
+//   // Função para buscar dados do cliente
+//   const fetchClientData = async (userId: number) => {
+//     try {
+//       const response = await api.get(`/cliente/cliente-logado/${userId}`);
+//       setClient(response.data);
+//     } catch (error) {
+//       console.error('Erro ao buscar dados do cliente:', error);
+//     }
+//   };
 
 //   useEffect(() => {
 //     const storagedToken = localStorage.getItem('token');
@@ -143,47 +173,15 @@ export function useAuth() {
 //       const decodedToken: any = jwtDecode(storagedToken);
 //       setUserRole(decodedToken.role);
 
+//       if (decodedToken.role === 'CLIENTE') {
+//         fetchClientData(Number(storagedUserId));
+//       }
 //     }
 
 //     setLoading(false);
 //   }, []);
 
-//   console.log("userIDD:::", userId)
-
-//   const fetchClientData = async (userId: number) => {
-//     try {
-//       const response = await api.get(`/cliente/cliente-logado/${userId}`);
-//       const clientData = response.data;
-//       setClient(clientData)
-//       return clientData;
-//     } catch (error) {
-//       console.error('Erro ao buscar dados do cliente:', error);
-//       return null;
-//     }
-//   };
-
-//   // const userAuth = async (login: string, senha: string) => {
-//   //   setLoading(true);
-//   //   try {
-//   //     const response = await api.post('/autentica/login', { login, senha });
-//   //     const { token, id_usuario } = response.data;
-//   //     localStorage.setItem('token', token);
-//   //     localStorage.setItem('userId', id_usuario);
-//   //     setToken(token);
-//   //     setUserId(id_usuario);
-//   //     const decodedToken: any = jwtDecode(token);
-//   //     setUserRole(decodedToken.role);
-//   //     navigate('/PaginaInicial');
-
-//   //     console.log('Conteúdo do token:', decodedToken);
-
-//   //   } catch (error) {
-//   //     console.error('Erro na autenticação:', error);
-//   //   } finally {
-//   //     setLoading(false);
-//   //   }
-//   // };
-
+//   // Função para autenticar o usuário
 //   const userAuth = async (login: string, senha: string) => {
 //     setLoading(true);
 //     try {
@@ -193,14 +191,12 @@ export function useAuth() {
 //       localStorage.setItem('userId', id_usuario);
 //       setToken(token);
 //       setUserId(id_usuario);
+
 //       const decodedToken: any = jwtDecode(token);
 //       setUserRole(decodedToken.role);
 
 //       if (decodedToken.role === 'CLIENTE') {
-//         const clientData = await fetchClientData(id_usuario);
-//         console.log("CLIENTE NO USERAUTH:", clientData)
-//         if (clientData) {
-//           setClient(clientData);         }
+//         fetchClientData(id_usuario);
 //       }
 
 //       navigate('/PaginaInicial');
@@ -211,32 +207,14 @@ export function useAuth() {
 //     }
 //   };
 
-//   useEffect(() => {
-//     const storagedToken = localStorage.getItem('token');
-//     const storagedUserId = localStorage.getItem('userId');
-
-//     if (storagedToken && storagedUserId) {
-//       setToken(storagedToken);
-//       setUserId(Number(storagedUserId));
-
-//       try {
-//         const decodedToken: any = jwtDecode(storagedToken);
-//         setUserRole(decodedToken.role);
-//       } catch (error) {
-//         console.error('Erro ao decodificar token:', error);
-//       }
-//     }
-
-//     setLoading(false);
-//   }, []);
-
-
+//   // Função de logout
 //   const logout = () => {
 //     localStorage.removeItem('token');
 //     localStorage.removeItem('userId');
 //     setToken(null);
 //     setUserId(null);
 //     setUserRole('');
+//     setClient(undefined);
 //     navigate('/Login');
 //   };
 

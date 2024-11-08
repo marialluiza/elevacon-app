@@ -27,12 +27,14 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.elevacon.elevacon.model.Cliente;
 import com.elevacon.elevacon.model.Contador;
-import com.elevacon.elevacon.model.Usuario;
 
 public interface ClienteRepository extends JpaRepository<Cliente, Long> {
     List<Cliente> findByContador(Contador contador);
 
     Optional<Cliente> findByUsuarioIdUsuario(Long idUsuario);
 
-    // Optional<Cliente> findByUsuario(Usuario usuario);
+    List<Cliente> findByContadorAndUsuarioUsuarioAtivoTrue(Contador contador);
+
+    Optional<Cliente> findByEmailAndUsuarioUsuarioAtivoFalse(String email);
+
 }

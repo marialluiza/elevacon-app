@@ -11,13 +11,13 @@ interface CreateDocumentNewTypeProps {
 }
 
 const CreateDocumentNewType: React.FC<CreateDocumentNewTypeProps> = ({ onClose, isOpen, onCreate }) => {
-    const { token } = useAuth();
-
+    const { token, contador } = useAuth();
     const [name, setName] = useState<string>("");
     const [selectedFormat, setSelectedFormat] = useState<string>("");
     const [description, setDescription] = useState<string>("");
     const [error, setError] = useState<string | null>(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const idContador = contador?.id_contador;
 
     const formats = ["pdf", "txt"];
 
@@ -39,7 +39,8 @@ const CreateDocumentNewType: React.FC<CreateDocumentNewTypeProps> = ({ onClose, 
         setIsSubmitting(true);
 
         try {
-            const response = await api.post("/tipo-documentos/cadastrar", formData, {
+            // Inclua o id_contador como parâmetro na URL da requisição
+            const response = await api.post(`/tipo-documentos/cadastrar?id_contador=${idContador}`, formData, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
@@ -61,6 +62,49 @@ const CreateDocumentNewType: React.FC<CreateDocumentNewTypeProps> = ({ onClose, 
             setIsSubmitting(false);
         }
     };
+
+
+    // const submit = async (event: React.FormEvent) => {
+    //     event.preventDefault();
+
+    //     if (!name || !selectedFormat) {
+    //         setError("Todos os campos são obrigatórios.");
+    //         toast.info("Todos os campos são obrigatórios.");
+    //         return;
+    //     }
+
+    //     const formData = {
+    //         nome: name,
+    //         formato: selectedFormat,
+    //         descricao: description,
+    //         id_contador: idContador,
+    //     };
+
+    //     setIsSubmitting(true);
+
+    //     try {
+    //         const response = await api.post("/tipo-documentos/cadastrar", formData, {
+    //             headers: {
+    //                 Authorization: `Bearer ${token}`,
+    //             },
+    //         });
+
+    //         if (response.status === 201) {
+    //             const novoTipoDocumento: ITipoDocumento = response.data;
+    //             onCreate(novoTipoDocumento);
+    //             toast.success("Tipo de documento criado com sucesso.");
+    //             onClose();
+    //         } else {
+    //             console.warn("A criação falhou com status:", response.status);
+    //             setError("Falha ao criar tipo de documento.");
+    //         }
+    //     } catch (error) {
+    //         console.error("Erro ao cadastrar novo tipo:", error);
+    //         setError("Erro ao cadastrar tipo.");
+    //     } finally {
+    //         setIsSubmitting(false);
+    //     }
+    // };
 
     return (
         <div

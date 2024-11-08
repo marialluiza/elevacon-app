@@ -21,7 +21,7 @@ public class PessoaService {
     private PessoaRepository pessoaRepository;
 
     public Pessoa inserirPessoa(Pessoa pessoa) {
-        Long idContador = pessoa.getContador().getId_contador();
+        Long idContador = pessoa.getContador().getIdContador();
         Optional<Contador> contadorOptional = contadorRepository.findById(idContador);
         if (contadorOptional.isPresent()) {
             Contador contador = contadorOptional.get();

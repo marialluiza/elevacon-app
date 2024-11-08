@@ -6,6 +6,7 @@ import ModalAccess from "../ModalAccess";
 import api from "../../../../infra/hooks/useAPI";
 import NavBar from "../../../Header/Header";
 import { IClient } from "../../../../interfaces/IClient";
+import { toast } from "sonner";
 
 
 const VisualizarCliente = () => {
@@ -61,6 +62,7 @@ const VisualizarCliente = () => {
             setOpen(true);
         } catch (error) {
             console.error("Erro ao gerar acesso:", error);
+            toast.error("Erro ao gerar acesso:")
         }
     };
     

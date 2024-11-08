@@ -69,11 +69,11 @@ public class ClienteController {
         }
     }
 
-    @PostMapping("/{clienteId}/ativar-usuario")
-    public ResponseEntity<?> ativarUsuario(@PathVariable Long clienteId) {
-        clienteService.ativarUsuario(clienteId);
-        return ResponseEntity.ok("Usuário ativado com sucesso");
-    }
+    // @PostMapping("/{clienteId}/ativar-usuario")
+    // public ResponseEntity<?> ativarUsuario(@PathVariable Long clienteId) {
+    //     clienteService.ativarUsuario(clienteId);
+    //     return ResponseEntity.ok("Usuário ativado com sucesso");
+    // }
 
     @PostMapping("/gerar-acesso")
     public ResponseEntity<Map<String, String>> gerarAcesso(@RequestBody Map<String, String> payload) {

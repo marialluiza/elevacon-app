@@ -61,4 +61,8 @@ public class TipoDocumentoService {
         });
     }
 
+    public List<TipoDocumento> getTipoDocumentosByContadorId(Long idContador) {
+        return tipoDocumentoRepository.findByContadorIdContador(idContador);
+    }
+    
 }

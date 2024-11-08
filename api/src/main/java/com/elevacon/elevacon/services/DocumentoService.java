@@ -96,18 +96,18 @@ public class DocumentoService {
         return fileName;
     }
 
-    private void validarEnvioDeCliente(Cliente clienteAutenticado, Usuario recebidoPor) {
-        Optional<Contador> contadorDestino = contadorRepository.findByUsuario(recebidoPor);
-        if (!contadorDestino.isPresent()) {
-            throw new IllegalArgumentException("O usuário destino não é um contador.");
-        }
+    // private void validarEnvioDeCliente(Cliente clienteAutenticado, Usuario recebidoPor) {
+    //     Optional<Contador> contadorDestino = contadorRepository.findByUsuario(recebidoPor);
+    //     if (!contadorDestino.isPresent()) {
+    //         throw new IllegalArgumentException("O usuário destino não é um contador.");
+    //     }
 
-        Contador contador = contadorDestino.get();
-        if (!clienteAutenticado.getContador().getId_contador().equals(contador.getId_contador())) {
-            throw new IllegalArgumentException(
-                    "Você não pode enviar documentos para um contador que não está associado a você.");
-        }
-    }
+    //     Contador contador = contadorDestino.get();
+    //     if (!clienteAutenticado.getContador().getId_contador().equals(contador.getId_contador())) {
+    //         throw new IllegalArgumentException(
+    //                 "Você não pode enviar documentos para um contador que não está associado a você.");
+    //     }
+    // }
 
     private static String tokenUsuarioAutenticado;
 

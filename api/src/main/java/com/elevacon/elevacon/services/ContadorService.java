@@ -34,4 +34,8 @@ public class ContadorService {
     public List<Contador> listarContadores() {
         return contadorRepository.findAll();
     }
+
+    public Contador findByUsuarioId(Long idUsuario) {
+        return contadorRepository.findByUsuarioIdUsuario(idUsuario).orElse(null);
+    }
 }

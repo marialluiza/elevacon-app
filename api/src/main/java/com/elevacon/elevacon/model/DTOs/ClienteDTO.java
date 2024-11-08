@@ -84,7 +84,7 @@ public class ClienteDTO {
     this.observacao = cliente.getObservacao();
     this.nome_conjugue = cliente.getNome_conjugue();
     this.cpf_conjugue = cliente.getCpf_conjugue();
-    this.id_contador = cliente.getContador().getId_contador();
+    this.id_contador = cliente.getContador().getIdContador();
     this.id_usuario = cliente.getUsuario().getIdUsuario();
     this.contador = cliente.getContador();
 }

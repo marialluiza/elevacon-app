@@ -1,6 +1,8 @@
 package com.elevacon.elevacon.controller;
 
+import com.elevacon.elevacon.model.Contador;
 import com.elevacon.elevacon.model.TipoDocumento;
+import com.elevacon.elevacon.repository.ContadorRepository;
 import com.elevacon.elevacon.services.TipoDocumentoService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,9 +17,11 @@ import java.util.stream.Collectors;
 public class TipoDocumentoController {
 
     private final TipoDocumentoService tipoDocumentoService;
+    private final ContadorRepository contadorRepository;
 
-    public TipoDocumentoController(TipoDocumentoService tipoDocumentoService) {
+    public TipoDocumentoController(TipoDocumentoService tipoDocumentoService, ContadorRepository contadorRepository) {
         this.tipoDocumentoService = tipoDocumentoService;
+        this.contadorRepository = contadorRepository;
     }
 
     /**
@@ -26,9 +30,17 @@ public class TipoDocumentoController {
      * @param tipoDocumento Objeto TipoDocumento a ser salvo.
      * @return Resposta com o TipoDocumento salvo e código HTTP 201 (Created).
      */
-    @PostMapping
-    @RequestMapping("/cadastrar")
-    public ResponseEntity<TipoDocumento> createOrUpdateTipoDocumento(@RequestBody TipoDocumento tipoDocumento) {
+    @PostMapping("/cadastrar")
+    public ResponseEntity<TipoDocumento> createOrUpdateTipoDocumento(@RequestBody TipoDocumento tipoDocumento,
+            @RequestParam Long id_contador) {
+        // Busca o objeto Contador pelo id_contador
+        Optional<Contador> contadorOptional = contadorRepository.findById(id_contador);
+        if (contadorOptional.isPresent()) {
+            tipoDocumento.setContador(contadorOptional.get()); // Associa o contador ao TipoDocumento
+        } else {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build(); // Retorna erro se o contador não existe
+        }
+
         TipoDocumento savedTipoDocumento = tipoDocumentoService.saveTipoDocumento(tipoDocumento);
         return new ResponseEntity<>(savedTipoDocumento, HttpStatus.CREATED);
     }
@@ -38,9 +50,19 @@ public class TipoDocumentoController {
      *
      * @return Resposta com a lista de TipoDocumentos e código HTTP 200 (OK).
      */
+    // @GetMapping("/listar")
+    // public ResponseEntity<List<TipoDocumento>> getAllActiveTipoDocumentos() {
+    // List<TipoDocumento> tipoDocumentos =
+    // tipoDocumentoService.getAllTipoDocumentos()
+    // .stream()
+    // .filter(tipoDocumento -> !tipoDocumento.isEsta_arquivado())
+    // .collect(Collectors.toList());
+    // return new ResponseEntity<>(tipoDocumentos, HttpStatus.OK);
+    // }
+
     @GetMapping("/listar")
-    public ResponseEntity<List<TipoDocumento>> getAllActiveTipoDocumentos() {
-        List<TipoDocumento> tipoDocumentos = tipoDocumentoService.getAllTipoDocumentos()
+    public ResponseEntity<List<TipoDocumento>> getAllActiveTipoDocumentos(@RequestParam Long id_contador) {
+        List<TipoDocumento> tipoDocumentos = tipoDocumentoService.getTipoDocumentosByContadorId(id_contador)
                 .stream()
                 .filter(tipoDocumento -> !tipoDocumento.isEsta_arquivado())
                 .collect(Collectors.toList());
@@ -57,8 +79,7 @@ public class TipoDocumentoController {
     @GetMapping("/{id}")
     public ResponseEntity<TipoDocumento> getTipoDocumentoById(@PathVariable("id") Long id) {
         Optional<TipoDocumento> tipoDocumento = tipoDocumentoService.getTipoDocumentoById(id);
-        return tipoDocumento.map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).build());
+        return tipoDocumento.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).build());
     }
 
     /**

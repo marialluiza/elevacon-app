@@ -14,7 +14,7 @@ interface TipoDocumento {
 }
 
 const EnviarDocumento: React.FC = () => {
-    const { token, loading, userRole, client } = useAuth();
+    const { token, loading, userRole, client, contador } = useAuth();
     const [tipoDocumentos, setTipoDocumentos] = useState<TipoDocumento[]>([]);
     const [usuarios, setUsuarios] = useState<IClient[]>([]);
     const [selectedTipoDocumento, setSelectedTipoDocumento] = useState<TipoDocumento | null>(null);
@@ -24,47 +24,28 @@ const EnviarDocumento: React.FC = () => {
     const [error, setError] = useState<string | null>(null);
     const [isOpen, setOpen] = useState<boolean>(false);
     const [confirmDeleteOpen, setConfirmDeleteOpen] = useState<boolean>(false);
-
-    // console.log("CLIENTE::", client)
+    const idContador = contador?.id_contador || client?.id_contador;
 
     useEffect(() => {
         const fetchTipoDocumentos = async () => {
             try {
-                const response = await api.get('/tipo-documentos/listar', {
+                const response = await api.get(`/tipo-documentos/listar?id_contador=${idContador}`, {
                     headers: {
                         Authorization: `Bearer ${token}`,
                     },
                 });
+                console.log("PÓS RESPONSE::", idContador)
+
                 setTipoDocumentos(response.data);
             } catch (err) {
                 console.error('Erro ao buscar tipos de documentos:', err);
             }
         };
 
-        if (userRole == "CONTADOR") {
-
-            const fetchUsuarios = async () => {
-                try {
-                    const response = await api.get('/cliente/listar-clientes', {
-                        headers: {
-                            Authorization: `Bearer ${token}`,
-                        },
-                    });
-                    setUsuarios(response.data);
-                } catch (err) {
-                    console.error('Erro ao buscar usuários:', err);
-                }
-            };
-
-            if (token) {
-                fetchUsuarios();
-            }
-        }
-
         if (token) {
             fetchTipoDocumentos();
         }
-    }, [token]);
+    }, [token, userRole, idContador]);
 
     const handleDeleteTipoDocumento = async () => {
         if (!selectedTipoDocumento) return;
@@ -144,8 +125,6 @@ const EnviarDocumento: React.FC = () => {
     if (loading) {
         return <div>Carregando...</div>;
     }
-
-    console.log("clientee::", client)
 
     return (
         <>

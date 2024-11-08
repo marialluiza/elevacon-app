@@ -6,6 +6,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 
 @Data
 @Entity
@@ -18,9 +20,12 @@ public class TipoDocumento {
     private String nome;
 
     private String formato;
-    
+
     private boolean esta_arquivado = false;
 
     private String descricao;
 
+    @ManyToOne
+    @JoinColumn(name = "id_contador")
+    private Contador contador;
 }

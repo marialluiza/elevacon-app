@@ -1,7 +1,8 @@
 package com.elevacon.elevacon.model;
 
-import com.elevacon.elevacon.model.DTOs.reqContdorDTO;
+import com.elevacon.elevacon.model.DTOs.ContadorDTO;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -21,7 +22,8 @@ import lombok.NoArgsConstructor;
 public class Contador {
     
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id_contador;
+    @Column(name = "id_contador")
+    private Long idContador;
 
     private String crc;
 
@@ -33,8 +35,8 @@ public class Contador {
     @JoinColumn(name = "id_pessoa")
     private Pessoa pessoa;
 
-    public Contador(reqContdorDTO dados){
-        this.id_contador = dados.id_contador();
-        this.crc = dados.crc();
+    public Contador(ContadorDTO dados){
+        this.idContador = dados.getId_contador();
+        this.crc = dados.getCrc();
     }
 }
