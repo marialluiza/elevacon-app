@@ -1,6 +1,9 @@
 package com.elevacon.elevacon.model;
 
+import java.time.LocalDate;
 import java.util.Date;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
@@ -31,7 +34,8 @@ public class Cliente {
     private String titulo_eleitoral;
     private boolean conjugue;
     private String cpf;
-    private Date data_nascimento;
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    private LocalDate data_nascimento;
     private boolean dependente;
     private String ocupacao_principal;
     private String logradouro;

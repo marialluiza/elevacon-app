@@ -8,6 +8,7 @@ import EditarCliente from './components/Client/Edit/EditarCliente';
 import InserirCliente from './components/Client/Create/InserirCliente';
 import PrivateRoute from './components/PrivateRoute/PrivateRoute';
 import Login from './components/Login/Login';
+import EditarPerfil from './components/EditProfile/EditarPerfil';
 import ListaDocumentos from './components/Documents/List/ListaDocumentos';
 import EnviarDocumento from './components/Documents/Create/EnviarDocumento';
 import { Toaster } from 'sonner'
@@ -24,6 +25,7 @@ const App: React.FC = () => {
 
           <Route element={<PrivateRoute allowedRoles={['CONTADOR', 'CLIENTE']} />}>
             <Route path="/PaginaInicial" element={<PaginaInicial />} />
+            <Route path="/EditarPerfil" element={<EditarPerfil />} />
             <Route path="/ListaDocumento" element={<ListaDocumentos />} />
             <Route path="/EnviarDocumento" element={<EnviarDocumento />} />
             <Route path="/Ajuda" element={<SessaoAjuda/>} />

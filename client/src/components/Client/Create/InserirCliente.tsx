@@ -41,6 +41,12 @@ const InserirCliente = () => {
         return;
       }
 
+      const formattedData = {
+        ...clienteData,
+        data_nascimento: clienteData.data_nascimento ? new Date(clienteData.data_nascimento).toISOString().split('T')[0] : '',
+        id_usuario: userId,
+      };
+
       const response = await api.post('/cliente/cadastrar-cliente', {
         ...clienteData,
         id_usuario: userId

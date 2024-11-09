@@ -36,9 +36,9 @@ public class ConfigSeguranca {
         return httpSecurity
                 .csrf(csrf -> csrf.disable())
                 // indica que será autenticação STATELESS(autenticação por token)
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) 
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 // define requisições http que serão autorizadas e a aprtir de quais roles
-                .authorizeHttpRequests(autoriza -> autoriza 
+                .authorizeHttpRequests(autoriza -> autoriza
 
                         .requestMatchers(HttpMethod.POST, "/autentica/login").permitAll()
 
@@ -47,6 +47,7 @@ public class ConfigSeguranca {
                         .requestMatchers(HttpMethod.POST, "/documentos/recebidos").hasRole("USUARIO")
                         .requestMatchers(HttpMethod.POST, "/documentos/download/{documentoId}").hasRole("USUARIO")
 
+                        .requestMatchers(HttpMethod.POST, "/autentica/cadastrar").permitAll()
 
                         .requestMatchers(HttpMethod.POST, "/autentica/cadastrar").hasRole("ADMIN")
                         // .requestMatchers(HttpMethod.POST, "/autentica/cadastrar").permitAll()
@@ -57,7 +58,7 @@ public class ConfigSeguranca {
                         .requestMatchers(HttpMethod.POST, "/contador/cadastrar-contador").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.GET, "/contador/listar-contadores").hasRole("ADMIN")
 
-                        .requestMatchers(HttpMethod.DELETE, "/usuario/remover").hasRole("ADMIN")
+                        // .requestMatchers(HttpMethod.DELETE, "/usuario/remover").hasRole("ADMIN")
 
                         .requestMatchers(HttpMethod.DELETE, "/usuario/remover").hasRole("CONTADOR")
                         .requestMatchers(HttpMethod.GET, "/cliente/listar-clientes").hasRole("CONTADOR")
