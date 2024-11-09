@@ -1,5 +1,6 @@
 package com.elevacon.elevacon.model.DTOs;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 import com.elevacon.elevacon.model.Cliente;
@@ -39,7 +40,7 @@ public class ClienteDTO {
     private String cpf;
 
     @NotNull(message = "Data de nascimento é obrigatória")
-    private Date data_nascimento;
+    private LocalDate data_nascimento;
 
     private boolean dependente;
 
@@ -66,28 +67,27 @@ public class ClienteDTO {
     private Contador contador;
 
     public ClienteDTO(Cliente cliente) {
-    this.nome = cliente.getNome();
-    this.id_cliente = cliente.getId_cliente();
-    this.nome = cliente.getNome();
-    this.email = cliente.getEmail();
-    this.telefone = cliente.getTelefone();
-    this.titulo_eleitoral = cliente.getTitulo_eleitoral();
-    this.cpf = cliente.getCpf();
-    this.data_nascimento = cliente.getData_nascimento();
-    this.ocupacao_principal = cliente.getOcupacao_principal();
-    this.logradouro = cliente.getLogradouro();
-    this.numero = cliente.getNumero();
-    this.bairro = cliente.getBairro();
-    this.cidade = cliente.getCidade();
-    this.estado = cliente.getEstado();
-    this.cep = cliente.getCep();
-    this.observacao = cliente.getObservacao();
-    this.nome_conjugue = cliente.getNome_conjugue();
-    this.cpf_conjugue = cliente.getCpf_conjugue();
-    this.id_contador = cliente.getContador().getIdContador();
-    this.id_usuario = cliente.getUsuario().getIdUsuario();
-    this.contador = cliente.getContador();
-}
+        this.nome = cliente.getNome();
+        this.id_cliente = cliente.getId_cliente();
+        this.nome = cliente.getNome();
+        this.email = cliente.getEmail();
+        this.telefone = cliente.getTelefone();
+        this.titulo_eleitoral = cliente.getTitulo_eleitoral();
+        this.cpf = cliente.getCpf();
+        this.data_nascimento = cliente.getData_nascimento();
+        this.ocupacao_principal = cliente.getOcupacao_principal();
+        this.logradouro = cliente.getLogradouro();
+        this.numero = cliente.getNumero();
+        this.bairro = cliente.getBairro();
+        this.cidade = cliente.getCidade();
+        this.estado = cliente.getEstado();
+        this.cep = cliente.getCep();
+        this.observacao = cliente.getObservacao();
+        this.nome_conjugue = cliente.getNome_conjugue();
+        this.cpf_conjugue = cliente.getCpf_conjugue();
+        this.id_contador = cliente.getContador().getIdContador();
+        this.id_usuario = cliente.getUsuario().getIdUsuario();
+        this.contador = cliente.getContador();
+    }
 
-    
 }

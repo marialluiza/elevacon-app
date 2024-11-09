@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useAuth } from "../../../../infra/context/AuthProvider";
 import { Button } from "@radix-ui/themes";
@@ -7,6 +7,7 @@ import api from "../../../../infra/hooks/useAPI";
 import NavBar from "../../../Header/Header";
 import { IClient } from "../../../../interfaces/IClient";
 import { toast } from "sonner";
+import { formatDate } from "../../../../utils/formatDateUtils";
 
 
 const VisualizarCliente = () => {
@@ -119,7 +120,7 @@ const VisualizarCliente = () => {
                         </div>
                         <div className="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
                             <dt className="text-sm font-medium text-gray-900">Data de Nascimento</dt>
-                            <dd className="mt-1 text-sm text-gray-700 sm:col-span-2 sm:mt-0">{clienteData?.data_nascimento}</dd>
+                            <dd className="mt-1 text-sm text-gray-700 sm:col-span-2 sm:mt-0">{formatDate(clienteData?.data_nascimento)}</dd>
                         </div>
                         <div className="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
                             <dt className="text-sm font-medium text-gray-900">Titulo de Eleitor</dt>

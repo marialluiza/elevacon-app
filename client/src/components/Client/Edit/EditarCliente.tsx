@@ -45,7 +45,7 @@ const EditarCliente = () => {
                     cliente.data_nascimento = cliente.data_nascimento.split('T')[0];
                 }
 
-                setClienteData(response.data);
+                setClienteData(cliente);
 
             } catch (error) {
                 console.error('Erro ao buscar dados do cliente:', error);
@@ -69,10 +69,13 @@ const EditarCliente = () => {
         }
 
         try {
-            const response = await api.put(`/cliente/editar-cliente/${id}`, {
+            const formattedData = {
                 ...clienteData,
-                id_usuario: userId
-            }, {
+                data_nascimento: clienteData.data_nascimento ? new Date(clienteData.data_nascimento).toISOString().split('T')[0] : '',
+                id_usuario: userId,
+            };
+
+            const response = await api.put(`/cliente/editar-cliente/${id}`, formattedData, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },

@@ -145,32 +145,7 @@ public class ClienteService {
     // }
     // }
 
-    public List<Cliente> listarClientes() {
-        Authentication usuarioAutenticado = SecurityContextHolder.getContext().getAuthentication();
-
-        if (usuarioAutenticado != null && usuarioAutenticado.getPrincipal() instanceof UserDetails) {
-            UserDetails userDetails = (UserDetails) usuarioAutenticado.getPrincipal();
-
-            if (userDetails.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_CONTADOR"))) {
-                Optional<Contador> contadorOptional = contadorRepository.findByUsuarioLogin(userDetails.getUsername());
-
-                if (contadorOptional.isPresent()) {
-                    Contador contador = contadorOptional.get();
-                    // Retorna apenas clientes ativos associados ao contador
-                    return clienteRepository.findByContadorAndUsuarioUsuarioAtivoTrue(contador);
-                } else {
-                    throw new RuntimeException("Contador não encontrado para o usuário autenticado.");
-                }
-            } else {
-                throw new RuntimeException("Acesso negado: Contador apenas.");
-            }
-        } else {
-            throw new RuntimeException("Usuário autenticado não encontrado.");
-        }
-    }
-
-    // public List<Cliente> listarClientes() {
-    // // Obtém o usuário autenticado
+    // public List<Cliente> listarClientes() { EXCLUIR ESSA BOMBA (TALVEZ
     // Authentication usuarioAutenticado =
     // SecurityContextHolder.getContext().getAuthentication();
 
@@ -178,18 +153,15 @@ public class ClienteService {
     // instanceof UserDetails) {
     // UserDetails userDetails = (UserDetails) usuarioAutenticado.getPrincipal();
 
-    // // Verifica se o usuário tem a role ROLE_CONTADOR
     // if (userDetails.getAuthorities().contains(new
     // SimpleGrantedAuthority("ROLE_CONTADOR"))) {
-    // // Obtém o contador associado ao usuário autenticado
     // Optional<Contador> contadorOptional =
     // contadorRepository.findByUsuarioLogin(userDetails.getUsername());
 
-    // // Se o contador estiver presente
     // if (contadorOptional.isPresent()) {
     // Contador contador = contadorOptional.get();
-    // // Retorna a lista de clientes associados ao contador
-    // return clienteRepository.findByContador(contador);
+    // // Retorna apenas clientes ativos associados ao contador
+    // return clienteRepository.findByContadorAndUsuarioUsuarioAtivoTrue(contador);
     // } else {
     // throw new RuntimeException("Contador não encontrado para o usuário
     // autenticado.");
@@ -201,6 +173,34 @@ public class ClienteService {
     // throw new RuntimeException("Usuário autenticado não encontrado.");
     // }
     // }
+
+    public List<Cliente> listarClientes() {
+        // Obtém o usuário autenticado
+        Authentication usuarioAutenticado = SecurityContextHolder.getContext().getAuthentication();
+
+        if (usuarioAutenticado != null && usuarioAutenticado.getPrincipal() instanceof UserDetails) {
+            UserDetails userDetails = (UserDetails) usuarioAutenticado.getPrincipal();
+
+            // Verifica se o usuário tem a role ROLE_CONTADOR
+            if (userDetails.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_CONTADOR"))) {
+                // Obtém o contador associado ao usuário autenticado
+                Optional<Contador> contadorOptional = contadorRepository.findByUsuarioLogin(userDetails.getUsername());
+
+                // Se o contador estiver presente
+                if (contadorOptional.isPresent()) {
+                    Contador contador = contadorOptional.get();
+                    // Retorna a lista de clientes associados ao contador
+                    return clienteRepository.findByContador(contador);
+                } else {
+                    throw new RuntimeException("Contador não encontrado para o usuário autenticado.");
+                }
+            } else {
+                throw new RuntimeException("Acesso negado: Contador apenas.");
+            }
+        } else {
+            throw new RuntimeException("Usuário autenticado não encontrado.");
+        }
+    }
 
     public Cliente editarCliente(Long idCliente, Cliente clienteAtualizado) {
         // Obtém o usuário autenticado
@@ -247,6 +247,8 @@ public class ClienteService {
                             clienteExistente.setCpf_conjugue(clienteAtualizado.getCpf_conjugue());
                             clienteExistente.setUsuario(clienteAtualizado.getUsuario());
                             clienteExistente.setPessoa(clienteAtualizado.getPessoa());
+
+                            System.out.println("Cliente atualizado:" + clienteAtualizado);
 
                             // Salva e retorna o cliente atualizado
                             return clienteRepository.save(clienteExistente);
