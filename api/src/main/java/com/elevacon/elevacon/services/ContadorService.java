@@ -21,6 +21,10 @@ public class ContadorService {
 
     public Contador cadastrarContador(Contador contador) {
         Long idUsuario = contador.getUsuario().getIdUsuario();
+        if (idUsuario == null) {
+            throw new RuntimeException("ID do usuário não pode ser nulo.");
+        }
+
         Optional<Usuario> usuarioOptional = usuarioRepository.findById(idUsuario);
         if (usuarioOptional.isPresent()) {
             Usuario usuario = usuarioOptional.get();

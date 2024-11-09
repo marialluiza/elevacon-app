@@ -45,7 +45,9 @@ public class UsuarioService {
     }
 
     public Usuario atualizarUsuario(Long id, Usuario usuarioAtualizado) {
-        Authentication autenticado = SecurityContextHolder.getContext().getAuthentication(); // autenticado fornece o contexto do usuario autenticado
+        Authentication autenticado = SecurityContextHolder.getContext().getAuthentication(); // autenticado fornece o
+                                                                                             // contexto do usuario
+                                                                                             // autenticado
         String usuarioAtual = autenticado.getName();
 
         Optional<Usuario> usuarioExistente = usuarioRepository.findById(id);
@@ -88,9 +90,9 @@ public class UsuarioService {
         }
     }
 
-
-    private boolean usuarioPode(String atualUsuario, Usuario usuario){
-        Collection<? extends GrantedAuthority> authorities = SecurityContextHolder.getContext().getAuthentication().getAuthorities();
+    private boolean usuarioPode(String atualUsuario, Usuario usuario) {
+        Collection<? extends GrantedAuthority> authorities = SecurityContextHolder.getContext().getAuthentication()
+                .getAuthorities();
 
         for (GrantedAuthority autorizacao : authorities) {
             String role = autorizacao.getAuthority();
@@ -116,9 +118,9 @@ public class UsuarioService {
     }
 
     public String alterarSenha(AlteracaoSenhaDTO alteracaoSenhaDTO) {
-    
+
         Usuario usuario = usuarioRepository.findUsuarioByLogin(alteracaoSenhaDTO.getLogin());
-    
+
         if (usuario != null) {
             if (usuario.verificarSenha(alteracaoSenhaDTO.getSenhaAtual())) {
                 usuario.setSenha(passwordEncoder.encode(alteracaoSenhaDTO.getNovaSenha()));
@@ -128,10 +130,9 @@ public class UsuarioService {
                 throw new RuntimeException("Senha atual incorreta.");
             }
         }
-    
+
         throw new RuntimeException("Usuário não encontrado.");
     }
-
 }
 
 // -----------------------------------------------------------------------------------------------------
