@@ -96,9 +96,12 @@ const EditarCliente = () => {
                 <div className="border-b border-gray-900/10 pb-6">
                     <div className="grid grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-6">
                         <div className="sm:col-span-3">
-                            <label htmlFor="nome" className="block text-sm font-medium text-gray-900">
-                                Nome Completo
-                            </label>
+                            <div className="flex">
+                                <label htmlFor="nome" className="block text-sm font-medium text-gray-900">
+                                    Nome Completo
+                                </label>
+                                <label className="text-red-600 ml-1">*</label>
+                            </div>
                             <input
                                 id="nome"
                                 type="text"
@@ -110,9 +113,12 @@ const EditarCliente = () => {
                         </div>
 
                         <div className="sm:col-span-1">
-                            <label htmlFor="data-nascimento" className="block text-sm font-medium text-gray-900">
-                                Data de nascimento
-                            </label>
+                            <div className="flex">
+                                <label htmlFor="data-nascimento" className="block text-sm font-medium text-gray-900">
+                                    Data de nascimento
+                                </label>
+                                <label className="text-red-600 ml-1">*</label>
+                            </div>
                             <input
                                 id="data_nascimento"
                                 type="date"
@@ -138,9 +144,12 @@ const EditarCliente = () => {
                         </div>
 
                         <div className="sm:col-span-3">
-                            <label htmlFor="email" className="block text-sm font-medium text-gray-900">
-                                Email
-                            </label>
+                            <div className="flex">
+                                <label htmlFor="email" className="block text-sm font-medium text-gray-900">
+                                    Email
+                                </label>
+                                <label className="text-red-600 ml-1">*</label>
+                            </div>
                             <input
                                 id="email"
                                 type="email"
@@ -166,9 +175,12 @@ const EditarCliente = () => {
                         </div>
 
                         <div className="sm:col-span-3">
-                            <label htmlFor="cpf" className="block text-sm font-medium text-gray-900">
-                                CPF
-                            </label>
+                            <div className="flex">
+                                <label htmlFor="cpf" className="block text-sm font-medium text-gray-900">
+                                    CPF
+                                </label>
+                                <label className="text-red-600 ml-1">*</label>
+                            </div>
                             <input
                                 id="cpf"
                                 type="text"
@@ -177,6 +189,7 @@ const EditarCliente = () => {
                                 className="p-4 block w-full mt-2 rounded-md border border-slate-400 bg-white py-1.5 text-gray-900 placeholder-gray-500 focus:ring-2 focus:outline-none focus:border-blue-300 "
                                 placeholder="Informe o CPF"
                             />
+
                         </div>
 
                         <div className="sm:col-span-3">
@@ -212,7 +225,7 @@ const EditarCliente = () => {
                             </label>
                             <input
                                 id="numero"
-                                type="text"
+                                type="number"
                                 onChange={handleChange}
                                 value={clienteData.numero}
                                 className="p-4 block w-full mt-2 rounded-md border border-slate-400 bg-white py-1.5 text-gray-900 placeholder-gray-500 focus:ring-2 focus:outline-none focus:border-blue-300 "

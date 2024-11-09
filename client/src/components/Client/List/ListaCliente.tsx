@@ -33,6 +33,9 @@ const ListaCliente: React.FC = () => {
 
   const navigate = useNavigate();
 
+
+console.log("clientefiltrados:::", clientesFiltrados)
+
   useEffect(() => {
     const fetchClientes = async () => {
       try {
@@ -43,6 +46,8 @@ const ListaCliente: React.FC = () => {
         });
         setClientes(response.data);
         setClientesFiltrados(response.data);
+
+        console.log("dentro do fetch::", response)
       } catch (error) {
         console.error('Erro ao buscar clientes:', error);
       }
@@ -53,10 +58,8 @@ const ListaCliente: React.FC = () => {
     }
   }, [userId, token]);
 
-  // Clientes da página atual
   const currentClientes = clientesFiltrados.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 
-  // Mudar de página
   const handleChangePage = (event: React.ChangeEvent<unknown>, value: number) => {
     setCurrentPage(value);
   };

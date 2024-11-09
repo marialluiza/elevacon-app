@@ -28,7 +28,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
-  // Função para buscar dados do cliente
   const fetchClientData = async (userId: number) => {
     try {
       const response = await api.get(`/cliente/cliente-logado/${userId}`);
@@ -38,7 +37,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
-  // Função para buscar dados do contador
   const fetchContadorData = async (userId: number) => {
     try {
       const response = await api.get(`/contador/contador-logado/${userId}`);
@@ -48,7 +46,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
-  // Efeito para carregar token e userId do localStorage ao iniciar a aplicação
   useEffect(() => {
     const storagedToken = localStorage.getItem('token');
     const storagedUserId = localStorage.getItem('userId');
@@ -59,7 +56,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       const decodedToken: any = jwtDecode(storagedToken);
       setUserRole(decodedToken.role);
 
-      // Verifica a role e busca os dados correspondentes
       if (decodedToken.role === 'CLIENTE') {
         fetchClientData(Number(storagedUserId));
       } else if (decodedToken.role === 'CONTADOR') {
@@ -70,7 +66,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setLoading(false);
   }, []);
 
-  // Função para autenticar o usuário
   const userAuth = async (login: string, senha: string) => {
     setLoading(true);
     try {
@@ -84,7 +79,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       const decodedToken: any = jwtDecode(token);
       setUserRole(decodedToken.role);
 
-      // Busca os dados com base na role
       if (decodedToken.role === 'CLIENTE') {
         fetchClientData(id_usuario);
       } else if (decodedToken.role === 'CONTADOR') {
@@ -99,7 +93,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
-  // Função de logout
   const logout = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('userId');
@@ -125,110 +118,3 @@ export function useAuth() {
   }
   return context;
 }
-
-// import { jwtDecode } from 'jwt-decode';
-// import { createContext, useState, useContext, useEffect, ReactNode } from 'react';
-// import { useNavigate } from 'react-router-dom';
-// import api from '../hooks/useAPI';
-// import { IClient } from '../../interfaces/IClient';
-
-// interface AuthContextData {
-//   signed: boolean;
-//   token: string | null;
-//   userId: number | null;
-//   userRole: string;
-//   client?: IClient;
-//   loading: boolean;
-//   userAuth(login: string, senha: string): Promise<void>;
-//   logout(): void;
-// }
-
-// const AuthContext = createContext<AuthContextData>({} as AuthContextData);
-
-// export const AuthProvider = ({ children }: { children: ReactNode }) => {
-//   const [token, setToken] = useState<string | null>(null);
-//   const [userId, setUserId] = useState<number | null>(null);
-//   const [userRole, setUserRole] = useState<string>('');
-//   const [client, setClient] = useState<IClient>();
-//   const [loading, setLoading] = useState(true);
-//   const navigate = useNavigate();
-
-//   // Função para buscar dados do cliente
-//   const fetchClientData = async (userId: number) => {
-//     try {
-//       const response = await api.get(`/cliente/cliente-logado/${userId}`);
-//       setClient(response.data);
-//     } catch (error) {
-//       console.error('Erro ao buscar dados do cliente:', error);
-//     }
-//   };
-
-//   useEffect(() => {
-//     const storagedToken = localStorage.getItem('token');
-//     const storagedUserId = localStorage.getItem('userId');
-
-//     if (storagedToken && storagedUserId) {
-//       setToken(storagedToken);
-//       setUserId(Number(storagedUserId));
-//       const decodedToken: any = jwtDecode(storagedToken);
-//       setUserRole(decodedToken.role);
-
-//       if (decodedToken.role === 'CLIENTE') {
-//         fetchClientData(Number(storagedUserId));
-//       }
-//     }
-
-//     setLoading(false);
-//   }, []);
-
-//   // Função para autenticar o usuário
-//   const userAuth = async (login: string, senha: string) => {
-//     setLoading(true);
-//     try {
-//       const response = await api.post('/autentica/login', { login, senha });
-//       const { token, id_usuario } = response.data;
-//       localStorage.setItem('token', token);
-//       localStorage.setItem('userId', id_usuario);
-//       setToken(token);
-//       setUserId(id_usuario);
-
-//       const decodedToken: any = jwtDecode(token);
-//       setUserRole(decodedToken.role);
-
-//       if (decodedToken.role === 'CLIENTE') {
-//         fetchClientData(id_usuario);
-//       }
-
-//       navigate('/PaginaInicial');
-//     } catch (error) {
-//       console.error('Erro na autenticação:', error);
-//     } finally {
-//       setLoading(false);
-//     }
-//   };
-
-//   // Função de logout
-//   const logout = () => {
-//     localStorage.removeItem('token');
-//     localStorage.removeItem('userId');
-//     setToken(null);
-//     setUserId(null);
-//     setUserRole('');
-//     setClient(undefined);
-//     navigate('/Login');
-//   };
-
-//   return (
-//     <AuthContext.Provider value={{ signed: !!token, token, client, userId, userRole, loading, userAuth, logout }}>
-//       {children}
-//     </AuthContext.Provider>
-//   );
-// };
-
-// export function useAuth() {
-//   const context = useContext(AuthContext);
-//   if (!context) {
-//     throw new Error('useAuth deve ser usado com AuthProvider');
-//   }
-//   return context;
-// }

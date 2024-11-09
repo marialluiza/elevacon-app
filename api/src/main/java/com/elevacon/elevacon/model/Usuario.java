@@ -17,6 +17,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -48,22 +50,21 @@ public class Usuario implements UserDetails {
     @Column(nullable = false)
     private String senha;
 
-    private boolean usuarioAtivo;
-
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private Date data_criacao;
+    private StatusUsuario status;
+
+    @Column(nullable = false, name = "data_criacao")
+    private Date dataCriacao;
 
     @Column(nullable = false)
     private UsuarioRole role;
 
     @PrePersist
     protected void onCreate() {
-        data_criacao = new Date();
+        this.dataCriacao = new Date();
+        this.status = StatusUsuario.NOVO; 
     }
-
-    @OneToOne
-    @JoinColumn(name = "id_cliente")
-    private Cliente cliente;
 
     @OneToMany(mappedBy = "enviadoPor", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Set<Documento> documentosEnviados;
@@ -75,15 +76,16 @@ public class Usuario implements UserDetails {
         this.idUsuario = dados.id_usuario();
         this.login = dados.login();
         this.senha = dados.senha();
-        this.usuarioAtivo = dados.usuarioAtivo();
-        this.data_criacao = dados.dataCriacao();
+        this.status = dados.status();
+        this.dataCriacao = dados.dataCriacao();
         this.role = dados.role();
+        this.status = StatusUsuario.NOVO;
     }
 
-    public Usuario(String login, String senha, Date data_criacao, UsuarioRole role) {
+    public Usuario(String login, String senha, Date dataCriacao, UsuarioRole role) {
         this.login = login;
         this.senha = senha;
-        this.data_criacao = data_criacao;
+        this.dataCriacao = dataCriacao;
         this.role = role;
     }
 
@@ -154,6 +156,10 @@ public class Usuario implements UserDetails {
 
     public boolean verificarSenha(String senha) {
         return new BCryptPasswordEncoder().matches(senha, this.senha);
+    }
+
+    public enum StatusUsuario {
+        NOVO, ATIVO, INATIVO
     }
 
 }

@@ -53,8 +53,4 @@ public class Cliente {
     @JoinColumn(name = "id_usuario", referencedColumnName = "id_usuario")
     private Usuario usuario;
 
-    @OneToOne
-    @JoinColumn(name = "id_pessoa")
-    private Pessoa pessoa;
-
 }

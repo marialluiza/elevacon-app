@@ -31,10 +31,6 @@ public class Contador {
     @JoinColumn(name = "id_usuario")
     private Usuario usuario;
 
-    @OneToOne
-    @JoinColumn(name = "id_pessoa")
-    private Pessoa pessoa;
-
     public Contador(ContadorDTO dados){
         this.idContador = dados.getId_contador();
         this.crc = dados.getCrc();

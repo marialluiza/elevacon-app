@@ -41,7 +41,6 @@ public class ConfigSeguranca {
                 .authorizeHttpRequests(autoriza -> autoriza 
 
                         .requestMatchers(HttpMethod.POST, "/autentica/login").permitAll()
-                        // .requestMatchers(HttpMethod.POST, "/pessoa/cadastrar-pessoa").permitAll()
 
                         .requestMatchers(HttpMethod.POST, "/documentos/upload").hasRole("USUARIO")
                         .requestMatchers(HttpMethod.POST, "/documentos/enviados").hasRole("USUARIO")
@@ -50,11 +49,10 @@ public class ConfigSeguranca {
 
 
                         .requestMatchers(HttpMethod.POST, "/autentica/cadastrar").hasRole("ADMIN")
+                        // .requestMatchers(HttpMethod.POST, "/autentica/cadastrar").permitAll()
 
                         .requestMatchers(HttpMethod.GET, "/usuario/listar-usuarios").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.POST, "/usuario").hasRole("ADMIN")
-
-                        .requestMatchers(HttpMethod.GET, "/pessoa/listar-pessoas").hasRole("ADMIN")
 
                         .requestMatchers(HttpMethod.POST, "/contador/cadastrar-contador").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.GET, "/contador/listar-contadores").hasRole("ADMIN")

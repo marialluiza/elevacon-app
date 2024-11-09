@@ -35,6 +35,8 @@ const VisualizarCliente = () => {
         fetchClienteData();
     }, [id, token]);
 
+    console.log("token::", token)
+
     const showClientAccess = async () => {
         try {
             const response = await api.post(

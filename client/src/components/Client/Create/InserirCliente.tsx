@@ -190,7 +190,7 @@ const InserirCliente = () => {
               </label>
               <input
                 id="numero"
-                type="text"
+                type="number"
                 value={clienteData.numero}
                 onChange={handleChange}
                 className="p-4 block w-full mt-2 rounded-md border border-slate-400 bg-white py-1.5 text-gray-900 placeholder:text-sm placeholder-gray-500 focus:ring-2 focus:outline-none focus:border-blue-300 "

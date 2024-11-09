@@ -23,7 +23,6 @@ const Login: React.FC = () => {
     }
   };
 
-
   return (
     <div className="flex items-center justify-center min-h-screen bg-slate-900">
       <div className="w-full max-w-md p-8 space-y-6 bg-blue-950 rounded-lg shadow-lg">
@@ -42,6 +41,7 @@ const Login: React.FC = () => {
               placeholder="Digite seu login"
               required
             />
+             {erro && <p className="mt-2 text-sm text-red-500">{erro}</p>}
           </div>
           <div>
             <label htmlFor="senha" className="block text-sm font-medium text-white">

@@ -8,7 +8,6 @@
 //         Long id_contador,
 //         String crc,
 //         Long id_usuario,
-//         Long id_pessoa) {
 
 //     public ContadorDTO(Contador contador) {
 //         this.id_contador = contador.getId_contador();

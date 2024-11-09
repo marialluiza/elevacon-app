@@ -7,13 +7,11 @@ public class ContadorDTO {
     private Long id_contador;
     private String crc;
     private Long id_usuario;
-    private Long id_pessoa;
 
-    public ContadorDTO(Long id_contador, String crc, Long id_usuario, Long id_pessoa) {
+    public ContadorDTO(Long id_contador, String crc, Long id_usuario) {
         this.id_contador = id_contador;
         this.crc = crc;
         this.id_usuario = id_usuario;
-        this.id_pessoa = id_pessoa;
     }
 
     public Long getId_contador() {
@@ -38,14 +36,6 @@ public class ContadorDTO {
 
     public void setId_usuario(Long id_usuario) {
         this.id_usuario = id_usuario;
-    }
-
-    public Long getId_pessoa() {
-        return id_pessoa;
-    }
-
-    public void setId_pessoa(Long id_pessoa) {
-        this.id_pessoa = id_pessoa;
     }
 
     public ContadorDTO(Contador contador) {

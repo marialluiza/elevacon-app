@@ -4,10 +4,10 @@ import { Link } from 'react-router-dom';
 import Sidebar from '../SideBar/Sidebar';
 
 const NavBar: React.FC = () => {
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState<boolean>(false);
 
   const handleClick = () => {
-    setIsSidebarOpen(!isSidebarOpen);
+    setIsOpen(!isOpen);
   };
 
   return (
@@ -23,9 +23,9 @@ const NavBar: React.FC = () => {
   </nav>
 
   <div className="pt-16"> 
-    {isSidebarOpen && (
+    {isOpen && (
       <div className="">
-        <Sidebar />
+        <Sidebar isOpen={isOpen} setIsOpen={setIsOpen}/>
       </div>
     )}
   </div>

@@ -42,10 +42,30 @@ const EnviarDocumento: React.FC = () => {
             }
         };
 
+        if (userRole == "CONTADOR") {
+
+            const fetchUsuarios = async () => {
+                try {
+                    const response = await api.get('/cliente/listar-clientes', {
+                        headers: {
+                            Authorization: `Bearer ${token}`,
+                        },
+                    });
+                    setUsuarios(response.data);
+                } catch (err) {
+                    console.error('Erro ao buscar usuários:', err);
+                }
+            };
+
+            if (token) {
+                fetchUsuarios();
+            }
+        }
+
         if (token) {
             fetchTipoDocumentos();
         }
-    }, [token, userRole, idContador]);
+    }, [token, userRole, idContador, usuarios]);
 
     const handleDeleteTipoDocumento = async () => {
         if (!selectedTipoDocumento) return;
@@ -66,6 +86,8 @@ const EnviarDocumento: React.FC = () => {
         }
     };
 
+
+    
     const handleDelete = (tipoDocumento: TipoDocumento) => {
         setSelectedTipoDocumento(tipoDocumento);
         setConfirmDeleteOpen(true);

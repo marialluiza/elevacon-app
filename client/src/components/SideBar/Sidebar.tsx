@@ -2,20 +2,39 @@ import { CircleUser, HandHelpingIcon } from "lucide-react";
 import { Link } from "react-router-dom";
 
 import styles from './style.module.css';
-import { useState } from "react";
+import { useEffect, useRef } from "react";
 import { useAuth } from "../../infra/context/AuthProvider";
-const Sidebar = () => {
+
+interface SidebarProps{
+    isOpen: boolean;
+    setIsOpen: React.Dispatch<React.SetStateAction<boolean>>
+}
+
+const Sidebar: React.FC<SidebarProps> = ({setIsOpen, isOpen}) => {
 
     const { logout, userRole } = useAuth();
-    const [isOpen, setIsOpen] = useState<Boolean>(false);
+    const sidebarRef = useRef<HTMLDivElement | null>(null);
 
-    const handleSideBar = () => {
-        setIsOpen(true)
-    }
+    const handleClickOutside = (event: MouseEvent) => {
+        if (sidebarRef.current && !sidebarRef.current.contains(event.target as Node)) {
+            setIsOpen(false);
+        }
+    };
+
+    useEffect(() => {
+        if (isOpen) {
+            document.addEventListener("mousedown", handleClickOutside);
+        } else {
+            document.removeEventListener("mousedown", handleClickOutside);
+        }
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutside);
+        };
+    }, [isOpen]);
 
     return (
         <>
-            <aside id="separator-sidebar" className="fixed top-0 left-0 z-20 w-64 h-screen transition-transform -translate-x-full sm:translate-x-0" aria-label="Sidebar">
+            <aside ref={sidebarRef} id="separator-sidebar" className="fixed top-0 left-0 z-20 w-64 h-screen transition-transform -translate-x-full sm:translate-x-0" aria-label="Sidebar">
                 <div className="h-full pt-20 px-3 py-4 overflow-y-auto bg-gray-50 dark:bg-gray-800">
                     <ul className="space-y-2 font-medium">
                         {/* <li>

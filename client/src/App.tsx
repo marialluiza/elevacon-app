@@ -11,6 +11,7 @@ import Login from './components/Login/Login';
 import ListaDocumentos from './components/Documents/List/ListaDocumentos';
 import EnviarDocumento from './components/Documents/Create/EnviarDocumento';
 import { Toaster } from 'sonner'
+import SessaoAjuda from './components/HelpSession';
 
 const App: React.FC = () => {
   return (
@@ -25,6 +26,7 @@ const App: React.FC = () => {
             <Route path="/PaginaInicial" element={<PaginaInicial />} />
             <Route path="/ListaDocumento" element={<ListaDocumentos />} />
             <Route path="/EnviarDocumento" element={<EnviarDocumento />} />
+            <Route path="/Ajuda" element={<SessaoAjuda/>} />
           </Route>
 
           <Route element={<PrivateRoute allowedRoles={['CONTADOR']} />}>
