@@ -1,108 +1,62 @@
-import { useNavigate, useParams } from "react-router-dom";
-import { useEffect, useState } from "react";
-import { useAuth } from "../../../infra/context/AuthProvider";
-import api from "../../../infra/hooks/useAPI";
-import NavBar from "../../Header/Header";
-import { toast } from "sonner";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../../../infra/context/AuthProvider";
+import api from "../../../../infra/hooks/useAPI";
+import NavBar from "../../../Header/Header";
+import { useState } from "react";
+import { IClient } from "../../../../interfaces/IClient";
 
-const EditarCliente = () => {
+interface EditarClienteClienteProps { }
 
-    const { id } = useParams();
+const EditarClienteCliente: React.FC<EditarClienteClienteProps> = () => {
     const navigate = useNavigate();
-    const { token, userId } = useAuth();
+    const { token, userId, client, fetchClientData } = useAuth();
+    const [cliente, setCliente] = useState<IClient | undefined>(client);
 
-    const [clienteData, setClienteData] = useState({
-        nome: '',
-        data_nascimento: '',
-        ocupacao_principal: '',
-        email: '',
-        titulo_eleitoral: '',
-        cpf: '',
-        telefone: '',
-        logradouro: '',
-        numero: '',
-        bairro: '',
-        cidade: '',
-        estado: '',
-        cep: '',
-        nome_conjugue: '',
-        cpf_conjugue: '',
-        observacao: '',
-    });
-    const [loading, setLoading] = useState(true);
-
-    useEffect(() => {
-        const fetchClienteData = async () => {
-            try {
-                const response = await api.get(`/cliente/buscar-cliente/${id}`, {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
-                });
-
-                const cliente = response.data;
-
-                console.log("CLIENTE:", cliente)
-
-                if (cliente.data_nascimento) {
-                    cliente.data_nascimento = cliente.data_nascimento.split('T')[0];
-                }
-
-                setClienteData(cliente);
-
-            } catch (error) {
-                console.error('Erro ao buscar dados do cliente:', error);
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        fetchClienteData();
-    }, [id, token]);
-
-    const validateDate = (date: string) => {
-        const regex = /^\d{4}-\d{2}-\d{2}$/;
-        return regex.test(date);
-    };
+    const validateDate = (date: string) => /^\d{4}-\d{2}-\d{2}$/.test(date);
 
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
 
-        if (!validateDate(clienteData.data_nascimento)) {
-            toast.message('Data de nascimento inválida. Use o formato YYYY-MM-DD.');
-            return;
-        }
-
         try {
+            if (!cliente?.id_cliente) {
+                console.error('ID do cliente não encontrado');
+                return;
+            }
+
             const formattedData = {
-                ...clienteData,
-                data_nascimento: clienteData.data_nascimento ? new Date(clienteData.data_nascimento).toISOString().split('T')[0] : '',
+                ...cliente,
+                data_nascimento: cliente?.data_nascimento ? new Date(cliente?.data_nascimento).toISOString().split('T')[0] : '',
                 id_usuario: userId,
             };
 
-            const response = await api.put(`/cliente/editar-cliente/${id}`, formattedData, {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
+            await api.put('/cliente/editar', formattedData, {
+                headers: { Authorization: `Bearer ${token}` },
             });
-            navigate('/ListaCliente');
+
+            if (userId) {
+                await fetchClientData(userId);
+            }
+            navigate("/VisualizarClienteCliente")
+
         } catch (error) {
             console.error('Erro ao atualizar cliente:', error);
         }
     };
 
+
     const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const { id, value } = event.target;
-        setClienteData(prevData => ({ ...prevData, [id]: value }));
-    };
+        setCliente((prevData) => ({
+            ...prevData,
+            [id]: value,
+        }) as IClient);
 
-    if (loading) {
-        return <div>Carregando...</div>;
-      }
+    };
 
     return (
         <>
             <NavBar />
+            
             <form className="space-y-10 p-4 pl-8 pr-8 pb-6" onSubmit={handleSubmit}>
                 <div className="border-b border-gray-900/10 pb-6">
                     <div className="grid grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-6">
@@ -117,7 +71,8 @@ const EditarCliente = () => {
                                 id="nome"
                                 type="text"
                                 onChange={handleChange}
-                                value={clienteData.nome}
+                                // value={client?.nome}
+                                value={cliente?.nome}
                                 className="p-4 block w-full mt-2 rounded-md border border-slate-400 bg-white py-1.5 text-gray-900 placeholder-gray-500 focus:ring-2 focus:outline-none focus:border-blue-300 "
                                 placeholder="nome completo..."
                             />
@@ -133,7 +88,7 @@ const EditarCliente = () => {
                             <input
                                 id="data_nascimento"
                                 type="date"
-                                value={clienteData.data_nascimento}
+                                value={cliente?.data_nascimento}
                                 onChange={handleChange}
                                 className="p-4 block w-full mt-2 rounded-md border border-slate-400 bg-white py-1.5 text-gray-900 placeholder-gray-500 focus:ring-2 focus:outline-none focus:border-blue-300 "
                                 required
@@ -147,14 +102,14 @@ const EditarCliente = () => {
                             <input
                                 id="ocupacao_principal"
                                 type="text"
-                                value={clienteData.ocupacao_principal}
+                                value={cliente?.ocupacao_principal}
                                 onChange={handleChange}
                                 className="p-4 block w-full mt-2 rounded-md border border-slate-400 bg-white py-1.5 text-gray-900 placeholder-gray-500 focus:ring-2 focus:outline-none focus:border-blue-300 "
                                 placeholder="Informe a ocupação principal"
                             />
                         </div>
 
-                        <div className="sm:col-span-3">
+                        {/* <div className="sm:col-span-3">
                             <div className="flex">
                                 <label htmlFor="email" className="block text-sm font-medium text-gray-900">
                                     Email
@@ -164,12 +119,12 @@ const EditarCliente = () => {
                             <input
                                 id="email"
                                 type="email"
-                                value={clienteData.email}
+                                value={cliente?.email}
                                 onChange={handleChange}
                                 className="p-4 block w-full mt-2 rounded-md border border-slate-400 bg-white py-1.5 text-gray-900 placeholder-gray-500 focus:ring-2 focus:outline-none focus:border-blue-300 "
                                 placeholder='exemplo@email.com'
                             />
-                        </div>
+                        </div> */}
 
                         <div className="sm:col-span-3">
                             <label htmlFor="titulo-eleitor" className="block text-sm font-medium text-gray-900">
@@ -178,7 +133,7 @@ const EditarCliente = () => {
                             <input
                                 id="titulo_eleitoral"
                                 type="text"
-                                value={clienteData.titulo_eleitoral}
+                                value={cliente?.titulo_eleitoral}
                                 onChange={handleChange}
                                 className="p-4 block w-full mt-2 rounded-md border border-slate-400 bg-white py-1.5 text-gray-900 placeholder-gray-500 focus:ring-2 focus:outline-none focus:border-blue-300 "
                                 placeholder="Informe o título de eleitor"
@@ -195,7 +150,7 @@ const EditarCliente = () => {
                             <input
                                 id="cpf"
                                 type="text"
-                                value={clienteData.cpf}
+                                value={cliente?.cpf}
                                 onChange={handleChange}
                                 className="p-4 block w-full mt-2 rounded-md border border-slate-400 bg-white py-1.5 text-gray-900 placeholder-gray-500 focus:ring-2 focus:outline-none focus:border-blue-300 "
                                 placeholder="Informe o CPF"
@@ -210,7 +165,7 @@ const EditarCliente = () => {
                             <input
                                 id="telefone"
                                 type="text"
-                                value={clienteData.telefone}
+                                value={cliente?.telefone}
                                 onChange={handleChange}
                                 className="p-4 block w-full mt-2 rounded-md border border-slate-400 bg-white py-1.5 text-gray-900 placeholder-gray-500 focus:ring-2 focus:outline-none focus:border-blue-300 "
                                 placeholder='(xx)xxxxx-xxxx'
@@ -224,7 +179,7 @@ const EditarCliente = () => {
                             <input
                                 id="logradouro"
                                 type="text"
-                                value={clienteData.logradouro}
+                                value={cliente?.logradouro}
                                 onChange={handleChange}
                                 className="p-4 block w-full mt-2 rounded-md border border-slate-400 bg-white py-1.5 text-gray-900 placeholder-gray-500 focus:ring-2 focus:outline-none focus:border-blue-300 "
                             />
@@ -238,7 +193,7 @@ const EditarCliente = () => {
                                 id="numero"
                                 type="number"
                                 onChange={handleChange}
-                                value={clienteData.numero}
+                                value={cliente?.numero}
                                 className="p-4 block w-full mt-2 rounded-md border border-slate-400 bg-white py-1.5 text-gray-900 placeholder-gray-500 focus:ring-2 focus:outline-none focus:border-blue-300 "
                             />
                         </div>
@@ -251,7 +206,7 @@ const EditarCliente = () => {
                                 id="bairro"
                                 type="text"
                                 onChange={handleChange}
-                                value={clienteData.bairro}
+                                value={cliente?.bairro}
                                 className="p-4 block w-full mt-2 rounded-md border border-slate-400 bg-white py-1.5 text-gray-900 placeholder-gray-500 focus:ring-2 focus:outline-none focus:border-blue-300 "
                             />
                         </div>
@@ -263,7 +218,7 @@ const EditarCliente = () => {
                             <input
                                 id="cidade"
                                 type="text"
-                                value={clienteData.cidade}
+                                value={cliente?.cidade}
                                 onChange={handleChange}
                                 className="p-4 block w-full mt-2 rounded-md border border-slate-400 bg-white py-1.5 text-gray-900 placeholder-gray-500 focus:ring-2 focus:outline-none focus:border-blue-300 "
                             />
@@ -277,7 +232,7 @@ const EditarCliente = () => {
                                 id="estado"
                                 type="text"
                                 onChange={handleChange}
-                                value={clienteData.estado}
+                                value={cliente?.estado}
                                 className="p-4 block w-full mt-2 rounded-md border border-slate-400 bg-white py-1.5 text-gray-900 placeholder-gray-500 focus:ring-2 focus:outline-none focus:border-blue-300 "
                             />
                         </div>
@@ -290,7 +245,7 @@ const EditarCliente = () => {
                                 id="cep"
                                 type="text"
                                 onChange={handleChange}
-                                value={clienteData.cep}
+                                value={cliente?.cep}
                                 className="p-4 block w-full mt-2 rounded-md border border-slate-400 bg-white py-1.5 text-gray-900 placeholder-gray-500 focus:ring-2 focus:outline-none focus:border-blue-300 "
                             />
                         </div>
@@ -308,7 +263,7 @@ const EditarCliente = () => {
                             <input
                                 id="nome_conjugue"
                                 type="text"
-                                value={clienteData.nome_conjugue}
+                                value={cliente?.nome_conjugue}
                                 onChange={handleChange}
                                 className="p-4 block w-full mt-2 rounded-md border border-slate-400 bg-white py-1.5 text-gray-900 placeholder-gray-500 focus:ring-2 focus:outline-none focus:border-blue-300 "
                                 placeholder="Informe o nome do cônjuge ou companheiro(a)"
@@ -322,7 +277,7 @@ const EditarCliente = () => {
                             <input
                                 id="cpf_conjugue"
                                 type="text"
-                                value={clienteData.cpf_conjugue}
+                                value={cliente?.cpf_conjugue}
                                 onChange={handleChange}
                                 className="p-4 block w-full mt-2 rounded-md border border-slate-400 bg-white py-1.5 text-gray-900 placeholder-gray-500 focus:ring-2 focus:outline-none focus:border-blue-300 "
                                 placeholder="Informe o CPF do cônjuge ou companheiro(a)"
@@ -331,16 +286,17 @@ const EditarCliente = () => {
 
                     </div>
                 </div>
+
                 <button
                     type="submit"
-                    className="mt-6 w-full bg-blue-600 text-white p-2 rounded-md hover:bg-blue-700"
+                    className="mt-6 w-full bg-blue-500 text-white rounded-md py-2"
                 >
-                    Atualizar Cliente
+                    Salvar Alterações
                 </button>
             </form>
 
         </>
-    )
-}
+    );
+};
 
-export default EditarCliente;
+export default EditarClienteCliente;

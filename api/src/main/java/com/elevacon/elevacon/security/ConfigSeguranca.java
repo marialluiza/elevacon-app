@@ -64,11 +64,18 @@ public class ConfigSeguranca {
                         .requestMatchers(HttpMethod.GET, "/cliente/listar-clientes").hasRole("CONTADOR")
                         .requestMatchers(HttpMethod.POST, "/cliente/cadastrar-cliente").hasRole("CONTADOR")
 
-                        .requestMatchers(HttpMethod.PUT, "/cliente/editar-cliente").hasRole("CONTADOR")
-                        .requestMatchers(HttpMethod.GET, "/cliente/buscar-cliente").hasRole("CONTADOR")
+                        .requestMatchers(HttpMethod.GET, "/cliente/buscar-cliente").hasRole("CLIENTE")
                         .requestMatchers(HttpMethod.DELETE, "/cliente/excluir-cliente").hasRole("CONTADOR")
 
                         .requestMatchers(HttpMethod.POST, "/tipo-documentos/cadastrar").hasRole("CONTADOR")
+                        .requestMatchers(HttpMethod.POST, "/tipo-documentos/editar").hasRole("CONTADOR")
+
+                        .requestMatchers(HttpMethod.PUT, "/cliente/editar-cliente").hasRole("CONTADOR")
+
+                        // .requestMatchers(HttpMethod.PUT,
+                        // "/cliente/editar-cliente-by-cliente").hasRole("CLIENTE")
+
+                        .requestMatchers(HttpMethod.PUT, "/usuario/atualizar").permitAll()
 
                         .anyRequest().authenticated())
                 .addFilterBefore(filtroSeguranca, UsernamePasswordAuthenticationFilter.class)

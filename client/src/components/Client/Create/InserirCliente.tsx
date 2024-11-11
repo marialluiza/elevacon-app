@@ -75,9 +75,12 @@ const InserirCliente = () => {
         <div className="border-b border-gray-900/10 pb-6">
           <div className="grid gap-x-6 gap-y-6 sm:grid-cols-6">
             <div className="sm:col-span-3">
-              <label htmlFor="nome" className="block text-sm font-medium text-gray-900">
-                Nome Completo
-              </label>
+              <div className='flex'>
+                <label htmlFor="nome" className="block text-sm font-medium text-gray-900">
+                  Nome Completo
+                </label>
+                <label className="text-red-600 ml-1">*</label>
+              </div>
               <input
                 id="nome"
                 type="text"
@@ -87,6 +90,7 @@ const InserirCliente = () => {
                 placeholder='nome completo...'
                 required
               />
+
             </div>
 
             <div className="sm:col-span-1">
@@ -118,9 +122,13 @@ const InserirCliente = () => {
             </div>
 
             <div className="sm:col-span-3">
-              <label htmlFor="email" className="block text-sm font-medium text-gray-900">
-                Email
-              </label>
+              <div className='flex'>
+                <label htmlFor="email" className="block text-sm font-medium text-gray-900">
+                  Email
+                </label>
+                <label className="text-red-600 ml-1">*</label>
+              </div>
+
               <input
                 id="email"
                 type="email"
@@ -147,9 +155,12 @@ const InserirCliente = () => {
             </div>
 
             <div className="sm:col-span-3">
-              <label htmlFor="cpf" className="block text-sm font-medium text-gray-900">
-                CPF
-              </label>
+              <div className="flex">
+                <label htmlFor="cpf" className="block text-sm font-medium text-gray-900">
+                  CPF
+                </label>
+                <label className="text-red-600 ml-1">*</label>
+              </div>
               <input
                 id="cpf"
                 type="text"

@@ -4,8 +4,8 @@ export type IDocumento = {
     dataEnvio: string;
     enviadoPor: string;
     tipoDocumento: string;
+    recebidoPor: string;
     // caminho
     // id
-    // recebidoPor
     // tipoDocumento:
 }

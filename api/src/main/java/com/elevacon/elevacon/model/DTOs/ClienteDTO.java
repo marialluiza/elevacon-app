@@ -65,6 +65,7 @@ public class ClienteDTO {
     private Long id_usuario;
 
     private Contador contador;
+    private UsuarioDTO usuario;
 
     public ClienteDTO(Cliente cliente) {
         this.nome = cliente.getNome();
@@ -88,6 +89,15 @@ public class ClienteDTO {
         this.id_contador = cliente.getContador().getIdContador();
         this.id_usuario = cliente.getUsuario().getIdUsuario();
         this.contador = cliente.getContador();
+        
+        if (cliente.getUsuario() != null) {
+            this.usuario = new UsuarioDTO(
+                cliente.getUsuario().getIdUsuario(),
+                cliente.getUsuario().getLogin(),
+                cliente.getUsuario().getStatus()
+            );
+        }
+        
     }
 
 }

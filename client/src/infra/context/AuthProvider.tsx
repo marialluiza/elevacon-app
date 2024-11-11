@@ -15,6 +15,7 @@ interface AuthContextData {
   loading: boolean;
   userAuth(login: string, senha: string): Promise<void>;
   logout(): void;
+  fetchClientData: (userId: number) => void;
 }
 
 const AuthContext = createContext<AuthContextData>({} as AuthContextData);
@@ -105,7 +106,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ signed: !!token, token, client, contador, userId, userRole, loading, userAuth, logout }}>
+    <AuthContext.Provider value={{ signed: !!token, token, client, contador, userId, userRole, loading, userAuth, logout, fetchClientData }}>
       {children}
     </AuthContext.Provider>
   );

@@ -13,10 +13,12 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.elevacon.elevacon.model.Usuario;
 import com.elevacon.elevacon.model.DTOs.AlteracaoSenhaDTO;
+import com.elevacon.elevacon.model.DTOs.AtualizacaoUsuarioDTO;
 import com.elevacon.elevacon.services.UsuarioService;
 
 @RestController // mapeia como controller
@@ -42,9 +44,14 @@ public class UsuarioController {
         }
     }
 
-    @PutMapping("/atualiza/{id}")
-    public ResponseEntity<Usuario> atualizarUsuario(@PathVariable Long id, @RequestBody Usuario usuarioAtualizado) {
-        Usuario usuario = usuarioService.atualizarUsuario(id, usuarioAtualizado);
+    @PutMapping("/atualizar")
+    public ResponseEntity<Usuario> atualizarUsuario(@RequestBody AtualizacaoUsuarioDTO atualizacaoDTO,
+            @RequestParam String senhaAntiga) {
+        Usuario usuarioAtualizado = new Usuario();
+        usuarioAtualizado.setLogin(atualizacaoDTO.getLogin());
+        usuarioAtualizado.setSenha(atualizacaoDTO.getSenha());
+
+        Usuario usuario = usuarioService.atualizarUsuario(atualizacaoDTO.getIdUsuario(), usuarioAtualizado, senhaAntiga);
         return ResponseEntity.ok(usuario);
     }
 

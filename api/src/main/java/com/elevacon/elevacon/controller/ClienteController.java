@@ -69,12 +69,6 @@ public class ClienteController {
         }
     }
 
-    // @PostMapping("/{clienteId}/ativar-usuario")
-    // public ResponseEntity<?> ativarUsuario(@PathVariable Long clienteId) {
-    //     clienteService.ativarUsuario(clienteId);
-    //     return ResponseEntity.ok("Usuário ativado com sucesso");
-    // }
-
     @PostMapping("/gerar-acesso")
     public ResponseEntity<Map<String, String>> gerarAcesso(@RequestBody Map<String, String> payload) {
         try {
@@ -108,6 +102,16 @@ public class ClienteController {
         }
     }
 
+    @PutMapping("/editar")
+    public ResponseEntity<Cliente> editarCliente(@RequestBody Cliente clienteAtualizado) {
+        try {
+        System.out.println("bateu aqui CONTROLLER");
+
+            Cliente clienteEditado = clienteService.editarClientePorClienteAutenticado(clienteAtualizado);
+            return ResponseEntity.ok(clienteEditado);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(null);
+        }
+    }
+    
 }
-
-

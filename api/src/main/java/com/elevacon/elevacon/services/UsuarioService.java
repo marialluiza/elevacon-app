@@ -44,22 +44,31 @@ public class UsuarioService {
         return usuarioRepository.findById(id);
     }
 
-    public Usuario atualizarUsuario(Long id, Usuario usuarioAtualizado) {
-        Authentication autenticado = SecurityContextHolder.getContext().getAuthentication(); // autenticado fornece o
-                                                                                             // contexto do usuario
-                                                                                             // autenticado
+    public Usuario atualizarUsuario(Long id, Usuario usuarioAtualizado, String senhaAntiga) {
+        // Obtém o usuário autenticado
+        Authentication autenticado = SecurityContextHolder.getContext().getAuthentication();
         String usuarioAtual = autenticado.getName();
 
         Optional<Usuario> usuarioExistente = usuarioRepository.findById(id);
         if (usuarioExistente.isPresent()) {
             Usuario usuario = usuarioExistente.get();
 
+            // Verifica se o usuário autenticado pode atualizar os dados
             if (usuarioPode(usuarioAtual, usuario)) {
-                // atualiza os campos do usuário com os novos valores:
-                usuario.setLogin(usuarioAtualizado.getLogin());
-                String senhaCriptografada = new BCryptPasswordEncoder().encode(usuarioAtualizado.getSenha());
-                usuario.setSenha(senhaCriptografada);
-                return usuarioRepository.save(usuario); // slva o usuário atualizado no repositório
+
+                // Verifica se a senha antiga está correta antes de permitir a atualização
+                if (new BCryptPasswordEncoder().matches(senhaAntiga, usuario.getSenha())) {
+                    // Atualiza os dados do usuário
+                    usuario.setLogin(usuarioAtualizado.getLogin());
+                    String senhaCriptografada = new BCryptPasswordEncoder().encode(usuarioAtualizado.getSenha());
+                    usuario.setSenha(senhaCriptografada);
+
+                    // Salva as alterações no banco de dados
+                    return usuarioRepository.save(usuario);
+                } else {
+                    throw new RuntimeException("Senha antiga incorreta.");
+                }
+
             } else {
                 throw new AccessDeniedException("Usuário não possui permissão.");
             }
@@ -67,7 +76,6 @@ public class UsuarioService {
         } else {
             throw new RuntimeException("Usuário não encontrado");
         }
-
     }
 
     public String removerUsuario(Long id) {

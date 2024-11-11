@@ -25,6 +25,17 @@ export const PaginaInicial = () => {
             </Link>
 
           )}
+
+          {
+            userRole === "CLIENTE" && (
+              <>
+                <Link to="/VisualizarClienteCliente" className="bg-gray-300 p-4 rounded-lg text-center hover:bg-gray-300 transition-colors duration-300">
+                  Informações pessoais
+                </Link>
+              </>
+            )
+          }
+
           <Link to="/ListaDocumento" className="bg-gray-300 p-4 rounded-lg text-center hover:bg-gray-300 transition-colors duration-300">
             Documentos
           </Link>

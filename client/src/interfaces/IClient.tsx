@@ -2,6 +2,7 @@ import { IContador } from "./IContador";
 import { IUsuario } from "./IUsuario";
 
 export type IClient = {
+    id_cliente: number;
     nome: string;
     data_nascimento: string;
     ocupacao_principal: string;

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useAuth } from "../../../../infra/context/AuthProvider";
 import { Button } from "@radix-ui/themes";
@@ -7,8 +7,6 @@ import api from "../../../../infra/hooks/useAPI";
 import NavBar from "../../../Header/Header";
 import { IClient } from "../../../../interfaces/IClient";
 import { toast } from "sonner";
-import { formatDate } from "../../../../utils/formatDateUtils";
-
 
 const VisualizarCliente = () => {
     const [isOpen, setOpen] = useState<boolean>(false);
@@ -38,6 +36,17 @@ const VisualizarCliente = () => {
 
     console.log("token::", token)
 
+    const formatarData = (data: string | undefined) => {
+        if (!data) return 'N/A';
+
+        const dataObj = new Date(data);
+        const dia = (dataObj.getDate() + 1).toString().padStart(2, '0');
+        const mes = (dataObj.getMonth() + 1).toString().padStart(2, '0');
+        const ano = dataObj.getFullYear();
+
+        return `${dia}/${mes}/${ano}`;
+    };
+
     const showClientAccess = async () => {
         try {
             const response = await api.post(
@@ -51,7 +60,7 @@ const VisualizarCliente = () => {
                 }
             );
             const loginInfo = response.data;
-            
+
             if (loginInfo && loginInfo.senhaTemporaria) {
                 setClienteData((prevData) => ({
                     ...prevData,
@@ -61,14 +70,14 @@ const VisualizarCliente = () => {
             } else {
                 console.error("A senha temporária não foi gerada corretamente.");
             }
-    
+
             setOpen(true);
         } catch (error) {
             console.error("Erro ao gerar acesso:", error);
             toast.error("Erro ao gerar acesso:")
         }
     };
-    
+
 
     const handleCancel = () => {
         setCancel(true);
@@ -114,7 +123,7 @@ const VisualizarCliente = () => {
                         </div>
                         <div className="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
                             <dt className="text-sm font-medium text-gray-900">Email</dt>
-                            <dd className="mt-1 text-sm text-gray-700 sm:col-span-2 sm:mt-0">{clienteData?.email}</dd>
+                            <dd className="mt-1 text-sm text-gray-700 sm:col-span-2 sm:mt-0">{clienteData?.usuario?.login}</dd>
                         </div>
                         <div className="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
                             <dt className="text-sm font-medium text-gray-900">Telefone</dt>
@@ -122,7 +131,7 @@ const VisualizarCliente = () => {
                         </div>
                         <div className="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
                             <dt className="text-sm font-medium text-gray-900">Data de Nascimento</dt>
-                            <dd className="mt-1 text-sm text-gray-700 sm:col-span-2 sm:mt-0">{formatDate(clienteData?.data_nascimento)}</dd>
+                            <dd className="mt-1 text-sm text-gray-700 sm:col-span-2 sm:mt-0">{formatarData(clienteData?.data_nascimento)}</dd>
                         </div>
                         <div className="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
                             <dt className="text-sm font-medium text-gray-900">Titulo de Eleitor</dt>

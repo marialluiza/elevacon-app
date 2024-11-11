@@ -1,19 +1,21 @@
 import { CircleUser, HandHelpingIcon } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 import styles from './style.module.css';
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useAuth } from "../../infra/context/AuthProvider";
 
-interface SidebarProps{
+interface SidebarProps {
     isOpen: boolean;
     setIsOpen: React.Dispatch<React.SetStateAction<boolean>>
 }
 
-const Sidebar: React.FC<SidebarProps> = ({setIsOpen, isOpen}) => {
+const Sidebar: React.FC<SidebarProps> = ({ setIsOpen, isOpen }) => {
 
     const { logout, userRole } = useAuth();
     const sidebarRef = useRef<HTMLDivElement | null>(null);
+    const [isProfileOpen, setIsProfileOpen] = useState<boolean>(false);
+    const navigate = useNavigate();
 
     const handleClickOutside = (event: MouseEvent) => {
         if (sidebarRef.current && !sidebarRef.current.contains(event.target as Node)) {
@@ -54,14 +56,35 @@ const Sidebar: React.FC<SidebarProps> = ({setIsOpen, isOpen}) => {
                                 <span className="flex-1 ms-3 whitespace-nowrap">Página Inicial</span>
                             </Link>
                         </li>
+
                         <li>
-                            <a href="/EditarPerfil" className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
+                            <button
+                                onClick={() => setIsProfileOpen(!isProfileOpen)}
+                                aria-controls="dropdown-example"
+                                aria-expanded={isProfileOpen}
+                                type="button" className="flex items-center w-full p-2 text-base text-gray-900 transition duration-75 rounded-lg group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700" data-collapse-toggle="dropdown-example">
                                 <svg className="flex-shrink-0 w-6 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" >
                                     <CircleUser />
                                 </svg>
-                                <span className="flex-1 ms-3 whitespace-nowrap">Perfil</span>
-                            </a>
+                                <span className="flex-1 ms-3 text-left rtl:text-right whitespace-nowrap">Perfil</span>
+                                <svg className="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
+                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 4 4 4-4" />
+                                </svg>
+                            </button>
+                            <ul id="dropdown-example" className={`${isProfileOpen ? "" : "hidden"} py-2 space-y-2`}>
+                                <li>
+                                    <button
+                                        onClick={() => {navigate('/VisualizarClienteCliente');}}
+                                        className="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">
+                                        <span>Informações pessoais</span>
+                                    </button>
+                                </li>
+                                <li>
+                                    <Link to="/EditarPerfil" className="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700"><span>Dados de acesso</span></Link>
+                                </li>
+                            </ul>
                         </li>
+
                         {
                             userRole === "CONTADOR" && (
                                 <li>

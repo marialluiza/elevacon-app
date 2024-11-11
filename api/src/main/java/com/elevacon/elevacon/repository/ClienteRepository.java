@@ -14,9 +14,7 @@ public interface ClienteRepository extends JpaRepository<Cliente, Long> {
 
     Optional<Cliente> findByUsuarioIdUsuario(Long idUsuario);
 
-    // List<Cliente> findByContadorAndUsuarioUsuarioAtivoTrue(Contador contador);
-
-    // Optional<Cliente> findByEmailAndUsuarioUsuarioAtivoFalse(String email);
+    Optional<Cliente> findByUsuarioLogin(String login);
 
     Optional<Cliente> findByEmailAndUsuarioStatus(String email, Usuario.StatusUsuario status);
 

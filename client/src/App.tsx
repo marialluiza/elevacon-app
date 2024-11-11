@@ -8,11 +8,16 @@ import EditarCliente from './components/Client/Edit/EditarCliente';
 import InserirCliente from './components/Client/Create/InserirCliente';
 import PrivateRoute from './components/PrivateRoute/PrivateRoute';
 import Login from './components/Login/Login';
-import EditarPerfil from './components/EditProfile/EditarPerfil';
+// import EditarPerfil from './components/EditProfile/EditarPerfil';
 import ListaDocumentos from './components/Documents/List/ListaDocumentos';
 import EnviarDocumento from './components/Documents/Create/EnviarDocumento';
 import { Toaster } from 'sonner'
 import SessaoAjuda from './components/HelpSession';
+import ListaDocumentosEnviados from './components/Documents/List/ListaDocumentosEnviados';
+import ListaTiposDocumetos from './components/TiposDocumentos/List';
+import VisualizarInformaçõesLadoCliente from './components/Client/Single/LadoCliente';
+import EditarClienteCliente from './components/Client/Edit/LadoCliente';
+import { EditarPerfil } from './components/EditProfile/EditarPerfil';
 
 const App: React.FC = () => {
   return (
@@ -27,37 +32,28 @@ const App: React.FC = () => {
             <Route path="/PaginaInicial" element={<PaginaInicial />} />
             <Route path="/EditarPerfil" element={<EditarPerfil />} />
             <Route path="/ListaDocumento" element={<ListaDocumentos />} />
+            <Route path="/ListaDocumentosEnviados" element={<ListaDocumentosEnviados />} />
             <Route path="/EnviarDocumento" element={<EnviarDocumento />} />
-            <Route path="/Ajuda" element={<SessaoAjuda/>} />
+            <Route path="/Ajuda" element={<SessaoAjuda />} />
           </Route>
 
           <Route element={<PrivateRoute allowedRoles={['CONTADOR']} />}>
-            <Route path="/ListaCliente" element={<ListaCliente />} />
-            <Route path="/VisualizarCliente/:id" element={<VisualizarCliente />} />
-            <Route path="/InserirCliente" element={<InserirCliente />} />
             <Route path="/EditarCliente/:id" element={<EditarCliente />} />
+            <Route path="/VisualizarCliente/:id" element={<VisualizarCliente />} />
+            <Route path="/ListaCliente" element={<ListaCliente />} />
+            <Route path="/InserirCliente" element={<InserirCliente />} />
+            <Route path="/ListarTiposDocumentos/" element={<ListaTiposDocumetos />} />
+
           </Route>
 
           <Route element={<PrivateRoute allowedRoles={['CLIENTE']} />}>
+            <Route path="/VisualizarClienteCliente" element={<VisualizarInformaçõesLadoCliente />} />
+            <Route path="/EditarClienteCliente" element={<EditarClienteCliente />} />
           </Route>
 
           <Route path="/" element={<Navigate to="/PaginaInicial" />} />
         </Routes>
 
-
-        {/* <Routes>
-          <Route path="/Login" element={<Login />} />
-          <Route element={<PrivateRoute />}>
-            <Route path="/PaginaInicial" element={<PaginaInicial />} />
-            <Route path="/ListaCliente" element={<ListaCliente />} />
-            <Route path="/ListaDocumento" element={<ListaDocumentos />} />
-            <Route path="/EnviarDocumento" element={<EnviarDocumento />} />
-            <Route path="/InserirCliente" element={<InserirCliente />} />
-            <Route path="/EditarCliente/:id" element={<EditarCliente />} />
-            <Route path="/VisualizarCliente/:id" element={<VisualizarCliente />} />
-          </Route>
-          <Route path="/" element={<Navigate to="/PaginaInicial" />} />
-        </Routes> */}
       </AuthProvider>
     </Router>
   );

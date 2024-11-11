@@ -34,7 +34,6 @@ const EnviarDocumento: React.FC = () => {
                         Authorization: `Bearer ${token}`,
                     },
                 });
-                console.log("PÓS RESPONSE::", idContador)
 
                 setTipoDocumentos(response.data);
             } catch (err) {
@@ -65,7 +64,7 @@ const EnviarDocumento: React.FC = () => {
         if (token) {
             fetchTipoDocumentos();
         }
-    }, [token, userRole, idContador, usuarios]);
+    }, [token, userRole, idContador]);
 
     const handleDeleteTipoDocumento = async () => {
         if (!selectedTipoDocumento) return;
@@ -85,8 +84,6 @@ const EnviarDocumento: React.FC = () => {
             toast.error('Erro ao excluir tipo de documento.');
         }
     };
-
-
     
     const handleDelete = (tipoDocumento: TipoDocumento) => {
         setSelectedTipoDocumento(tipoDocumento);

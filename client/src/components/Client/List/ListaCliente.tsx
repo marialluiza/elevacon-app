@@ -3,7 +3,7 @@ import * as Dialog from '@radix-ui/react-dialog';
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../../infra/context/AuthProvider";
 import { useEffect, useState } from "react";
-import { Edit, SearchIcon, SquareArrowOutUpRight, Trash2Icon } from 'lucide-react';
+import { Edit, SquareArrowOutUpRight, Trash2Icon } from 'lucide-react';
 import api from "../../../infra/hooks/useAPI";
 import NavBar from "../../Header/Header";
 import { toast } from "sonner";
@@ -32,7 +32,6 @@ const ListaCliente: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);
 
   const navigate = useNavigate();
-
 
 console.log("clientefiltrados:::", clientesFiltrados)
 
@@ -192,19 +191,19 @@ console.log("clientefiltrados:::", clientesFiltrados)
                         </Dialog.Trigger>
 
                         <Dialog.Portal>
-                          <Dialog.Overlay className="inset-0 fixed bg-black/10" >
-                            <Dialog.Content>
-                              <div className="fixed flex flex-col left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-md outline-none justify-center items-center">
+                          <Dialog.Overlay className="inset-0 fixed bg-black/10 " >
+                            <Dialog.Content >
+                              <div className="w-[30%] fixed flex flex-col left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-md outline-none justify-center items-center">
                                 <div className="p-4 w-full max-w-lg h-full md:h-auto">
-                                  <div className="p-4 bg-white rounded-lg shadow dark:bg-gray-800 md:p-8">
+                                  <div className="p-4 bg-white rounded-lg shadow dark:bg-gray-700 md:p-8">
                                     <div className="mb-4 text-sm font-light text-gray-500 dark:text-gray-400">
                                       <h3 className="mb-3 text-2xl font-bold text-gray-900 dark:text-white">Tem certeza?</h3>
-                                      <p className="text-white">
-                                        Tem certeza de que deseja excluir esse cliente? Esta ação é irreversível e todas as informações serão perdidas permanentemente.
+                                      <p className="text-white text-[16px]" >
+                                        Realmente deseja excluir esse cliente?
                                       </p>
                                     </div>
-                                    <div className="pt-0 space-y-4 sm:flex sm:space-y-0">
-                                      <div className="space-y-4 sm:space-x-4 sm:flex sm:space-y-0">
+                                    <div className="flex justify-end pt-0 space-y-4 sm:flex sm:space-y-0">
+                                      <div className="flex justify-end space-y-4 sm:space-x-4 sm:flex sm:space-y-0 mt-4">
                                         <button id="close-modal"
                                           type="button"
                                           onClick={handleFecharModal}
@@ -215,7 +214,7 @@ console.log("clientefiltrados:::", clientesFiltrados)
                                         <button id="confirm-button"
                                           type="button"
                                           onClick={handleExcluirCliente}
-                                          className="bg-red-700 py-2 px-4 w-full text-sm font-medium text-center text-white rounded-lg bg-primary-700 sm:w-auto hover:bg-primary-800 focus:ring text-center text-white rounded-lg bg-primary-700 sm:w-auto hover:bg-primary-800 focus:ring-4 focus:outline-none focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800"
+                                          className="bg-red-700 py-2 px-4 w-full text-sm font-medium text-white rounded-lg bg-primary-700 hover:bg-primary-800 focus:ring text-center bg-primary-700 sm:w-auto hover:bg-primary-800 focus:outline-none focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-400 dark:focus:ring-primary-600"
                                         >Sim, apagar!
                                         </button>
                                       </div>

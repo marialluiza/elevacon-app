@@ -7,27 +7,27 @@ import NavBar from "../../Header/Header";
 import { toast } from "sonner";
 import { IDocumento } from "../../../interfaces/IDocumento";
 
-const ListaDocumento: React.FC = () => {
-    const { userId, token, loading, userRole } = useAuth();
+const ListaDocumentosEnviados: React.FC = () => {
+    const { userId, token, loading } = useAuth();
     const [documentos, setDocumentos] = useState<IDocumento[]>([]);
 
     useEffect(() => {
-        const fetchDocumentos = async () => {
-
+        const fetchDocumentosEnviados = async () => {
             try {
-                const response = await api.get(`/documentos/recebidos`, {
+                const response = await api.get(`/documentos/enviados`, {
                     headers: {
                         Authorization: `Bearer ${token}`,
                     },
                 });
                 setDocumentos(response.data);
             } catch (error) {
-                console.error('Erro ao buscar documentos:', error);
+                console.error('Erro ao buscar documentos enviados:', error);
+                toast.error("Erro ao buscar documentos enviados.");
             }
         };
 
         if (userId && token) {
-            fetchDocumentos();
+            fetchDocumentosEnviados();
         }
     }, [userId, token]);
 
@@ -48,7 +48,7 @@ const ListaDocumento: React.FC = () => {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
-                responseType: 'blob', // garante que a resposta seja tratada como arquivo binário
+                responseType: 'blob',
             });
 
             const url = window.URL.createObjectURL(new Blob([response.data]));
@@ -60,7 +60,7 @@ const ListaDocumento: React.FC = () => {
             document.body.removeChild(link);
         } catch (error) {
             console.error("Erro ao baixar o documento:", error);
-            toast.error("Não foi possível baixar o documento.")
+            toast.error("Não foi possível baixar o documento.");
         }
     };
 
@@ -73,50 +73,26 @@ const ListaDocumento: React.FC = () => {
             <NavBar />
             <div className="min-h-screen bg-gray-100 p-4">
                 <div className="bg-white p-6 rounded-lg shadow-lg">
-                    <h2 className="text-2xl font-semibold mb-6">Documentos Recebidos</h2>
+                    <h2 className="text-2xl font-semibold mb-6">Documentos Enviados</h2>
                     <div className="flex items-center justify-between mb-8">
-                        <div className=" flex items-center gap-4 w-1/2">
+                        <div className="flex items-center gap-4 w-1/2">
                             <input
                                 type="text"
                                 placeholder="Pesquisar documento..."
-                                className="w-1/2 px-3 py-2 border rounded-md border-blue-800 focus:outline-none focus:ring focus:border-blue-300 "
+                                className="w-1/2 px-3 py-2 border rounded-md border-blue-800 focus:outline-none focus:ring focus:border-blue-300"
                             />
                             <div className="p-2 cursor-pointer border rounded-md border-blue-800 focus:outline-none focus:ring focus:border-blue-300">
                                 <SearchIcon className="cursor-pointer text-blue-800" />
                             </div>
                         </div>
-
-                        <div className="w-full flex justify-end gap-10">
+                        <div className="flex gap-10">
                             <a href="/EnviarDocumento">
                                 <button
                                     type="submit"
-                                    className=" right-4 px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition duration-300">
+                                    className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition duration-300">
                                     Enviar documento
                                 </button>
-
                             </a>
-
-                            <a href="/ListaDocumentosEnviados">
-                                <button
-                                    type="submit"
-                                    className=" right-4 px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition duration-300">
-                                    Visualizar documentos enviados
-                                </button>
-
-                            </a>
-
-                            {
-                                userRole == "CONTADOR" && (
-                                    <a href="/ListarTiposDocumentos">
-                                        <button
-                                            type="submit"
-                                            className=" right-4 px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition duration-300">
-                                            Visualizar Tipos
-                                        </button>
-                                    </a>
-                                )
-                            }
-
                         </div>
                     </div>
                     <div className="overflow-y-auto max-h-[70vh]">
@@ -125,9 +101,9 @@ const ListaDocumento: React.FC = () => {
                                 <Table.Row>
                                     <Table.ColumnHeaderCell>Nome</Table.ColumnHeaderCell>
                                     <Table.ColumnHeaderCell>Data de Envio</Table.ColumnHeaderCell>
-                                    <Table.ColumnHeaderCell>Recebido de</Table.ColumnHeaderCell>
+                                    <Table.ColumnHeaderCell>Enviado para</Table.ColumnHeaderCell>
                                     <Table.ColumnHeaderCell>Tipo de Documento</Table.ColumnHeaderCell>
-                                    <Table.ColumnHeaderCell className="flex align-middle justify-center">Ações</Table.ColumnHeaderCell>
+                                    <Table.ColumnHeaderCell>Ações</Table.ColumnHeaderCell>
                                 </Table.Row>
                             </Table.Header>
 
@@ -136,7 +112,7 @@ const ListaDocumento: React.FC = () => {
                                     <Table.Row key={documento.id}>
                                         <Table.Cell>{documento.nome ? documento.nome : 'N/A'}</Table.Cell>
                                         <Table.Cell>{formatarData(documento.dataEnvio)}</Table.Cell>
-                                        <Table.Cell>{documento.enviadoPor ? documento.enviadoPor : 'N/A'}</Table.Cell>
+                                        <Table.Cell>{documento.recebidoPor ? documento.recebidoPor : 'N/A'}</Table.Cell>
                                         <Table.Cell>{documento.tipoDocumento ? documento.tipoDocumento : 'N/A'}</Table.Cell>
                                         <Table.Cell className="flex justify-center">
                                             <button
@@ -156,4 +132,4 @@ const ListaDocumento: React.FC = () => {
     );
 };
 
-export default ListaDocumento;
+export default ListaDocumentosEnviados;

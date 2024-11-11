@@ -122,6 +122,7 @@ public class ClienteService {
         }
     }
 
+    // lógica pro CONTADOR acessar dados de seu cliente
     public Cliente editarCliente(Long idCliente, Cliente clienteAtualizado) {
         Authentication usuarioAutenticado = SecurityContextHolder.getContext().getAuthentication();
 
@@ -188,6 +189,46 @@ public class ClienteService {
         }
     }
 
+    // lógica pro CLIENTE acessar e editar seus próprios dados
+    public Cliente editarClientePorClienteAutenticado(Cliente dadosAtualizados) {
+        System.out.println("bateu aquii SERVICE");
+        Authentication usuarioAutenticado = SecurityContextHolder.getContext().getAuthentication();
+
+        if (usuarioAutenticado != null && usuarioAutenticado.getPrincipal() instanceof UserDetails) {
+            UserDetails userDetails = (UserDetails) usuarioAutenticado.getPrincipal();
+            Optional<Cliente> clienteOptional = clienteRepository.findByUsuarioLogin(userDetails.getUsername());
+
+            System.out.println("cliente opcional no back::" + clienteOptional);
+
+            if (clienteOptional.isPresent()) {
+                Cliente clienteExistente = clienteOptional.get();
+
+                clienteExistente.setNome(dadosAtualizados.getNome());
+                clienteExistente.setTelefone(dadosAtualizados.getTelefone());
+                clienteExistente.setTitulo_eleitoral(dadosAtualizados.getTitulo_eleitoral());
+                clienteExistente.setConjugue(dadosAtualizados.isConjugue());
+                clienteExistente.setCpf(dadosAtualizados.getCpf());
+                clienteExistente.setData_nascimento(dadosAtualizados.getData_nascimento());
+                clienteExistente.setDependente(dadosAtualizados.isDependente());
+                clienteExistente.setOcupacao_principal(dadosAtualizados.getOcupacao_principal());
+                clienteExistente.setLogradouro(dadosAtualizados.getLogradouro());
+                clienteExistente.setNumero(dadosAtualizados.getNumero());
+                clienteExistente.setBairro(dadosAtualizados.getBairro());
+                clienteExistente.setCidade(dadosAtualizados.getCidade());
+                clienteExistente.setEstado(dadosAtualizados.getEstado());
+                clienteExistente.setCep(dadosAtualizados.getCep());
+                clienteExistente.setNome_conjugue(dadosAtualizados.getNome_conjugue());
+                clienteExistente.setCpf_conjugue(dadosAtualizados.getCpf_conjugue());
+
+                return clienteRepository.save(clienteExistente);
+            } else {
+                throw new RuntimeException("Cliente não encontrado ou não autorizado.");
+            }
+        } else {
+            throw new RuntimeException("Usuário autenticado não encontrado.");
+        }
+    }
+
     public void excluirCliente(Long idCliente) {
         Authentication usuarioAutenticado = SecurityContextHolder.getContext().getAuthentication();
 
@@ -232,30 +273,24 @@ public class ClienteService {
         }
     }
 
+    // lógica pro CONTADOR acessar dados de seu cliente
     public Cliente buscarClientePorId(Long idCliente) {
-        // Obtém o usuário autenticado
         Authentication usuarioAutenticado = SecurityContextHolder.getContext().getAuthentication();
 
         if (usuarioAutenticado != null && usuarioAutenticado.getPrincipal() instanceof UserDetails) {
             UserDetails userDetails = (UserDetails) usuarioAutenticado.getPrincipal();
 
-            // Verifica se o usuário tem a role ROLE_CONTADOR
             if (userDetails.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_CONTADOR"))) {
-                // Obtém o contador associado ao usuário autenticado
                 Optional<Contador> contadorOptional = contadorRepository.findByUsuarioLogin(userDetails.getUsername());
 
-                // Se o contador estiver presente
                 if (contadorOptional.isPresent()) {
                     Contador contador = contadorOptional.get();
 
-                    // Obtém o cliente pelo ID
                     Optional<Cliente> clienteOptional = clienteRepository.findById(idCliente);
 
-                    // Se o cliente estiver presente
                     if (clienteOptional.isPresent()) {
                         Cliente clienteExistente = clienteOptional.get();
 
-                        // Verifica se o cliente pertence ao contador autenticado
                         if (clienteExistente.getContador().getIdContador().equals(contador.getIdContador())) {
                             return clienteExistente;
                         } else {
@@ -276,47 +311,45 @@ public class ClienteService {
         }
     }
 
+    // lógica pro CLIENTE acessar seus prórpios dados
+
     public Map<String, String> gerarAcessoParaCliente(String login) {
         Usuario usuario = usuarioRepository.findUsuarioByLogin(login);
         if (usuario == null) {
             throw new RuntimeException("Usuário não encontrado.");
         }
-    
-        // Log para depuração
-        System.out.println("Status do usuário antes de gerar acesso: " + usuario.getStatus());
-    
-        // Verifica se o usuário está ATIVO ou se não é NOVO
+
         if (usuario.getStatus() == Usuario.StatusUsuario.ATIVO) {
             throw new RuntimeException("Usuário já está ativo.");
         } else if (usuario.getStatus() != Usuario.StatusUsuario.NOVO) {
             throw new RuntimeException("Geração de acesso permitida apenas para usuários com status 'NOVO'.");
         }
-    
-        // Gera senha temporária e seta usuário como ATIVO
+
         String senhaTemporaria = UUID.randomUUID().toString().replace("-", "").substring(0, 8);
         String senhaCriptografada = passwordEncoder.encode(senhaTemporaria);
         usuario.setSenha(senhaCriptografada);
-        usuario.setStatus(Usuario.StatusUsuario.ATIVO);  // Atualiza para ATIVO
-    
+        usuario.setStatus(Usuario.StatusUsuario.ATIVO);
+
         usuarioRepository.save(usuario);
-    
+
         System.out.println("Status do usuário após salvar: " + usuario.getStatus());
-    
+
         String linkAcesso = "http://localhost:5173/Login";
         String conteudoEmail = String.format(
-                "Olá, %s\n\nSeu acesso ao sistema foi gerado. Use as seguintes credenciais para acessar o sistema:\n\n" +
-                "Login: %s\n" +
-                "Senha temporária: %s\n\n" +
-                "Por favor, para segurança da sua conta acesse o sistema e altere sua senha: %s",
+                "Olá, %s\n\nSeu acesso ao sistema foi gerado. Use as seguintes credenciais para acessar o sistema:\n\n"
+                        +
+                        "Login: %s\n" +
+                        "Senha temporária: %s\n\n" +
+                        "Por favor, para segurança da sua conta acesse o sistema e altere sua senha: %s",
                 usuario.getLogin(), usuario.getLogin(), senhaTemporaria, linkAcesso);
-    
+
         emailService.enviarEmail(usuario.getLogin(), "Dados de Acesso", conteudoEmail);
-    
-        // Informações de login temporárias
+
+        // informações de login temporárias
         Map<String, String> loginInfo = new HashMap<>();
         loginInfo.put("login", usuario.getLogin());
         loginInfo.put("senhaTemporaria", senhaTemporaria);
-    
+
         return loginInfo;
     }
 

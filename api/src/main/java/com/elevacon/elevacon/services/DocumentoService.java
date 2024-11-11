@@ -11,8 +11,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
-import com.elevacon.elevacon.model.Cliente;
-import com.elevacon.elevacon.model.Contador;
 import com.elevacon.elevacon.model.Documento;
 import com.elevacon.elevacon.model.StatusDocumento;
 import com.elevacon.elevacon.model.Usuario;
@@ -26,7 +24,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Date;
 import java.util.List;
-import java.util.Optional;
 
 import jakarta.transaction.Transactional;
 

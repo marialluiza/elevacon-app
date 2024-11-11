@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../infra/context/AuthProvider';
+import { Eye, EyeOffIcon } from 'lucide-react';
 
 const Login: React.FC = () => {
 
@@ -10,6 +11,11 @@ const Login: React.FC = () => {
   const [login, setLogin] = useState('');
   const [senha, setSenha] = useState('');
   const [erro, setErro] = useState('');
+  const [senhaVisivel, setSenhaVisivel] = useState<boolean>(false);
+
+  const toggleSenhaVisivel = () => {
+    setSenhaVisivel(!senhaVisivel);
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -41,21 +47,30 @@ const Login: React.FC = () => {
               placeholder="Digite seu login"
               required
             />
-             {erro && <p className="mt-2 text-sm text-red-500">{erro}</p>}
+            {erro && <p className="mt-2 text-sm text-red-500">{erro}</p>}
           </div>
           <div>
             <label htmlFor="senha" className="block text-sm font-medium text-white">
               Digite sua senha
             </label>
-            <input
-              id="senha"
-              type="password"
-              value={senha}
-              onChange={(e) => setSenha(e.target.value)}
-              className="w-full px-3 py-2 mt-1 bg-slate-200 text-gray-900 placeholder-gray-500 border rounded-md focus:outline-none focus:ring focus:border-blue-300"
-              placeholder="Digite sua senha"
-              required
-            />
+            <div className='relative'>
+              <input
+                id="senha"
+                type={senhaVisivel ? 'text' : 'password'}
+                value={senha}
+                onChange={(e) => setSenha(e.target.value)}
+                className="w-full px-3 py-2 mt-1 bg-slate-200 text-gray-900 placeholder-gray-500 border rounded-md focus:outline-none focus:ring focus:border-blue-300"
+                placeholder="Digite sua senha"
+                required
+              />
+              <button
+                type="button"
+                onClick={toggleSenhaVisivel}
+                className="absolute right-4 top-3.5 text-sm text-gray-600"
+              >
+                {senhaVisivel ? <EyeOffIcon className=' text-gray-500 w-5' /> : <Eye className=' text-gray-500 w-5' />}
+              </button>
+            </div>
           </div>
           {erro && <p className="text-red-500">{erro}</p>}
           <div className="text-right">
