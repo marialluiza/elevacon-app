@@ -46,7 +46,6 @@ console.log("clientefiltrados:::", clientesFiltrados)
         setClientes(response.data);
         setClientesFiltrados(response.data);
 
-        console.log("dentro do fetch::", response)
       } catch (error) {
         console.error('Erro ao buscar clientes:', error);
       }

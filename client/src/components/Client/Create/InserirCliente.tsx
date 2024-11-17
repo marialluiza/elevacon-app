@@ -32,6 +32,8 @@ const InserirCliente = () => {
   const navigate = useNavigate();
   const { token, userId } = useAuth();
   const [cpfError, setCpfError] = useState<string | null>(null);
+  const [emailError, setEmailError] = useState<string | null>(null);
+
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -43,22 +45,31 @@ const InserirCliente = () => {
 
       const formattedData = {
         ...clienteData,
-        data_nascimento: clienteData.data_nascimento ? new Date(clienteData.data_nascimento).toISOString().split('T')[0] : '',
+        data_nascimento: clienteData.data_nascimento
+          ? new Date(clienteData.data_nascimento).toISOString().split('T')[0]
+          : '',
         id_usuario: userId,
       };
 
-      const response = await api.post('/cliente/cadastrar-cliente', {
-        ...clienteData,
-        id_usuario: userId
-      }, {
+      const response = await api.post('/cliente/cadastrar-cliente', formattedData, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
-      toast.success("Cliente cadastrado com sucesso")
+
+      toast.success('Cliente cadastrado com sucesso');
       navigate('/ListaCliente');
-    } catch (error) {
-      console.error('Erro ao cadastrar cliente:', error);
+    } catch (error: any) {
+      if (error.response && error.response.status === 400) {
+        const errorMessage = error.response.data.message || 'Erro desconhecido';
+        setEmailError(errorMessage); // Exibe a mensagem de erro do backend
+        toast.error(errorMessage); // Exibe como notificação
+      } else if (error.response && error.response.status === 500) {
+        toast.error('Erro no servidor. Tente novamente mais tarde.');
+      } else {
+        console.error('Erro ao cadastrar cliente:', error);
+        toast.error('Erro ao cadastrar cliente.');
+      }
     }
   };
 
@@ -121,6 +132,7 @@ const InserirCliente = () => {
               />
             </div>
 
+
             <div className="sm:col-span-3">
               <div className='flex'>
                 <label htmlFor="email" className="block text-sm font-medium text-gray-900">
@@ -128,16 +140,18 @@ const InserirCliente = () => {
                 </label>
                 <label className="text-red-600 ml-1">*</label>
               </div>
-
               <input
                 id="email"
                 type="email"
                 value={clienteData.email}
                 onChange={handleChange}
-                className="p-4 block w-full mt-2 rounded-md border border-slate-400 bg-white py-1.5 text-gray-900 placeholder:text-sm placeholder-gray-500 focus:ring-2 focus:outline-none focus:border-blue-300 "
+                className={`p-4 block w-full mt-2 rounded-md border ${emailError ? 'border-red-500' : 'border-slate-400'
+                  } bg-white py-1.5 text-gray-900 placeholder:text-sm placeholder-gray-500 focus:ring-2 focus:outline-none ${emailError ? 'focus:border-red-500' : 'focus:border-blue-300'
+                  }`}
                 placeholder='exemplo@email.com'
                 required
               />
+              {emailError && <p className="text-red-500 text-sm mt-1">{emailError}</p>}
             </div>
 
             <div className="sm:col-span-3">
@@ -171,7 +185,6 @@ const InserirCliente = () => {
                 required
               />
               {cpfError && <p className="text-red-500 text-sm mt-1">{cpfError}</p>}
-
             </div>
 
             <div className="sm:col-span-3">
