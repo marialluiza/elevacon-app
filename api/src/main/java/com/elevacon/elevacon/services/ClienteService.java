@@ -7,12 +7,14 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import com.elevacon.elevacon.model.Cliente;
 import com.elevacon.elevacon.model.Contador;
@@ -57,11 +59,18 @@ public class ClienteService {
                     Contador contador = contadorOptional.get();
                     cliente.setContador(contador);
 
-                    Optional<Cliente> clienteExistente = clienteRepository
-                            .findByEmailAndUsuarioStatus(cliente.getEmail(), StatusUsuario.INATIVO);
+                    Optional<Cliente> clienteExistente = clienteRepository.findByEmailAndUsuarioStatusIn(cliente.getEmail(), 
+                    List.of(StatusUsuario.NOVO, StatusUsuario.ATIVO));
 
                     if (clienteExistente.isPresent()) {
-                        Cliente clienteInativo = clienteExistente.get();
+                        throw new RuntimeException("Já existe um cliente com este email com status NOVO ou ATIVO.");
+                    }
+
+                    Optional<Cliente> clienteInativoExistente = clienteRepository
+                            .findByEmailAndUsuarioStatus(cliente.getEmail(), StatusUsuario.INATIVO);
+
+                    if (clienteInativoExistente.isPresent()) {
+                        Cliente clienteInativo = clienteInativoExistente.get();
                         clienteInativo.setNome(cliente.getNome());
                         clienteInativo.setCpf(cliente.getCpf());
                         clienteInativo.setTelefone(cliente.getTelefone());
@@ -71,6 +80,7 @@ public class ClienteService {
                         return clienteRepository.save(clienteInativo);
 
                     } else {
+                        
                         String senhaTemporaria = UUID.randomUUID().toString().replace("-", "").substring(0, 8);
 
                         Usuario usuario = new Usuario();

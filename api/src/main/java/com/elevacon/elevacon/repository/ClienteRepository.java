@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import com.elevacon.elevacon.model.Cliente;
 import com.elevacon.elevacon.model.Contador;
 import com.elevacon.elevacon.model.Usuario;
+import com.elevacon.elevacon.model.Usuario.StatusUsuario;
 
 public interface ClienteRepository extends JpaRepository<Cliente, Long> {
     List<Cliente> findByContador(Contador contador);
@@ -19,5 +20,9 @@ public interface ClienteRepository extends JpaRepository<Cliente, Long> {
     Optional<Cliente> findByEmailAndUsuarioStatus(String email, Usuario.StatusUsuario status);
 
     List<Cliente> findByContadorAndUsuarioStatusIn(Contador contador, List<Usuario.StatusUsuario> status);
+
+    Optional<Cliente> findByCpf(String cpf);
+
+    Optional<Cliente> findByEmailAndUsuarioStatusIn(String email, List<StatusUsuario> statuses);
 
 }
