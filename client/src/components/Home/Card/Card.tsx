@@ -1,19 +1,73 @@
-import React from 'react';
+import {
+  CardContent,
+  Typography,
+  CardActions,
+  Card,
+  Button,
+  Badge,
+} from "@mui/material";
+import { IMediaCardProps } from "../../../interfaces/IMediaCard";
+import { useNavigate } from "react-router-dom";
 
-interface CardProps {
-  color: string;
-  title: string;
-  description: string;
-}
+export default function MediaCard({
+  title,
+  shareText,
+  learnMoreText,
+  badgeContent,
+  shareRoute,
+  learnMoreRoute,
+}: IMediaCardProps) {
+  const navigate = useNavigate();
 
-const Card: React.FC<CardProps> = ({ color, title, description }) => {
   return (
-    <div className={`p-4 ${color} rounded-lg text-white`}>
-      <div>{title}</div>
-      <div>{description}</div>
-      <div className="mt-2"><a href="#" className="text-blue-200">Visualizar tudo</a></div>
-    </div>
-  );
-};
+    <Card sx={{ maxWidth: 345, position: "relative", overflow: "visible" }}>
+      {badgeContent != null && (
+        <Badge
+          badgeContent={badgeContent}
+          color="primary"
+          // showZero
+          sx={{
+            position: "absolute",
+            top: 5,
+            right: 5,
+          }}
+        />
+      )}
 
-export default Card;
+      {/* <Box
+        sx={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+        }}
+      >
+        <Avatar src={avatarSrc} sizes="lg" />
+        <AvatarGroup sx={{ display: "flex" }}>
+          {avatarGroup.map((src, index) => (
+            <Avatar key={index} src={src} />
+          ))}
+          <Avatar>+{avatarGroup.length}</Avatar>
+        </AvatarGroup>
+      </Box> */}
+
+      <CardContent>
+        <Typography gutterBottom variant="h5" component="div">
+          {title}
+        </Typography>
+      </CardContent>
+
+      <CardActions>
+        {shareText && shareRoute && (
+          <Button size="small" onClick={() => navigate(shareRoute)}>
+            {shareText}
+          </Button>
+        )}
+        {learnMoreText && learnMoreRoute && (
+          <Button size="small" onClick={() => navigate(learnMoreRoute)}>
+            {learnMoreText}
+          </Button>
+        )}
+      </CardActions>
+    </Card>
+  );
+}
