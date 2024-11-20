@@ -7,6 +7,7 @@ import api from "../../../../infra/hooks/useAPI";
 import NavBar from "../../../Header/Header";
 import { IClient } from "../../../../interfaces/IClient";
 import { toast } from "sonner";
+import { Tooltip } from "@mui/material";
 
 const VisualizarCliente = () => {
     const [isOpen, setOpen] = useState<boolean>(false);
@@ -16,6 +17,8 @@ const VisualizarCliente = () => {
     const { id } = useParams();
     const { token } = useAuth();
     const [clienteData, setClienteData] = useState<IClient>(Object);
+    const clienteStatus = clienteData?.usuario?.status;
+    console.log("STATUS:::", clienteStatus)
 
     useEffect(() => {
         const fetchClienteData = async () => {
@@ -33,8 +36,6 @@ const VisualizarCliente = () => {
 
         fetchClienteData();
     }, [id, token]);
-
-    console.log("token::", token)
 
     const formatarData = (data: string | undefined) => {
         if (!data) return 'N/A';
@@ -101,10 +102,26 @@ const VisualizarCliente = () => {
                             onClick={() => handleEditarCliente(id)}>
                             Editar cliente
                         </Button>
-                        <Button
-                            className="hover:bg-blue-400 transition duration-300 "
-                            style={{ cursor: "pointer" }}
-                            onClick={showClientAccess}>Gerar acesso</Button>
+
+                        <Tooltip
+                            title={
+                                clienteStatus === "ATIVO"
+                                    ? "O acesso desse cliente já foi gerado."
+                                    : ""
+                            }
+                        >
+                            <span> {/* Necessário para envolver o botão desabilitado */}
+                                <Button
+                                    className="hover:bg-blue-400 transition duration-300"
+                                    style={{ cursor: clienteStatus === "ATIVO" ? "not-allowed" : "pointer" }}
+                                    onClick={showClientAccess}
+                                    disabled={clienteStatus === "ATIVO"}
+                                >
+                                    Gerar acesso
+                                </Button>
+                            </span>
+                        </Tooltip>
+
                         {isOpen && (
                             <ModalAccess
                                 clienteData={clienteData}
@@ -180,7 +197,7 @@ const VisualizarCliente = () => {
                         <div className="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
                             <dt className="text-sm font-medium text-gray-900">Observações</dt>
                             <dd className="mt-1 text-sm text-gray-700 sm:col-span-2 sm:mt-0">
-                                {clienteData?.observacao}
+                                {clienteData?.observacao ? clienteData?.observacao : <span className="text-gray-400">Nenhuma observação.</span> }
                             </dd>
                         </div>
                     </dl>

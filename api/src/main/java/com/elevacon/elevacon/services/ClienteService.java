@@ -59,8 +59,9 @@ public class ClienteService {
                     Contador contador = contadorOptional.get();
                     cliente.setContador(contador);
 
-                    Optional<Cliente> clienteExistente = clienteRepository.findByEmailAndUsuarioStatusIn(cliente.getEmail(), 
-                    List.of(StatusUsuario.NOVO, StatusUsuario.ATIVO));
+                    Optional<Cliente> clienteExistente = clienteRepository.findByEmailAndUsuarioStatusIn(
+                            cliente.getEmail(),
+                            List.of(StatusUsuario.NOVO, StatusUsuario.ATIVO));
 
                     if (clienteExistente.isPresent()) {
                         throw new RuntimeException("Já existe um cliente com este email com status NOVO ou ATIVO.");
@@ -80,7 +81,7 @@ public class ClienteService {
                         return clienteRepository.save(clienteInativo);
 
                     } else {
-                        
+
                         String senhaTemporaria = UUID.randomUUID().toString().replace("-", "").substring(0, 8);
 
                         Usuario usuario = new Usuario();
@@ -132,32 +133,30 @@ public class ClienteService {
         }
     }
 
-    // lógica pro CONTADOR acessar dados de seu cliente
+    // lógica pro CONTADOR acessar dados de seu cliente e ditá-los
     public Cliente editarCliente(Long idCliente, Cliente clienteAtualizado) {
         Authentication usuarioAutenticado = SecurityContextHolder.getContext().getAuthentication();
 
         if (usuarioAutenticado != null && usuarioAutenticado.getPrincipal() instanceof UserDetails) {
             UserDetails userDetails = (UserDetails) usuarioAutenticado.getPrincipal();
 
-            // Verifica se o usuário tem a role ROLE_CONTADOR
+            // verifica se o usuário tem a role ROLE_CONTADOR
             if (userDetails.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_CONTADOR"))) {
-                // Obtém o contador associado ao usuário autenticado
+                // pega o contador relacionado ao usuário autenticado
                 Optional<Contador> contadorOptional = contadorRepository.findByUsuarioLogin(userDetails.getUsername());
 
-                // Se o contador estiver presente
+                // se tiver contador
                 if (contadorOptional.isPresent()) {
                     Contador contador = contadorOptional.get();
 
-                    // Obtém o cliente pelo ID
+                    // busca cliente pelo ID
                     Optional<Cliente> clienteOptional = clienteRepository.findById(idCliente);
 
-                    // Se o cliente estiver presente
+                    // se tiver cliente
                     if (clienteOptional.isPresent()) {
                         Cliente clienteExistente = clienteOptional.get();
 
-                        // Verifica se o cliente pertence ao contador autenticado
                         if (clienteExistente.getContador().getIdContador().equals(contador.getIdContador())) {
-                            // Atualiza os dados do cliente
                             clienteExistente.setNome(clienteAtualizado.getNome());
                             clienteExistente.setTelefone(clienteAtualizado.getTelefone());
                             clienteExistente.setEmail(clienteAtualizado.getEmail());
@@ -172,6 +171,7 @@ public class ClienteService {
                             clienteExistente.setBairro(clienteAtualizado.getBairro());
                             clienteExistente.setCidade(clienteAtualizado.getCidade());
                             clienteExistente.setEstado(clienteAtualizado.getEstado());
+                            clienteExistente.setObservacao(clienteAtualizado.getObservacao());
                             clienteExistente.setCep(clienteAtualizado.getCep());
                             clienteExistente.setNome_conjugue(clienteAtualizado.getNome_conjugue());
                             clienteExistente.setCpf_conjugue(clienteAtualizado.getCpf_conjugue());
@@ -179,7 +179,6 @@ public class ClienteService {
 
                             System.out.println("Cliente atualizado:" + clienteAtualizado);
 
-                            // Salva e retorna o cliente atualizado
                             return clienteRepository.save(clienteExistente);
                         } else {
                             throw new RuntimeException(

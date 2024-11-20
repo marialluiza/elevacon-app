@@ -98,7 +98,7 @@ const EditarCliente = () => {
 
     if (loading) {
         return <div>Carregando...</div>;
-      }
+    }
 
     return (
         <>
@@ -329,6 +329,18 @@ const EditarCliente = () => {
                             />
                         </div>
 
+                    </div>
+                    <div className="mt-4">
+                        <label htmlFor="observacoes" className="block text-sm font-medium text-gray-900">
+                            Observações
+                        </label>
+                        <input
+                            id="observacao"
+                            value={clienteData.observacao}
+                            onChange={handleChange}
+                            className="p-4 w-full h-4/5 mt-2 rounded-md border border-slate-400 bg-white py-1.5 text-gray-900 placeholder:text-sm placeholder-gray-500 focus:ring-2 focus:outline-none focus:border-blue-300"
+                            placeholder="Digite suas observações aqui"
+                        ></input>
                     </div>
                 </div>
                 <button

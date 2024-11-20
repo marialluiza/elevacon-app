@@ -1,4 +1,4 @@
-import {jwtDecode} from 'jwt-decode';
+import { jwtDecode } from 'jwt-decode';
 import { createContext, useState, useContext, useEffect, ReactNode } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../hooks/useAPI';
@@ -32,11 +32,29 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const fetchClientData = async (userId: number) => {
     try {
       const response = await api.get(`/cliente/cliente-logado/${userId}`);
-      setClient(response.data);
+      const clientData = response.data;
+
+      if (clientData.usuario.status === 'INATIVO') {
+        alert('Seu acesso está inativo. Entre em contato com o contador.');
+        logout();
+        return;
+      }
+
+      setClient(clientData);
     } catch (error) {
       console.error('Erro ao buscar dados do cliente:', error);
     }
   };
+
+
+  // const fetchClientData = async (userId: number) => {
+  //   try {
+  //     const response = await api.get(`/cliente/cliente-logado/${userId}`);
+  //     setClient(response.data);
+  //   } catch (error) {
+  //     console.error('Erro ao buscar dados do cliente:', error);
+  //   }
+  // };
 
   const fetchContadorData = async (userId: number) => {
     try {
