@@ -9,7 +9,6 @@ import theme from "./theme/theme";
 
 ReactDOM.render(
   <React.StrictMode>
-    {/* Envolvendo o App com ambos os provedores de tema */}
     <Theme>
       <ThemeProvider theme={theme}>
         <App />
