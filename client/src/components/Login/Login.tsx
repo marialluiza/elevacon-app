@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../infra/context/AuthProvider';
 import { Eye, EyeOffIcon } from 'lucide-react';
+import { Button, Spinner } from '@radix-ui/themes';
 
 const Login: React.FC = () => {
 
@@ -12,6 +13,7 @@ const Login: React.FC = () => {
   const [senha, setSenha] = useState('');
   const [erro, setErro] = useState('');
   const [senhaVisivel, setSenhaVisivel] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const toggleSenhaVisivel = () => {
     setSenhaVisivel(!senhaVisivel);
@@ -20,12 +22,15 @@ const Login: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErro('');
+    setIsLoading(true); // Iniciar carregamento
     try {
       await userAuth(login, senha);
       navigate('/PaginaInicial');
     } catch (err) {
-      console.log(err);
+      console.error(err);
       setErro('Login falhou, verifique suas credenciais.');
+    } finally {
+      setIsLoading(false); // Encerrar carregamento
     }
   };
 
@@ -80,9 +85,11 @@ const Login: React.FC = () => {
           </div>
           <button
             type="submit"
-            className="w-full px-4 py-2 text-white bg-blue-800 rounded-md hover:bg-blue-700 focus:outline-none focus:bg-blue-600"
+            className={`w-full h-12 flex items-center justify-center px-4 py-2 text-white bg-blue-800 rounded-md hover:bg-blue-700 focus:outline-none focus:bg-blue-600 ${isLoading ? 'cursor-not-allowed opacity-75' : ''
+              }`}
+            disabled={isLoading}
           >
-            LOGAR
+            {isLoading ? <Spinner size="3" /> : 'Login'}
           </button>
         </form>
       </div>

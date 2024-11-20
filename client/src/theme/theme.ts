@@ -1,18 +1,25 @@
-import { createTheme } from '@mui/material/styles';
-import { red } from '@mui/material/colors';
+import { createTheme } from "@mui/material/styles";
 
-// A custom theme for this app
+// Definindo as cores e fontes no tema global
 const theme = createTheme({
-  cssVariables: true,
   palette: {
     primary: {
-      main: '#556cd6',
+      main: "#172D62", // Cor principal
     },
     secondary: {
-      main: '#19857b',
+      main: "#ffffff", // Cor secundária
     },
-    error: {
-      main: red.A400,
+    background: {
+      default: "#f4f4f4", // Cor de fundo padrão
+    },
+  },
+  typography: {
+    fontFamily: "'Poppins', 'Arial', sans-serif", // Fonte global
+    h1: {
+      fontSize: "2.5rem", // Estilo de título
+    },
+    h2: {
+      fontSize: "2rem", // Estilo de subtítulo
     },
   },
 });

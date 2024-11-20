@@ -1,10 +1,10 @@
 import { useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
-import NavBar from '../Header/Header';
 import { useAuth } from '../../infra/context/AuthProvider';
 import api from '../../infra/hooks/useAPI';
 import { toast } from 'sonner';
 import { Eye, EyeOffIcon } from 'lucide-react';
+import { Button } from '@radix-ui/themes';
 
 export const EditarPerfil = () => {
     const navigate = useNavigate();
@@ -72,8 +72,6 @@ export const EditarPerfil = () => {
 
     return (
         <>
-            <NavBar />
-
             <form className="space-y-10 p-4 pl-8 pr-8 pb-6" onSubmit={handleSubmit}>
                 <div className="border-b border-gray-900/10 pb-6">
                     <div className="grid grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-6">
@@ -98,7 +96,7 @@ export const EditarPerfil = () => {
                             </label>
                             <div className="relative">
                                 <input
-                                    type={senhaVisivel ? 'text' : 'password'} 
+                                    type={senhaVisivel ? 'text' : 'password'}
                                     id="senhaAntiga"
                                     onChange={(e) => setSenhaAntiga(e.target.value)}
                                     value={senhaAntiga}
@@ -110,12 +108,12 @@ export const EditarPerfil = () => {
                                     onClick={toggleSenhaVisivel}
                                     className="absolute right-4 top-2 text-sm text-gray-600"
                                 >
-                                     {senhaVisivel ? <EyeOffIcon className=' text-gray-500 w-5' /> : <Eye className=' text-gray-500 w-5' />}
+                                    {senhaVisivel ? <EyeOffIcon className=' text-gray-500 w-5' /> : <Eye className=' text-gray-500 w-5' />}
                                 </button>
                             </div>
                         </div>
 
-                        <div className="sm:col-span-3"> 
+                        <div className="sm:col-span-3">
                             <label htmlFor="senha" className="block text-sm font-medium text-gray-900">
                                 Nova Senha
                             </label>
@@ -141,12 +139,12 @@ export const EditarPerfil = () => {
                     </div>
                 </div>
 
-                <button
+                <Button
                     type="submit"
                     className="mt-6 w-full rounded-md bg-blue-600 py-2 px-4 text-sm font-medium text-white hover:bg-blue-500 focus:outline-none"
                 >
                     Atualizar Perfil
-                </button>
+                </Button>
             </form>
 
         </>

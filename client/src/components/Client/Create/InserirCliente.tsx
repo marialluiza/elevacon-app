@@ -3,12 +3,10 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../../infra/context/AuthProvider';
 import { isValidCPF } from '../../../utils/validateCpf';
 import api from '../../../infra/hooks/useAPI';
-import NavBar from '../../Header/Header';
 import { toast } from 'sonner';
-
+import Utils from '../../../utils/Utils';
 
 const InserirCliente = () => {
-
 
   const [clienteData, setClienteData] = useState({
     nome: '',
@@ -51,7 +49,7 @@ const InserirCliente = () => {
         id_usuario: userId,
       };
 
-      const response = await api.post('/cliente/cadastrar-cliente', formattedData, {
+      await api.post('/cliente/cadastrar-cliente', formattedData, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -78,10 +76,8 @@ const InserirCliente = () => {
     setClienteData({ ...clienteData, [id]: value });
   };
 
-
   return (
     <>
-      <NavBar />
       <form className="space-y-10 p-4 pl-8 pr-8 pb-6" onSubmit={handleSubmit}>
         <div className="border-b border-gray-900/10 pb-6">
           <div className="grid gap-x-6 gap-y-6 sm:grid-cols-6">
@@ -101,9 +97,7 @@ const InserirCliente = () => {
                 placeholder='nome completo...'
                 required
               />
-
             </div>
-
             <div className="sm:col-span-1">
               <label htmlFor="data-nascimento" className="block text-sm font-medium text-gray-900">
                 Data de nascimento
@@ -116,8 +110,6 @@ const InserirCliente = () => {
                 className="block w-full mt-2 p-2 rounded-md border border-slate-400 bg-white py-1.5 text-sm text-gray-900 placeholder:text-sm placeholder-gray-500 focus:ring-2 focus:outline-none focus:border-blue-300"
               />
             </div>
-
-
             <div className="sm:col-span-2">
               <label htmlFor="ocupacao_principal" className="block text-sm font-medium text-gray-900">
                 Ocupação principal
@@ -131,8 +123,6 @@ const InserirCliente = () => {
                 placeholder="Informe a ocupação principal"
               />
             </div>
-
-
             <div className="sm:col-span-3">
               <div className='flex'>
                 <label htmlFor="email" className="block text-sm font-medium text-gray-900">
@@ -153,7 +143,6 @@ const InserirCliente = () => {
               />
               {emailError && <p className="text-red-500 text-sm mt-1">{emailError}</p>}
             </div>
-
             <div className="sm:col-span-3">
               <label htmlFor="titulo-eleitor" className="block text-sm font-medium text-gray-900">
                 Título de eleitor
@@ -167,11 +156,10 @@ const InserirCliente = () => {
                 placeholder="Informe o título de eleitor"
               />
             </div>
-
             <div className="sm:col-span-3">
               <div className="flex">
                 <label htmlFor="cpf" className="block text-sm font-medium text-gray-900">
-                  CPF
+                  CPF:
                 </label>
                 <label className="text-red-600 ml-1">*</label>
               </div>
@@ -179,14 +167,18 @@ const InserirCliente = () => {
                 id="cpf"
                 type="text"
                 value={clienteData.cpf}
-                onChange={handleChange}
-                className={`p-4 block w-full mt-2 rounded-md border ${cpfError ? 'border-red-500' : 'border-slate-400'} bg-white py-1.5 text-gray-900 placeholder:text-sm placeholder-gray-500 focus:ring-2 focus:outline-none ${cpfError ? 'focus:border-red-500' : 'focus:border-blue-300'}`}
+                onChange={(e) => {
+                  const valorFormatado = Utils.formatarCPF(e.target.value); // Formata o CPF
+                  setClienteData({ ...clienteData, cpf: valorFormatado }); // Atualiza o estado com o CPF formatado
+                }}
+                className={`p-4 block w-full mt-2 rounded-md border ${cpfError ? 'border-red-500' : 'border-slate-400'
+                  } bg-white py-1.5 text-gray-900 placeholder:text-sm placeholder-gray-500 focus:ring-2 focus:outline-none ${cpfError ? 'focus:border-red-500' : 'focus:border-blue-300'
+                  }`}
                 placeholder="Informe o CPF"
                 required
               />
               {cpfError && <p className="text-red-500 text-sm mt-1">{cpfError}</p>}
             </div>
-
             <div className="sm:col-span-3">
               <label htmlFor="telefone" className="block text-sm font-medium text-gray-900">
                 Telefone
@@ -200,7 +192,6 @@ const InserirCliente = () => {
                 placeholder='(xx)xxxxx-xxxx'
               />
             </div>
-
             <div className="sm:col-span-3">
               <label htmlFor="logradouro" className="block text-sm font-medium text-gray-900">
                 Rua
@@ -213,7 +204,6 @@ const InserirCliente = () => {
                 className="p-4 block w-full mt-2 rounded-md border border-slate-400 bg-white py-1.5 text-gray-900 placeholder:text-sm placeholder-gray-500 focus:ring-2 focus:outline-none focus:border-blue-300 "
               />
             </div>
-
             <div className="sm:col-span-1">
               <label htmlFor="numero" className="block text-sm font-medium text-gray-900">
                 Nº
@@ -226,7 +216,6 @@ const InserirCliente = () => {
                 className="p-4 block w-full mt-2 rounded-md border border-slate-400 bg-white py-1.5 text-gray-900 placeholder:text-sm placeholder-gray-500 focus:ring-2 focus:outline-none focus:border-blue-300 "
               />
             </div>
-
             <div className="sm:col-span-2">
               <label htmlFor="bairro" className="block text-sm font-medium text-gray-900">
                 Bairro
@@ -239,7 +228,6 @@ const InserirCliente = () => {
                 className="p-4 block w-full mt-2 rounded-md border border-slate-400 bg-white py-1.5 text-gray-900 placeholder:text-sm placeholder-gray-500 focus:ring-2 focus:outline-none focus:border-blue-300 "
               />
             </div>
-
             <div className="sm:col-span-3">
               <label htmlFor="cidade" className="block text-sm font-medium text-gray-900">
                 Cidade
@@ -252,7 +240,6 @@ const InserirCliente = () => {
                 className="p-4 block w-full mt-2 rounded-md border border-slate-400 bg-white py-1.5 text-gray-900 placeholder:text-sm placeholder-gray-500 focus:ring-2 focus:outline-none focus:border-blue-300 "
               />
             </div>
-
             <div className="sm:col-span-1">
               <label htmlFor="estado" className="block text-sm font-medium text-gray-900">
                 Estado
@@ -265,7 +252,6 @@ const InserirCliente = () => {
                 className="p-4 block w-full mt-2 rounded-md border border-slate-400 bg-white py-1.5 text-gray-900 placeholder:text-sm placeholder-gray-500 focus:ring-2 focus:outline-none focus:border-blue-300 "
               />
             </div>
-
             <div className="sm:col-span-2">
               <label htmlFor="cep" className="block text-sm font-medium text-gray-900">
                 CEP
@@ -283,7 +269,6 @@ const InserirCliente = () => {
                 <label htmlFor="nome_conjugue" className="pb-2 block text-sm font-medium text-gray-900">
                   Informações do conjugue
                 </label>
-
                 <div className="flex border border-slate-400 rounded-md px-4" >
                   <div className="sm:col-span-2 p-4">
                     <label htmlFor="nome_conjugue" className="block text-sm font-medium text-gray-900">
@@ -298,8 +283,6 @@ const InserirCliente = () => {
                       placeholder="Informe o nome do cônjuge"
                     />
                   </div>
-
-
                   <div className="sm:col-span-3 p-4">
                     <label htmlFor="cpf_conjugue" className="block text-sm font-medium text-gray-900">
                       CPF do Conjugue ou companheiro(a)
@@ -314,9 +297,7 @@ const InserirCliente = () => {
                     />
                   </div>
                 </div>
-
               </div>
-
               <div>
                 <label htmlFor="observacoes" className="block text-sm font-medium text-gray-900">
                   Observações
@@ -330,10 +311,8 @@ const InserirCliente = () => {
                 ></textarea>
               </div>
             </div>
-
           </div>
         </div>
-
         <div className="mt-2 flex items-center justify-between gap-x-4">
           <Link to="/ListaCliente" className=" right-4 bg-blue-500 text-white px-4 py-2 rounded-md shadow-lg hover:bg-blue-700">
             Cancelar

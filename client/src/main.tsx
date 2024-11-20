@@ -3,34 +3,19 @@ import ReactDOM from "react-dom";
 import App from "./App";
 import "./index.css";
 import "@radix-ui/themes/styles.css";
-import { Theme } from "@radix-ui/themes";
+import { Theme, ThemePanel } from "@radix-ui/themes";
+import { ThemeProvider } from "@mui/material/styles";
+import theme from "./theme/theme";
 
 ReactDOM.render(
   <React.StrictMode>
+    {/* Envolvendo o App com ambos os provedores de tema */}
     <Theme>
-      <App />
+      <ThemeProvider theme={theme}>
+        <App />
+        <ThemePanel></ThemePanel>
+      </ThemeProvider>
     </Theme>
   </React.StrictMode>,
   document.getElementById("root")
 );
-
-// import React from "react";
-// import ReactDOM from "react-dom";
-// import App from "./App";
-// // import './index.css';
-// // import '@radix-ui/themes/styles.css';
-// // import { Theme } from '@radix-ui/themes';
-// import theme from "./theme/theme";
-// import { ThemeProvider } from "@mui/material/styles";
-// import { StyledEngineProvider } from "@mui/material/styles";
-
-// ReactDOM.render(
-//   <React.StrictMode>
-//     {/* <StyledEngineProvider injectFirst> */}
-//     <ThemeProvider theme={theme}>
-//       <App />
-//     </ThemeProvider>
-//     {/* </StyledEngineProvider> */}
-//   </React.StrictMode>,
-//   document.getElementById("root")
-// );

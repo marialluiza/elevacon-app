@@ -1,211 +1,269 @@
-import { CircleUser, HandHelpingIcon } from "lucide-react";
-import { Link, useNavigate } from "react-router-dom";
+import * as React from 'react';
+import { styled, useTheme, Theme, CSSObject } from '@mui/material/styles';
+import Box from '@mui/material/Box';
+import MuiDrawer from '@mui/material/Drawer';
+import MuiAppBar, { AppBarProps as MuiAppBarProps } from '@mui/material/AppBar';
+import Toolbar from '@mui/material/Toolbar';
+import List from '@mui/material/List';
+import CssBaseline from '@mui/material/CssBaseline';
+import Typography from '@mui/material/Typography';
+import Divider from '@mui/material/Divider';
+import IconButton from '@mui/material/IconButton';
+import MenuIcon from '@mui/icons-material/Menu';
+import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
+import ChevronRightIcon from '@mui/icons-material/ChevronRight';
+import ListItem from '@mui/material/ListItem';
+import ListItemButton from '@mui/material/ListItemButton';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import ListItemText from '@mui/material/ListItemText';
+import { Link, useNavigate } from 'react-router-dom';
+import GridViewOutlinedIcon from '@mui/icons-material/GridViewOutlined';
+import PeopleAltOutlinedIcon from '@mui/icons-material/PeopleAltOutlined';
+import AccountCircleOutlinedIcon from '@mui/icons-material/AccountCircleOutlined';
+import ArticleOutlinedIcon from '@mui/icons-material/ArticleOutlined';
+import LiveHelpOutlinedIcon from '@mui/icons-material/LiveHelpOutlined';
+import LogoutOutlinedIcon from '@mui/icons-material/LogoutOutlined';
+import { useAuth } from '../../infra/context/AuthProvider';
+import { Tooltip } from '@mui/material';
 
-import styles from "./style.module.css";
-import { useEffect, useRef, useState } from "react";
-import { useAuth } from "../../infra/context/AuthProvider";
-
-interface SidebarProps {
-  isOpen: boolean;
-  setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
+interface MiniDrawerProps {
+  toggleSidebar: () => void;
 }
 
-const Sidebar: React.FC<SidebarProps> = ({ setIsOpen, isOpen }) => {
+const drawerWidth = 240;
+
+const openedMixin = (theme: Theme): CSSObject => ({
+  width: drawerWidth,
+  transition: theme.transitions.create('width', {
+    easing: theme.transitions.easing.sharp,
+    duration: theme.transitions.duration.enteringScreen,
+  }),
+  overflowX: 'hidden',
+});
+
+const closedMixin = (theme: Theme): CSSObject => ({
+  transition: theme.transitions.create('width', {
+    easing: theme.transitions.easing.sharp,
+    duration: theme.transitions.duration.leavingScreen,
+  }),
+  overflowX: 'hidden',
+  width: `calc(${theme.spacing(7)} + 1px)`,
+  [theme.breakpoints.up('sm')]: {
+    width: `calc(${theme.spacing(8)} + 1px)`,
+  },
+});
+
+const DrawerHeader = styled('div')(({ theme }) => ({
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'flex-end',
+  padding: theme.spacing(0, 1),
+  // necessary for content to be below app bar
+  ...theme.mixins.toolbar,
+  backgroundColor: theme.palette.primary.main,
+}));
+
+interface AppBarProps extends MuiAppBarProps {
+  open?: boolean;
+}
+
+const AppBar = styled(MuiAppBar, {
+  shouldForwardProp: (prop) => prop !== 'open',
+})<AppBarProps>(({ theme }) => ({
+  zIndex: theme.zIndex.drawer + 1,
+  transition: theme.transitions.create(['width', 'margin'], {
+    easing: theme.transitions.easing.sharp,
+    duration: theme.transitions.duration.leavingScreen,
+  }),
+  backgroundColor: theme.palette.primary.main,
+  variants: [
+    {
+      props: ({ open }) => open,
+      style: {
+        marginLeft: drawerWidth,
+        width: `calc(100% - ${drawerWidth}px)`,
+        transition: theme.transitions.create(['width', 'margin'], {
+          easing: theme.transitions.easing.sharp,
+          duration: theme.transitions.duration.enteringScreen,
+        }),
+      },
+    },
+  ],
+}));
+
+const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' })(
+  ({ theme }) => ({
+    width: drawerWidth,
+    backgroundColor: theme.palette.primary.main,
+    flexShrink: 0,
+    whiteSpace: 'nowrap',
+    boxSizing: 'border-box',
+    variants: [
+      {
+        props: ({ open }) => open,
+        style: {
+          ...openedMixin(theme),
+          '& .MuiDrawer-paper': openedMixin(theme),
+        },
+      },
+      {
+        props: ({ open }) => !open,
+        style: {
+          ...closedMixin(theme),
+          '& .MuiDrawer-paper': closedMixin(theme),
+        },
+      },
+    ],
+  }),
+);
+
+export default function MiniDrawer({ toggleSidebar }: MiniDrawerProps) {
+  const theme = useTheme();
+  const [open, setOpen] = React.useState(false);
   const { logout, userRole } = useAuth();
-  const sidebarRef = useRef<HTMLDivElement | null>(null);
-  const [isProfileOpen, setIsProfileOpen] = useState<boolean>(false);
   const navigate = useNavigate();
 
-  const handleClickOutside = (event: MouseEvent) => {
-    if (
-      sidebarRef.current &&
-      !sidebarRef.current.contains(event.target as Node)
-    ) {
-      setIsOpen(false);
-    }
+  const handleDrawerOpen = () => {
+    setOpen(true);
+    toggleSidebar();
   };
 
-  useEffect(() => {
-    if (isOpen) {
-      document.addEventListener("mousedown", handleClickOutside);
-    } else {
-      document.removeEventListener("mousedown", handleClickOutside);
-    }
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [isOpen]);
+  const handleDrawerClose = () => {
+    setOpen(false);
+    toggleSidebar();
+  };
+
+  const handleLogout = () => {
+    logout();
+    navigate('/Login'); // Redireciona para a página de login
+  };
 
   return (
-    <>
-      <aside
-        ref={sidebarRef}
-        id="separator-sidebar"
-        className="fixed top-0 left-0 z-20 w-64 h-screen transition-transform -translate-x-full sm:translate-x-0"
-        aria-label="Sidebar"
-      >
-        <div className="h-full pt-20 px-3 py-4 overflow-y-auto bg-gray-50 dark:bg-gray-800">
-          <ul className="space-y-2 font-medium">
-            <li>
-              <Link
-                to="/PaginaInicial"
-                className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group"
-              >
-                <svg
-                  className="flex-shrink-0 w-6 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"
-                  aria-hidden="true"
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="currentColor"
-                  viewBox="0 0 18 18"
-                >
-                  <path d="M6.143 0H1.857A1.857 1.857 0 0 0 0 1.857v4.286C0 7.169.831 8 1.857 8h4.286A1.857 1.857 0 0 0 8 6.143V1.857A1.857 1.857 0 0 0 6.143 0Zm10 0h-4.286A1.857 1.857 0 0 0 10 1.857v4.286C10 7.169 10.831 8 11.857 8h4.286A1.857 1.857 0 0 0 18 6.143V1.857A1.857 1.857 0 0 0 16.143 0Zm-10 10H1.857A1.857 1.857 0 0 0 0 11.857v4.286C0 17.169.831 18 1.857 18h4.286A1.857 1.857 0 0 0 8 16.143v-4.286A1.857 1.857 0 0 0 6.143 10Zm10 0h-4.286A1.857 1.857 0 0 0 10 11.857v4.286c0 1.026.831 1.857 1.857 1.857h4.286A1.857 1.857 0 0 0 18 16.143v-4.286A1.857 1.857 0 0 0 16.143 10Z" />
-                </svg>
-                <span className="flex-1 ms-3 whitespace-nowrap">
-                  Página Inicial
-                </span>
+    <Box sx={{ display: 'flex' }}>
+      <CssBaseline />
+      <AppBar position="fixed" open={open}>
+        <Toolbar>
+          <IconButton
+            color="inherit"
+            aria-label="open drawer"
+            onClick={handleDrawerOpen}
+            edge="start"
+            sx={[{ marginRight: 5 }, open && { display: 'none' }]}
+          >
+            <MenuIcon />
+          </IconButton>
+          {/* <Typography variant="h6" noWrap component="div">
+            Elevacon
+          </Typography> */}
+        </Toolbar>
+      </AppBar>
+      <Drawer variant="permanent" open={open}>
+        <DrawerHeader>
+          {open && (
+            <Typography variant="h6" sx={{ color: 'white', marginLeft: 1.6, flexGrow: 1, textAlign: 'left' }}>
+              Elevacon
+            </Typography>
+          )}
+          <IconButton onClick={handleDrawerClose} sx={{ color: 'white' }}>
+            {theme.direction === 'rtl' ? <ChevronRightIcon /> : <ChevronLeftIcon />}
+          </IconButton>
+        </DrawerHeader>
+        <Divider />
+        <List>
+          {[
+            { text: 'Pagina Inicial', route: '/PaginaInicial', icon: <GridViewOutlinedIcon /> },
+            // { text: 'Visualizar Cliente', route: '/VisualizarClienteCliente', icon: <PeopleAltOutlinedIcon /> },
+            { text: 'Clientes', route: '/ListaCliente', icon: <PeopleAltOutlinedIcon /> },
+            { text: 'Documentos', route: '/ListaDocumento', icon: <ArticleOutlinedIcon /> },
+          ].map(({ text, route, icon }, index) => (
+            <ListItem key={text} disablePadding sx={{ display: 'block' }}>
+              <Link to={route} style={{ textDecoration: 'none' }}>
+                <Tooltip title={text} placement="right">
+                  <ListItemButton sx={[{ minHeight: 48, px: 2.5 }, open ? { justifyContent: 'initial' } : { justifyContent: 'center' }]}>
+
+                    <ListItemIcon sx={[{ minWidth: 0, justifyContent: 'center' }, open ? { mr: 3 } : { mr: 'auto' }, { color: theme.palette.primary.main }]}>
+                      {icon}
+                    </ListItemIcon>
+
+                    <ListItemText primary={text} sx={[open ? { opacity: 1 } : { opacity: 0 }, { color: theme.palette.primary.main }]} />
+                  </ListItemButton>
+                </Tooltip>
               </Link>
-            </li>
+            </ListItem>
+          ))}
+        </List>
+        <Divider />
+        <List>
+          {[
+            { text: 'Editar Perfil', route: '/EditarPerfil', icon: <AccountCircleOutlinedIcon /> },
+            { text: 'Ajuda', route: '/Ajuda', icon: <LiveHelpOutlinedIcon /> },
+            {
+              text: 'Sair',
+              route: '/Login', // A rota será usada apenas para o redirecionamento após o logout
+              icon: <LogoutOutlinedIcon />,
+              action: handleLogout, // Define a função de logout para o item "Sair"
+            },
+          ].map(({ text, route, icon, action }, index) => (
+            <ListItem key={text} disablePadding sx={{ display: 'block' }}>
+              {action ? (
+                // Para o botão "Sair", apenas a função de logout será chamada
+                <Tooltip title={text} placement="right">
+                  <ListItemButton
+                    sx={[
+                      { minHeight: 48, px: 2.5 },
+                      open ? { justifyContent: 'initial' } : { justifyContent: 'center' },
+                    ]}
+                    onClick={action}
+                  >
+                    <ListItemIcon
+                      sx={[
+                        { minWidth: 0, justifyContent: 'center' },
+                        open ? { mr: 3 } : { mr: 'auto' }, { color: theme.palette.primary.main },
+                      ]}
+                    >
+                      {icon}
+                    </ListItemIcon>
+                    <ListItemText primary={text} sx={[open ? { opacity: 1 } : { opacity: 0 }, { color: theme.palette.primary.main }]} />
+                  </ListItemButton>
+                </Tooltip>
+              ) : (
+                // Para os outros botões, envolvemos com o componente Link
+                <Link to={route} style={{ textDecoration: 'none' }}>
+                  <Tooltip title={text} placement="right">
+                    <ListItemButton
+                      sx={[
+                        { minHeight: 48, px: 2.5 },
+                        open ? { justifyContent: 'initial' } : { justifyContent: 'center' },
+                      ]}
+                    >
 
-            <li>
-              <button
-                onClick={() => setIsProfileOpen(!isProfileOpen)}
-                aria-controls="dropdown-example"
-                aria-expanded={isProfileOpen}
-                type="button"
-                className="flex items-center w-full p-2 text-base text-gray-900 transition duration-75 rounded-lg group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700"
-                data-collapse-toggle="dropdown-example"
-              >
-                <svg className="flex-shrink-0 w-6 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white">
-                  <CircleUser />
-                </svg>
-                <span className="flex-1 ms-3 text-left rtl:text-right whitespace-nowrap">
-                  Perfil
-                </span>
-                <svg
-                  className="w-3 h-3"
-                  aria-hidden="true"
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 10 6"
-                >
-                  <path
-                    stroke="currentColor"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="m1 1 4 4 4-4"
-                  />
-                </svg>
-              </button>
-              <ul
-                id="dropdown-example"
-                className={`${isProfileOpen ? "" : "hidden"} py-2 space-y-2`}
-              >
-                <li>
-                  <button
-                    onClick={() => {
-                      navigate("/VisualizarClienteCliente");
-                    }}
-                    className="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700"
-                  >
-                    <span>Informações pessoais</span>
-                  </button>
-                </li>
-                <li>
-                  <Link
-                    to="/EditarPerfil"
-                    className="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700"
-                  >
-                    <span>Dados de acesso</span>
-                  </Link>
-                </li>
-              </ul>
-            </li>
 
-            {userRole === "CONTADOR" && (
-              <li>
-                <Link
-                  to="/ListaCliente"
-                  className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group"
-                >
-                  <svg
-                    className="flex-shrink-0 w-6 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"
-                    aria-hidden="true"
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="currentColor"
-                    viewBox="0 0 20 18"
-                  >
-                    <path d="M14 2a3.963 3.963 0 0 0-1.4.267 6.439 6.439 0 0 1-1.331 6.638A4 4 0 1 0 14 2Zm1 9h-1.264A6.957 6.957 0 0 1 15 15v2a2.97 2.97 0 0 1-.184 1H19a1 1 0 0 0 1-1v-1a5.006 5.006 0 0 0-5-5ZM6.5 9a4.5 4.5 0 1 0 0-9 4.5 4.5 0 0 0 0 9ZM8 10H5a5.006 5.006 0 0 0-5 5v2a1 1 0 0 0 1 1h11a1 1 0 0 0 1-1v-2a5.006 5.006 0 0 0-5-5Z" />
-                  </svg>
-                  <span className="flex-1 ms-3 whitespace-nowrap">
-                    Clientes
-                  </span>
+                      <ListItemIcon
+                        sx={[
+                          { minWidth: 0, justifyContent: 'center' },
+                          open ? { mr: 3 } : { mr: 'auto' }, { color: theme.palette.primary.main },
+                        ]}
+                      >
+                        {icon}
+                      </ListItemIcon>
+                      <ListItemText primary={text} sx={[open ? { opacity: 1 } : { opacity: 0 }, { color: theme.palette.primary.main }]} />
+                    </ListItemButton>
+                  </Tooltip>
                 </Link>
-              </li>
-            )}
-            <li>
-              <a
-                href="/ListaDocumento"
-                className="flex items-center p-2 text-gray-900 transition duration-75 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 dark:text-white group"
-              >
-                <svg
-                  className="flex-shrink-0 w-6 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"
-                  aria-hidden="true"
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="currentColor"
-                  viewBox="0 0 16 20"
-                >
-                  <path d="M16 14V2a2 2 0 0 0-2-2H2a2 2 0 0 0-2 2v15a3 3 0 0 0 3 3h12a1 1 0 0 0 0-2h-1v-2a2 2 0 0 0 2-2ZM4 2h2v12H4V2Zm8 16H3a1 1 0 0 1 0-2h9v2Z" />
-                </svg>
-                <span className="ms-3">Documentos</span>
-              </a>
-            </li>
-          </ul>
-          <ul className="pt-4 mt-4 space-y-2 font-medium border-t border-gray-200 dark:border-gray-700">
-            <li>
-              <a
-                onClick={logout}
-                className={`${styles["button-sair"]} button-sair flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group cursor-pointer`}
-              >
-                <svg
-                  className="flex-shrink-0 w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"
-                  aria-hidden="true"
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 18 16"
-                >
-                  <path
-                    stroke="currentColor"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d="M1 8h11m0 0L8 4m4 4-4 4m4-11h3a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2h-3"
-                  />
-                </svg>
-                <span className="flex-1 ms-3 whitespace-nowrap">Sair</span>
-              </a>
-            </li>
-
-            <li>
-              <a
-                href="/Ajuda"
-                className="flex items-center p-2 text-gray-900 transition duration-75 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 dark:text-white group"
-              >
-                <svg
-                  className="flex-shrink-0 w-6 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"
-                  aria-hidden="true"
-                  viewBox="0 0 21 21"
-                >
-                  <HandHelpingIcon />
-                </svg>
-                <span className="ms-3">Ajuda</span>
-              </a>
-            </li>
-          </ul>
-        </div>
-      </aside>
-    </>
+              )}
+            </ListItem>
+          ))}
+        </List>
+      </Drawer>
+      <Box
+        component="main"
+        sx={{
+          flexGrow: 1,
+          p: 0,
+          marginTop: `${theme.mixins.toolbar.minHeight}px`,
+        }}
+      >
+      </Box>
+    </Box>
   );
-};
-
-export default Sidebar;
+}
