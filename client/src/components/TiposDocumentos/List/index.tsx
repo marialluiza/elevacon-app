@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { Table } from "@radix-ui/themes";
 import { useAuth } from "../../../infra/context/AuthProvider";
 import api from "../../../infra/hooks/useAPI";
-import NavBar from "../../Header/Header";
 import { toast } from "sonner";
 import { ITipoDocumento } from "../../../interfaces/ITipoDocumento";
 import { Edit, Trash2 } from 'lucide-react';
@@ -66,7 +65,6 @@ const ListaTiposDocumentos: React.FC = () => {
 
     return (
         <>
-            <NavBar />
             <div className="min-h-screen bg-gray-100 p-4">
                 <div className="bg-white p-6 rounded-lg shadow-lg">
                     <h2 className="text-2xl font-semibold mb-6">Tipos de Documentos</h2>

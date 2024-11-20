@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 import { Autocomplete, TextField, Button, CircularProgress, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, IconButton } from '@mui/material';
 import { useAuth } from "../../../infra/context/AuthProvider";
 import api from '../../../infra/hooks/useAPI';
-import NavBar from '../../Header/Header';
 import { toast } from 'sonner';
 import CreateDocumentNewType from '../CreateType';
 import { IClient } from '../../../interfaces/IClient';
@@ -84,7 +83,7 @@ const EnviarDocumento: React.FC = () => {
             toast.error('Erro ao excluir tipo de documento.');
         }
     };
-    
+
     const handleDelete = (tipoDocumento: TipoDocumento) => {
         setSelectedTipoDocumento(tipoDocumento);
         setConfirmDeleteOpen(true);
@@ -147,7 +146,6 @@ const EnviarDocumento: React.FC = () => {
 
     return (
         <>
-            <NavBar />
             <div className="min-h-screen bg-gray-100 p-4">
                 <div className="bg-white p-6 rounded-lg shadow-lg">
                     <h2 className="text-2xl font-bold mb-4">Enviar Documento</h2>

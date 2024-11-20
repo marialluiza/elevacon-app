@@ -3,7 +3,6 @@ import { useAuth } from "../../../infra/context/AuthProvider";
 import { useEffect, useState } from "react";
 import { Download, SearchIcon } from "lucide-react";
 import api from "../../../infra/hooks/useAPI";
-import NavBar from "../../Header/Header";
 import { toast } from "sonner";
 import { IDocumento } from "../../../interfaces/IDocumento";
 
@@ -70,7 +69,6 @@ const ListaDocumentosEnviados: React.FC = () => {
 
   return (
     <>
-      <NavBar />
       <div className="min-h-screen bg-gray-100 p-4">
         <div className="bg-white p-6 rounded-lg shadow-lg">
           <h2 className="text-2xl font-semibold mb-6">Documentos Enviados</h2>

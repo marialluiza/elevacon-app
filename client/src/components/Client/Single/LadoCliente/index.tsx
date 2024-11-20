@@ -1,6 +1,5 @@
 import React, { useCallback } from "react";
 import { useAuth } from "../../../../infra/context/AuthProvider";
-import NavBar from "../../../Header/Header";
 import { Button } from "@radix-ui/themes";
 import { useNavigate } from "react-router-dom";
 
@@ -8,7 +7,7 @@ const VisualizarInformaçõesLadoCliente: React.FC = () => {
     const { client } = useAuth();
     const navigate = useNavigate();
 
-if (!client) {
+    if (!client) {
         return <p>Carregando informações...</p>;
     }
 
@@ -18,7 +17,6 @@ if (!client) {
 
     return (
         <div>
-            <NavBar />
 
             <div className=" mx-auto px-4 sm:px-6 lg:px-8 mt-8">
                 <div className="flex px-4 sm:px-0 justify-between gap-10">

@@ -4,7 +4,6 @@ import { useAuth } from "../../../../infra/context/AuthProvider";
 import { Button } from "@radix-ui/themes";
 import ModalAccess from "../ModalAccess";
 import api from "../../../../infra/hooks/useAPI";
-import NavBar from "../../../Header/Header";
 import { IClient } from "../../../../interfaces/IClient";
 import { toast } from "sonner";
 import { Tooltip } from "@mui/material";
@@ -91,7 +90,6 @@ const VisualizarCliente = () => {
 
     return (
         <>
-            <NavBar />
             <div className="p-10 bg-white rounded-lg shadow-md">
                 <div className="flex justify-between">
                     <h2 className="text-2xl font-semibold text-blue-950 mb-6 w-1/2">Informações do cliente</h2>

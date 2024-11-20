@@ -5,9 +5,10 @@ import { useAuth } from "../../../infra/context/AuthProvider";
 import { useEffect, useState } from "react";
 import { Edit, SquareArrowOutUpRight, Trash2Icon } from 'lucide-react';
 import api from "../../../infra/hooks/useAPI";
-import NavBar from "../../Header/Header";
 import { toast } from "sonner";
 import { Pagination, Stack } from "@mui/material";
+import { Skeleton } from '@radix-ui/themes';
+import Utils from "../../../utils/Utils";
 
 interface Cliente {
   id_cliente: number;
@@ -21,22 +22,24 @@ interface Cliente {
 
 const ListaCliente: React.FC = () => {
 
-  const { userId, token, loading } = useAuth();
+  const { userId, token } = useAuth();
   const [clientes, setClientes] = useState<Cliente[]>([]);
   const [clientesFiltrados, setClientesFiltrados] = useState<Cliente[]>([]);
   const [clienteIdParaExcluir, setClienteIdParaExcluir] = useState<number | null>(null);
   const [isOpen, setIsOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState<string>('');
+  const [isLoading, setIsLoading] = useState(true);
 
   const itemsPerPage = 7;
   const [currentPage, setCurrentPage] = useState(1);
 
   const navigate = useNavigate();
 
-console.log("clientefiltrados:::", clientesFiltrados)
+  console.log("clientefiltrados:::", clientesFiltrados)
 
   useEffect(() => {
     const fetchClientes = async () => {
+      setIsLoading(true);
       try {
         const response = await api.get(`/cliente/listar-clientes`, {
           headers: {
@@ -45,9 +48,10 @@ console.log("clientefiltrados:::", clientesFiltrados)
         });
         setClientes(response.data);
         setClientesFiltrados(response.data);
-
       } catch (error) {
         console.error('Erro ao buscar clientes:', error);
+      } finally {
+        setIsLoading(false);
       }
     };
 
@@ -80,7 +84,7 @@ console.log("clientefiltrados:::", clientesFiltrados)
   const handleExcluirCliente = async () => {
     if (clienteIdParaExcluir === null) return;
     try {
-      const response = await api.delete(`/cliente/excluir-cliente/${clienteIdParaExcluir}`);
+      await api.delete(`/cliente/excluir-cliente/${clienteIdParaExcluir}`);
 
       const novosClientes = clientes.filter(cliente => cliente.id_cliente !== clienteIdParaExcluir);
       setClientes(novosClientes);
@@ -123,13 +127,65 @@ console.log("clientefiltrados:::", clientesFiltrados)
     setCurrentPage(1);
   };
 
-  if (loading) {
-    return <div>Carregando...</div>;
+  // if (loading) {
+  //   return <div>Carregando...</div>;
+  // }
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gray-100 p-4">
+        <div className="bg-white p-6 rounded-lg shadow-lg">
+          <h2 className="text-2xl font-bold mb-4">Lista de Clientes</h2>
+          <div className="mb-4 flex justify-between gap-4">
+            <div className="flex w-[80%] gap-5">
+              <input
+                type="text"
+                placeholder="Pesquisar por nome ou CPF..."
+                value={searchQuery}
+                onChange={handleSearch}
+                className="w-1/2 px-3 py-2 border rounded-md border-blue-800 focus:outline-none focus:ring focus:border-blue-300"
+              />
+            </div>
+          </div>
+          <Table.Root>
+            <Table.Header>
+              <Table.Row>
+                <Table.ColumnHeaderCell>Nome</Table.ColumnHeaderCell>
+                <Table.ColumnHeaderCell>Telefone</Table.ColumnHeaderCell>
+                <Table.ColumnHeaderCell>CPF</Table.ColumnHeaderCell>
+                <Table.ColumnHeaderCell>Data de nascimento</Table.ColumnHeaderCell>
+                <Table.ColumnHeaderCell>Ocupação</Table.ColumnHeaderCell>
+                <Table.ColumnHeaderCell>Titulo Eleitoral</Table.ColumnHeaderCell>
+                <Table.ColumnHeaderCell></Table.ColumnHeaderCell>
+                <Table.ColumnHeaderCell></Table.ColumnHeaderCell>
+                <Table.ColumnHeaderCell></Table.ColumnHeaderCell>
+              </Table.Row>
+            </Table.Header>
+
+            <Table.Body>
+              {/* Aqui você vai usar o Skeleton */}
+              {[...Array(7)].map((_, index) => (
+                <Table.Row key={index}>
+                  <Table.Cell><Skeleton>Nome</Skeleton></Table.Cell>
+                  <Table.Cell><Skeleton>Telefone</Skeleton></Table.Cell>
+                  <Table.Cell><Skeleton>CPF</Skeleton></Table.Cell>
+                  <Table.Cell><Skeleton>Data de nascimento</Skeleton></Table.Cell>
+                  <Table.Cell><Skeleton>Ocupação</Skeleton></Table.Cell>
+                  <Table.Cell><Skeleton>Titulo Eleitoral</Skeleton></Table.Cell>
+                  <Table.Cell><Skeleton /></Table.Cell>
+                  <Table.Cell><Skeleton /></Table.Cell>
+                  <Table.Cell><Skeleton /></Table.Cell>
+                </Table.Row>
+              ))}
+            </Table.Body>
+          </Table.Root>
+        </div>
+      </div>
+    );
   }
 
   return (
     <>
-      <NavBar />
       <div className="min-h-screen bg-gray-100 p-4">
         <div className="bg-white p-6 rounded-lg shadow-lg">
           <h2 className="text-2xl font-bold mb-4">Lista de Clientes</h2>
@@ -171,8 +227,12 @@ console.log("clientefiltrados:::", clientesFiltrados)
                 {currentClientes.map(cliente => (
                   <Table.Row key={cliente.id_cliente}>
                     <Table.Cell>{cliente.nome ? cliente.nome : 'N/A'}</Table.Cell>
-                    <Table.Cell>{cliente.telefone ? cliente.telefone : 'N/A'}</Table.Cell>
-                    <Table.Cell>{cliente.cpf ? cliente.cpf : 'N/A'}</Table.Cell>
+                    <Table.Cell>
+                      {cliente.telefone ? Utils.mascaraTelefone(cliente.telefone) : 'N/A'}
+                    </Table.Cell>
+                    <Table.Cell>
+                      {cliente.cpf ? Utils.mascaraCPF(cliente.cpf) : 'N/A'}
+                    </Table.Cell>
                     <Table.Cell>{formatarData(cliente.data_nascimento)}</Table.Cell>
                     <Table.Cell>{cliente.ocupacao_principal ? cliente.ocupacao_principal : 'N/A'}</Table.Cell>
                     <Table.Cell >{cliente.titulo_eleitoral ? cliente.titulo_eleitoral : 'N/A'}</Table.Cell>

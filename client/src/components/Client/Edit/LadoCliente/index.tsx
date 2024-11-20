@@ -1,7 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../../../infra/context/AuthProvider";
 import api from "../../../../infra/hooks/useAPI";
-import NavBar from "../../../Header/Header";
 import { useState } from "react";
 import { IClient } from "../../../../interfaces/IClient";
 
@@ -12,7 +11,7 @@ const EditarClienteCliente: React.FC<EditarClienteClienteProps> = () => {
     const { token, userId, client, fetchClientData } = useAuth();
     const [cliente, setCliente] = useState<IClient | undefined>(client);
 
-    const validateDate = (date: string) => /^\d{4}-\d{2}-\d{2}$/.test(date);
+    (date: string) => /^\d{4}-\d{2}-\d{2}$/.test(date);
 
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
@@ -55,8 +54,6 @@ const EditarClienteCliente: React.FC<EditarClienteClienteProps> = () => {
 
     return (
         <>
-            <NavBar />
-            
             <form className="space-y-10 p-4 pl-8 pr-8 pb-6" onSubmit={handleSubmit}>
                 <div className="border-b border-gray-900/10 pb-6">
                     <div className="grid grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-6">

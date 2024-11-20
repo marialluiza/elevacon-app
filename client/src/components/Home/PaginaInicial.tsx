@@ -1,5 +1,4 @@
 import { Link } from "react-router-dom";
-import NavBar from "../Header/Header";
 import { useAuth } from "../../infra/context/AuthProvider";
 import MediaCard from "./Card/Card";
 import { useEffect, useState } from "react";
@@ -49,7 +48,6 @@ export const PaginaInicial = () => {
 
   return (
     <div className="flex flex-col min-h-screen">
-      <NavBar />
       <div className="flex-grow p-4">
         <h2 className="text-xl font-bold">Atualizações</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 my-4">
