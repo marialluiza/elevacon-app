@@ -13,7 +13,7 @@ ReactDOM.render(
     <Theme>
       <ThemeProvider theme={theme}>
         <App />
-        <ThemePanel></ThemePanel>
+        {/* <ThemePanel></ThemePanel> */}
       </ThemeProvider>
     </Theme>
   </React.StrictMode>,

@@ -355,10 +355,11 @@ class Utils {
 
     static formatarCPF(value: string): string {
         return value
-            .replace(/\D/g, '') // Remove todos os caracteres que não são dígitos
-            .replace(/(\d{3})(\d)/, '$1.$2') // Adiciona o primeiro ponto após os 3 primeiros dígitos
-            .replace(/(\d{3})(\d)/, '$1.$2') // Adiciona o segundo ponto
-            .replace(/(\d{3})(\d{1,2})$/, '$1-$2'); // Adiciona o hífen para os dois últimos dígitos
+            .replace(/\D/g, '') // Remove caracteres não numéricos
+            .slice(0, 11) // Garante que o valor tenha no máximo 11 dígitos
+            .replace(/(\d{3})(\d)/, '$1.$2') // Primeiro ponto
+            .replace(/(\d{3})(\d)/, '$1.$2') // Segundo ponto
+            .replace(/(\d{3})(\d{1,2})$/, '$1-$2'); // Hífen
     }
 
     static mascaraCNPJ(value: string) {

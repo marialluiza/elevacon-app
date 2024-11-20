@@ -73,8 +73,41 @@ const InserirCliente = () => {
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { id, value } = event.target;
-    setClienteData({ ...clienteData, [id]: value });
+
+    // Atualiza o estado do cliente com o valor do input/textarea
+    setClienteData((prev) => ({ ...prev, [id]: value }));
+
+    // Se o campo é o CEP e o valor tem 8 dígitos, busca os dados do endereço
+    if (id === "cep" && Utils.apenasNumeros(value).length === 8) {
+      fetch(Utils.viaCep(value)) // URL da API do ViaCEP
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error("Erro ao buscar CEP");
+          }
+          return response.json();
+        })
+        .then((data) => {
+          if (data.erro) {
+            alert("CEP não encontrado!");
+            return;
+          }
+
+          // Atualiza os campos de endereço com os dados retornados
+          setClienteData((prev) => ({
+            ...prev,
+            logradouro: data.logradouro || "",
+            bairro: data.bairro || "",
+            cidade: data.localidade || "",
+            estado: data.uf || "",
+          }));
+        })
+        .catch((error) => {
+          console.error("Erro ao buscar o CEP:", error);
+          alert("Erro ao buscar o CEP. Tente novamente.");
+        });
+    }
   };
+
 
   return (
     <>
