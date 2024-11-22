@@ -4,6 +4,29 @@ import MediaCard from "./Card/Card";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import api from "../../infra/hooks/useAPI";
+import { Bar, Line } from "react-chartjs-2";
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend,
+} from "chart.js";
+
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend
+);
+
+import { Card, CardContent, Typography, Box } from "@mui/material";
 
 export const PaginaInicial = () => {
   const { token, userRole } = useAuth();
@@ -45,6 +68,19 @@ export const PaginaInicial = () => {
       fetchDocumentCounts();
     }
   }, [token]);
+
+  const growthData = {
+    labels: ["1 mês", "6 meses", "1 ano"],
+    datasets: [
+      {
+        label: "Crescimento de clientes",
+        data: [20, 120, 250], // Dados estáticos para o exemplo
+        backgroundColor: "rgba(75,192,192,0.2)",
+        borderColor: "rgba(75,192,192,1)",
+        borderWidth: 2,
+      },
+    ],
+  };
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -102,6 +138,21 @@ export const PaginaInicial = () => {
           >
             Documentos
           </Link>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 my-4">
+          {/* Card para gráfico de crescimento */}
+          <Card sx={{ maxWidth: 400 }}>
+            <CardContent>
+              <Typography variant="h6" component="div">
+                Crescimento de Clientes
+              </Typography>
+              <Box sx={{ height: "200px", marginTop: 2 }}>
+                <Line data={growthData} />
+              </Box>
+            </CardContent>
+          </Card>
+        </div>
+        <div>
         </div>
       </div>
       <div className="p-4"></div>
