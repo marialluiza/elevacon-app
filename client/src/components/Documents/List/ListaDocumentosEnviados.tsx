@@ -5,10 +5,14 @@ import { Download, SearchIcon } from "lucide-react";
 import api from "../../../infra/hooks/useAPI";
 import { toast } from "sonner";
 import { IDocumento } from "../../../interfaces/IDocumento";
+import { Pagination, Stack } from "@mui/material";
 
 const ListaDocumentosEnviados: React.FC = () => {
   const { userId, token, loading } = useAuth();
   const [documentos, setDocumentos] = useState<IDocumento[]>([]);
+  const [pesquisa, setPesquisa] = useState<string>("");
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const itemsPerPage = 5;
 
   useEffect(() => {
     const fetchDocumentosEnviados = async () => {
@@ -47,20 +51,39 @@ const ListaDocumentosEnviados: React.FC = () => {
         headers: {
           Authorization: `Bearer ${token}`,
         },
-        responseType: "blob",
+        responseType: 'blob',
       });
 
       const url = window.URL.createObjectURL(new Blob([response.data]));
-      const link = document.createElement("a");
+      const link = document.createElement('a');
       link.href = url;
-      link.setAttribute("download", `documento_${documentoId}.pdf`);
+      link.setAttribute('download', `documento_${documentoId}.pdf`);
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
     } catch (error) {
       console.error("Erro ao baixar o documento:", error);
-      toast.error("Não foi possível baixar o documento.");
+      toast.error("Não foi possível baixar o documento.")
     }
+  };
+
+  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setPesquisa(e.target.value);
+  };
+
+  const documentosFiltrados = documentos.filter((documento) =>
+    documento.nome?.toLowerCase().includes(pesquisa.toLowerCase()) ||
+    documento.tipoDocumento?.toLowerCase().includes(pesquisa.toLowerCase()) ||
+    documento.recebidoPor?.toLowerCase().includes(pesquisa.toLowerCase())
+  );
+
+  const paginatedDocumentos = documentosFiltrados.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
+
+  const handleChangePage = (_event: React.ChangeEvent<unknown>, page: number) => {
+    setCurrentPage(page);
   };
 
   if (loading) {
@@ -69,14 +92,16 @@ const ListaDocumentosEnviados: React.FC = () => {
 
   return (
     <>
-      <div className="min-h-screen bg-gray-100 p-4">
-        <div className="bg-white p-6 rounded-lg shadow-lg">
+      <div className="min-h-[89vh] bg-gray-100 p-4">
+        <div className="bg-white p-6 rounded-lg shadow-lg max-h[70vh]">
           <h2 className="text-2xl font-semibold mb-6">Documentos Enviados</h2>
           <div className="flex items-center justify-between mb-8">
             <div className="flex items-center gap-4 w-1/2">
               <input
                 type="text"
                 placeholder="Pesquisar documento..."
+                value={pesquisa}
+                onChange={handleSearch}
                 className="w-1/2 px-3 py-2 border rounded-md border-blue-800 focus:outline-none focus:ring focus:border-blue-300"
               />
               <div className="p-2 cursor-pointer border rounded-md border-blue-800 focus:outline-none focus:ring focus:border-blue-300">
@@ -94,7 +119,7 @@ const ListaDocumentosEnviados: React.FC = () => {
               </a>
             </div>
           </div>
-          <div className="overflow-y-auto max-h-[70vh]">
+          <div className="overflow-y-auto min-h-[60vh] max-h-[60vh] flex justify-between flex-col">
             <Table.Root>
               <Table.Header>
                 <Table.Row>
@@ -109,9 +134,9 @@ const ListaDocumentosEnviados: React.FC = () => {
               </Table.Header>
 
               <Table.Body>
-                {documentos.map((documento) => (
+                {paginatedDocumentos.map((documento) => (
                   <Table.Row key={documento.id}>
-                    <Table.Cell>
+                    <Table.Cell className="max-w-md ">
                       {documento.nome ? documento.nome : "N/A"}
                     </Table.Cell>
                     <Table.Cell>{formatarData(documento.dataEnvio)}</Table.Cell>
@@ -123,15 +148,25 @@ const ListaDocumentosEnviados: React.FC = () => {
                         ? documento.tipoDocumento
                         : "N/A"}
                     </Table.Cell>
-                    <Table.Cell className="flex justify-center">
-                      <button onClick={() => handleDownload(documento.id)}>
+                    <Table.Cell className="text-center">
+                      <button onClick={() => handleDownload(documento.id)} className="mr-4">
                         <Download className="text-blue-500" />
                       </button>
                     </Table.Cell>
+
                   </Table.Row>
                 ))}
               </Table.Body>
             </Table.Root>
+
+            <Stack spacing={2} className="mt-4">
+              <Pagination
+                count={Math.ceil(documentosFiltrados.length / itemsPerPage)}
+                page={currentPage}
+                onChange={handleChangePage}
+                shape="rounded"
+              />
+            </Stack>
           </div>
         </div>
       </div>

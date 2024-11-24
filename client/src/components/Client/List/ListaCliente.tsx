@@ -30,7 +30,7 @@ const ListaCliente: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [isLoading, setIsLoading] = useState(true);
 
-  const itemsPerPage = 7;
+  const itemsPerPage = 5;
   const [currentPage, setCurrentPage] = useState(1);
 
   const navigate = useNavigate();
@@ -147,38 +147,40 @@ const ListaCliente: React.FC = () => {
               />
             </div>
           </div>
-          <Table.Root>
-            <Table.Header>
-              <Table.Row>
-                <Table.ColumnHeaderCell>Nome</Table.ColumnHeaderCell>
-                <Table.ColumnHeaderCell>Telefone</Table.ColumnHeaderCell>
-                <Table.ColumnHeaderCell>CPF</Table.ColumnHeaderCell>
-                <Table.ColumnHeaderCell>Data de nascimento</Table.ColumnHeaderCell>
-                <Table.ColumnHeaderCell>Ocupação</Table.ColumnHeaderCell>
-                <Table.ColumnHeaderCell>Titulo Eleitoral</Table.ColumnHeaderCell>
-                <Table.ColumnHeaderCell></Table.ColumnHeaderCell>
-                <Table.ColumnHeaderCell></Table.ColumnHeaderCell>
-                <Table.ColumnHeaderCell></Table.ColumnHeaderCell>
-              </Table.Row>
-            </Table.Header>
-
-            <Table.Body>
-              {/* Aqui você vai usar o Skeleton */}
-              {[...Array(7)].map((_, index) => (
-                <Table.Row key={index}>
-                  <Table.Cell><Skeleton>Nome</Skeleton></Table.Cell>
-                  <Table.Cell><Skeleton>Telefone</Skeleton></Table.Cell>
-                  <Table.Cell><Skeleton>CPF</Skeleton></Table.Cell>
-                  <Table.Cell><Skeleton>Data de nascimento</Skeleton></Table.Cell>
-                  <Table.Cell><Skeleton>Ocupação</Skeleton></Table.Cell>
-                  <Table.Cell><Skeleton>Titulo Eleitoral</Skeleton></Table.Cell>
-                  <Table.Cell><Skeleton /></Table.Cell>
-                  <Table.Cell><Skeleton /></Table.Cell>
-                  <Table.Cell><Skeleton /></Table.Cell>
+          <div className="overflow-y-auto min-h-[65vh] max-h-[70vh] flex justify-between flex-col">
+            <Table.Root>
+              <Table.Header>
+                <Table.Row>
+                  <Table.ColumnHeaderCell>Nome</Table.ColumnHeaderCell>
+                  <Table.ColumnHeaderCell>Telefone</Table.ColumnHeaderCell>
+                  <Table.ColumnHeaderCell>CPF</Table.ColumnHeaderCell>
+                  <Table.ColumnHeaderCell>Data de nascimento</Table.ColumnHeaderCell>
+                  <Table.ColumnHeaderCell>Ocupação</Table.ColumnHeaderCell>
+                  <Table.ColumnHeaderCell>Titulo Eleitoral</Table.ColumnHeaderCell>
+                  <Table.ColumnHeaderCell></Table.ColumnHeaderCell>
+                  <Table.ColumnHeaderCell></Table.ColumnHeaderCell>
+                  <Table.ColumnHeaderCell></Table.ColumnHeaderCell>
                 </Table.Row>
-              ))}
-            </Table.Body>
-          </Table.Root>
+              </Table.Header>
+
+              <Table.Body>
+                {/* Aqui você vai usar o Skeleton */}
+                {[...Array(7)].map((_, index) => (
+                  <Table.Row key={index}>
+                    <Table.Cell><Skeleton>Nome</Skeleton></Table.Cell>
+                    <Table.Cell><Skeleton>Telefone</Skeleton></Table.Cell>
+                    <Table.Cell><Skeleton>CPF</Skeleton></Table.Cell>
+                    <Table.Cell><Skeleton>Data de nascimento</Skeleton></Table.Cell>
+                    <Table.Cell><Skeleton>Ocupação</Skeleton></Table.Cell>
+                    <Table.Cell><Skeleton>Titulo Eleitoral</Skeleton></Table.Cell>
+                    <Table.Cell><Skeleton /></Table.Cell>
+                    <Table.Cell><Skeleton /></Table.Cell>
+                    <Table.Cell><Skeleton /></Table.Cell>
+                  </Table.Row>
+                ))}
+              </Table.Body>
+            </Table.Root>
+          </div>
         </div>
       </div>
     );
@@ -186,9 +188,9 @@ const ListaCliente: React.FC = () => {
 
   return (
     <>
-      <div className="min-h-screen bg-gray-100 p-4">
+      <div className="min-h-[89vh] bg-gray-100 p-4">
         <div className="bg-white p-6 rounded-lg shadow-lg">
-          <h2 className="text-2xl font-bold mb-4">Lista de Clientes</h2>
+          <h2 className="text-2xl font-bold mb-4 ">Lista de Clientes</h2>
           <div className="mb-4 flex justify-between gap-4">
             <div className="flex w-[80%] gap-5">
               <input
@@ -207,7 +209,7 @@ const ListaCliente: React.FC = () => {
               Inserir Cliente
             </Link>
           </div>
-          <div className="overflow-y-auto max-h-[70vh]">
+          <div className="overflow-y-auto min-h-[60vh] max-h-[65vh] flex    justify-between flex-col">
             <Table.Root>
               <Table.Header>
                 <Table.Row>

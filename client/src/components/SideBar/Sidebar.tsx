@@ -20,11 +20,16 @@ import { Link, useNavigate } from 'react-router-dom';
 import GridViewOutlinedIcon from '@mui/icons-material/GridViewOutlined';
 import PeopleAltOutlinedIcon from '@mui/icons-material/PeopleAltOutlined';
 import AccountCircleOutlinedIcon from '@mui/icons-material/AccountCircleOutlined';
+import PermContactCalendarOutlinedIcon from '@mui/icons-material/PermContactCalendarOutlined';
 import ArticleOutlinedIcon from '@mui/icons-material/ArticleOutlined';
+import ExpandLess from '@mui/icons-material/ArticleOutlined';
+import ExpandMore from '@mui/icons-material/ArticleOutlined';
+import { FileInput, FileOutput } from 'lucide-react';
+import PictureAsPdfOutlinedIcon from '@mui/icons-material/PictureAsPdfOutlined';
 import LiveHelpOutlinedIcon from '@mui/icons-material/LiveHelpOutlined';
 import LogoutOutlinedIcon from '@mui/icons-material/LogoutOutlined';
 import { useAuth } from '../../infra/context/AuthProvider';
-import { Tooltip } from '@mui/material';
+import { Collapse, Tooltip } from '@mui/material';
 
 interface MiniDrawerProps {
   toggleSidebar: () => void;
@@ -121,6 +126,7 @@ export default function MiniDrawer({ toggleSidebar }: MiniDrawerProps) {
   const theme = useTheme();
   const [open, setOpen] = React.useState(false);
   const { logout, userRole } = useAuth();
+  const [documentosOpen, setDocumentosOpen] = React.useState(false);
   const navigate = useNavigate();
 
   const handleDrawerOpen = () => {
@@ -135,8 +141,30 @@ export default function MiniDrawer({ toggleSidebar }: MiniDrawerProps) {
 
   const handleLogout = () => {
     logout();
-    navigate('/Login'); // Redireciona para a página de login
+    navigate('/Login');
   };
+
+  const handleDocumentosClick = () => {
+    setDocumentosOpen(!documentosOpen);
+  };
+
+  const mainItems = [
+    { text: 'Pagina Inicial', route: '/PaginaInicial', icon: <GridViewOutlinedIcon /> },
+    ...(userRole === "CONTADOR"
+      ? [{ text: 'Clientes', route: '/ListaCliente', icon: <PeopleAltOutlinedIcon /> }]
+      : []),
+    {
+      text: 'Documentos',
+      icon: <ArticleOutlinedIcon />,
+      children: [
+        { text: 'Recebidos', route: '/ListaDocumento', icon: <FileOutput size={20} /> },
+        { text: 'Enviados', route: '/ListaDocumentosEnviados', icon: <FileInput size={20} /> },
+        ...(userRole === "CONTADOR"
+          ? [{ text: 'Tipos de documentos', route: '/ListarTiposDocumentos', icon: <PictureAsPdfOutlinedIcon /> }]
+          : []),
+      ],
+    },
+  ];
 
   return (
     <Box sx={{ display: 'flex' }}>
@@ -169,33 +197,117 @@ export default function MiniDrawer({ toggleSidebar }: MiniDrawerProps) {
           </IconButton>
         </DrawerHeader>
         <Divider />
+
         <List>
-          {[
-            { text: 'Pagina Inicial', route: '/PaginaInicial', icon: <GridViewOutlinedIcon /> },
-            // { text: 'Visualizar Cliente', route: '/VisualizarClienteCliente', icon: <PeopleAltOutlinedIcon /> },
-            { text: 'Clientes', route: '/ListaCliente', icon: <PeopleAltOutlinedIcon /> },
-            { text: 'Documentos', route: '/ListaDocumento', icon: <ArticleOutlinedIcon /> },
-          ].map(({ text, route, icon }, index) => (
-            <ListItem key={text} disablePadding sx={{ display: 'block' }}>
-              <Link to={route} style={{ textDecoration: 'none' }}>
-                <Tooltip title={text} placement="right">
-                  <ListItemButton sx={[{ minHeight: 48, px: 2.5 }, open ? { justifyContent: 'initial' } : { justifyContent: 'center' }]}>
-
-                    <ListItemIcon sx={[{ minWidth: 0, justifyContent: 'center' }, open ? { mr: 3 } : { mr: 'auto' }, { color: theme.palette.primary.main }]}>
-                      {icon}
-                    </ListItemIcon>
-
-                    <ListItemText primary={text} sx={[open ? { opacity: 1 } : { opacity: 0 }, { color: theme.palette.primary.main }]} />
-                  </ListItemButton>
-                </Tooltip>
-              </Link>
-            </ListItem>
+          {mainItems.map((item) => (
+            <React.Fragment key={item.text}>
+              {!item.children ? (
+                <ListItem disablePadding sx={{ display: 'block' }}>
+                  <Link to={item.route} style={{ textDecoration: 'none' }}>
+                    <Tooltip title={item.text} placement="right">
+                      <ListItemButton
+                        sx={[
+                          { minHeight: 48, px: 2.5 },
+                          open ? { justifyContent: 'initial' } : { justifyContent: 'center' },
+                        ]}
+                      >
+                        <ListItemIcon
+                          sx={[
+                            { minWidth: 0, justifyContent: 'center' },
+                            open ? { mr: 3 } : { mr: 'auto' },
+                            { color: theme.palette.primary.main },
+                          ]}
+                        >
+                          {item.icon}
+                        </ListItemIcon>
+                        <ListItemText
+                          primary={item.text}
+                          sx={[
+                            open ? { opacity: 1 } : { opacity: 0 },
+                            { color: theme.palette.primary.main },
+                          ]}
+                        />
+                      </ListItemButton>
+                    </Tooltip>
+                  </Link>
+                </ListItem>
+              ) : (
+                <>
+                  <ListItem disablePadding sx={{ display: 'block' }}>
+                    <ListItemButton
+                      onClick={handleDocumentosClick}
+                      sx={[
+                        { minHeight: 48, px: 2.5 },
+                        open ? { justifyContent: 'initial' } : { justifyContent: 'center' },
+                      ]}
+                    >
+                      <ListItemIcon
+                        sx={[
+                          { minWidth: 0, justifyContent: 'center' },
+                          open ? { mr: 3 } : { mr: 'auto' },
+                          { color: theme.palette.primary.main },
+                        ]}
+                      >
+                        {item.icon}
+                      </ListItemIcon>
+                      <ListItemText
+                        primary={item.text}
+                        sx={[
+                          open ? { opacity: 1 } : { opacity: 0 },
+                          { color: theme.palette.primary.main },
+                        ]}
+                      />
+                      {open ? (documentosOpen ? <ExpandLess /> : <ExpandMore />) : null}
+                    </ListItemButton>
+                  </ListItem>
+                  <Collapse in={documentosOpen} timeout="auto" unmountOnExit>
+                    <List component="div" disablePadding>
+                      {item.children.map((child) => (
+                        <ListItem key={child.text} disablePadding sx={{ display: 'block' }}>
+                          <Link to={child.route} style={{ textDecoration: 'none' }}>
+                            <Tooltip title={child.text} placement="right">
+                              <ListItemButton
+                                sx={[
+                                  { minHeight: 48, pl: open ? 4 : 2.5 },
+                                  open ? { justifyContent: 'initial' } : { justifyContent: 'center' },
+                                ]}
+                              >
+                                <ListItemIcon
+                                  sx={[
+                                    { minWidth: 0, justifyContent: 'center' },
+                                    open ? { mr: 3 } : { mr: 'auto' },
+                                    { color: theme.palette.primary.main },
+                                  ]}
+                                >
+                                  {child.icon}
+                                </ListItemIcon>
+                                <ListItemText
+                                  primary={child.text}
+                                  sx={[
+                                    open ? { opacity: 1 } : { opacity: 0 },
+                                    { color: theme.palette.primary.main },
+                                  ]}
+                                />
+                              </ListItemButton>
+                            </Tooltip>
+                          </Link>
+                        </ListItem>
+                      ))}
+                    </List>
+                  </Collapse>
+                </>
+              )}
+            </React.Fragment>
           ))}
         </List>
+
         <Divider />
         <List>
           {[
-            { text: 'Editar Perfil', route: '/EditarPerfil', icon: <AccountCircleOutlinedIcon /> },
+            ...(userRole === "CLIENTE"
+              ? [{ text: 'Informações pessoais', route: '/VisualizarClienteCliente', icon: <PermContactCalendarOutlinedIcon /> }]
+              : []),
+            { text: 'Dados de acesso', route: '/EditarPerfil', icon: <AccountCircleOutlinedIcon /> },
             { text: 'Ajuda', route: '/Ajuda', icon: <LiveHelpOutlinedIcon /> },
             {
               text: 'Sair',

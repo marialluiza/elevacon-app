@@ -34,33 +34,82 @@ export const EditarPerfil = () => {
 
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
-
-        if (!senhaAntiga || !perfilData?.senha) {
-            toast.error('Por favor, preencha a senha antiga e a nova senha.');
+    
+        // se o e-mail foi alterado
+        const isEmailUpdated = perfilData.login !== undefined && perfilData.login.trim() !== '';
+    
+        // se a senha deve ser atualizada
+        const isPasswordUpdated = senhaAntiga && perfilData.senha && perfilData.senha.trim() !== '';
+    
+        // Se nenhuma alteração foi feita, retorna
+        if (!isEmailUpdated && !isPasswordUpdated) {
+            toast.error('Nenhuma alteração foi realizada.');
             return;
         }
-
-        const atualizacaoDTO = {
-            login: perfilData.login,
-            senha: perfilData.senha,
-        };
-
+    
         try {
-            await api.put(`/usuario/atualizar`, {
-                ...atualizacaoDTO,
-                idUsuario: perfilData.idUsuario
-            }, {
-                params: { senhaAntiga },
-                headers: { Authorization: `Bearer ${token}` },
-            });
-
+            const atualizacaoDTO: any = { idUsuario: perfilData.idUsuario };
+    
+            // att só o e-mail
+            if (isEmailUpdated) {
+                atualizacaoDTO.login = perfilData.login;
+            }
+    
+            // atualiza a senha, se necessário
+            if (isPasswordUpdated) {
+                atualizacaoDTO.senha = perfilData.senha;
+            }
+    
+            // faz a requisição com os campos certos
+            await api.put(
+                `/usuario/atualizar`,
+                atualizacaoDTO,
+                {
+                    params: isPasswordUpdated ? { senhaAntiga } : undefined,
+                    headers: { Authorization: `Bearer ${token}` },
+                }
+            );
+    
             toast.success('Perfil atualizado com sucesso');
             navigate('/PaginaInicial');
         } catch (error) {
             console.error('Erro ao atualizar perfil:', error);
-            toast.error('Senha atual incorreta.');
+            toast.error(
+                isPasswordUpdated ? 'Senha atual incorreta.' : 'Erro ao atualizar o perfil.'
+            );
         }
     };
+    
+
+    // const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    //     event.preventDefault();
+
+    //     if (!senhaAntiga || !perfilData?.senha) {
+    //         toast.error('Por favor, preencha a senha antiga e a nova senha.');
+    //         return;
+    //     }
+
+    //     const atualizacaoDTO = {
+    //         login: perfilData.login,
+    //         senha: perfilData.senha,
+    //     };
+
+    //     try {
+    //         await api.put(`/usuario/atualizar`, {
+    //             ...atualizacaoDTO,
+    //             idUsuario: perfilData.idUsuario
+    //         }, {
+    //             params: { senhaAntiga },
+    //             headers: { Authorization: `Bearer ${token}` },
+    //         });
+
+    //         toast.success('Perfil atualizado com sucesso');
+    //         navigate('/PaginaInicial');
+    //     } catch (error) {
+    //         console.error('Erro ao atualizar perfil:', error);
+    //         toast.error('Senha atual incorreta.');
+    //     }
+    // };
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { id, value } = e.target;

@@ -22,7 +22,7 @@ const Login: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErro('');
-    setIsLoading(true); // Iniciar carregamento
+    setIsLoading(true);
     try {
       await userAuth(login, senha);
       navigate('/PaginaInicial');
@@ -52,7 +52,7 @@ const Login: React.FC = () => {
               placeholder="Digite seu login"
               required
             />
-            {erro && <p className="mt-2 text-sm text-red-500">{erro}</p>}
+
           </div>
           <div>
             <label htmlFor="senha" className="block text-sm font-medium text-white">
@@ -75,14 +75,15 @@ const Login: React.FC = () => {
               >
                 {senhaVisivel ? <EyeOffIcon className=' text-gray-500 w-5' /> : <Eye className=' text-gray-500 w-5' />}
               </button>
+              {erro && <p className="mt-1 text-sm text-red-500">{erro}</p>}
             </div>
           </div>
-          {erro && <p className="text-red-500">{erro}</p>}
-          <div className="text-right">
+
+          {/* <div className="text-right">
             <a href="#" className="text-sm text-gray-400 hover:underline">
               Esqueceu sua senha?
             </a>
-          </div>
+          </div> */}
           <button
             type="submit"
             className={`w-full h-12 flex items-center justify-center px-4 py-2 text-white bg-blue-800 rounded-md hover:bg-blue-700 focus:outline-none focus:bg-blue-600 ${isLoading ? 'cursor-not-allowed opacity-75' : ''

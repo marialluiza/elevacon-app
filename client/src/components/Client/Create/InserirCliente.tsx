@@ -60,8 +60,8 @@ const InserirCliente = () => {
     } catch (error: any) {
       if (error.response && error.response.status === 400) {
         const errorMessage = error.response.data.message || 'Erro desconhecido';
-        setEmailError(errorMessage); // Exibe a mensagem de erro do backend
-        toast.error(errorMessage); // Exibe como notificação
+        setEmailError(errorMessage);
+        toast.error(errorMessage);
       } else if (error.response && error.response.status === 500) {
         toast.error('Erro no servidor. Tente novamente mais tarde.');
       } else {
@@ -103,7 +103,7 @@ const InserirCliente = () => {
         })
         .catch((error) => {
           console.error("Erro ao buscar o CEP:", error);
-          alert("Erro ao buscar o CEP. Tente novamente.");
+          toast.info("Erro ao buscar dados relacionados ao CEP. Tente novamente.");
         });
     }
   };
@@ -144,18 +144,29 @@ const InserirCliente = () => {
               />
             </div>
             <div className="sm:col-span-2">
-              <label htmlFor="ocupacao_principal" className="block text-sm font-medium text-gray-900">
-                Ocupação principal
-              </label>
+              <div className="flex">
+                <label htmlFor="cpf" className="block text-sm font-medium text-gray-900">
+                  CPF:
+                </label>
+                <label className="text-red-600 ml-1">*</label>
+              </div>
               <input
-                id="ocupacao_principal"
+                id="cpf"
                 type="text"
-                value={clienteData.ocupacao_principal}
-                onChange={handleChange}
-                className="p-4 block w-full mt-2 rounded-md border border-slate-400 bg-white py-1.5 text-gray-900 placeholder:text-sm placeholder-gray-500 focus:ring-2 focus:outline-none focus:border-blue-300 "
-                placeholder="Informe a ocupação principal"
+                value={clienteData.cpf}
+                onChange={(e) => {
+                  const valorFormatado = Utils.formatarCPF(e.target.value); // Formata o CPF
+                  setClienteData({ ...clienteData, cpf: valorFormatado }); // Atualiza o estado com o CPF formatado
+                }}
+                className={`p-4 block w-full mt-2 rounded-md border ${cpfError ? 'border-red-500' : 'border-slate-400'
+                  } bg-white py-1.5 text-gray-900 placeholder:text-sm placeholder-gray-500 focus:ring-2 focus:outline-none ${cpfError ? 'focus:border-red-500' : 'focus:border-blue-300'
+                  }`}
+                placeholder="Informe o CPF"
+                required
               />
+              {cpfError && <p className="text-red-500 text-sm mt-1">{cpfError}</p>}
             </div>
+           
             <div className="sm:col-span-3">
               <div className='flex'>
                 <label htmlFor="email" className="block text-sm font-medium text-gray-900">
@@ -190,27 +201,17 @@ const InserirCliente = () => {
               />
             </div>
             <div className="sm:col-span-3">
-              <div className="flex">
-                <label htmlFor="cpf" className="block text-sm font-medium text-gray-900">
-                  CPF:
-                </label>
-                <label className="text-red-600 ml-1">*</label>
-              </div>
+              <label htmlFor="ocupacao_principal" className="block text-sm font-medium text-gray-900">
+                Ocupação principal
+              </label>
               <input
-                id="cpf"
+                id="ocupacao_principal"
                 type="text"
-                value={clienteData.cpf}
-                onChange={(e) => {
-                  const valorFormatado = Utils.formatarCPF(e.target.value); // Formata o CPF
-                  setClienteData({ ...clienteData, cpf: valorFormatado }); // Atualiza o estado com o CPF formatado
-                }}
-                className={`p-4 block w-full mt-2 rounded-md border ${cpfError ? 'border-red-500' : 'border-slate-400'
-                  } bg-white py-1.5 text-gray-900 placeholder:text-sm placeholder-gray-500 focus:ring-2 focus:outline-none ${cpfError ? 'focus:border-red-500' : 'focus:border-blue-300'
-                  }`}
-                placeholder="Informe o CPF"
-                required
+                value={clienteData.ocupacao_principal}
+                onChange={handleChange}
+                className="p-4 block w-full mt-2 rounded-md border border-slate-400 bg-white py-1.5 text-gray-900 placeholder:text-sm placeholder-gray-500 focus:ring-2 focus:outline-none focus:border-blue-300 "
+                placeholder="Informe a ocupação principal"
               />
-              {cpfError && <p className="text-red-500 text-sm mt-1">{cpfError}</p>}
             </div>
             <div className="sm:col-span-3">
               <label htmlFor="telefone" className="block text-sm font-medium text-gray-900">
@@ -226,17 +227,18 @@ const InserirCliente = () => {
               />
             </div>
             <div className="sm:col-span-3">
-              <label htmlFor="logradouro" className="block text-sm font-medium text-gray-900">
-                Rua
+              <label htmlFor="cep" className="block text-sm font-medium text-gray-900">
+                CEP
               </label>
               <input
-                id="logradouro"
+                id="cep"
                 type="text"
-                value={clienteData.logradouro}
+                value={clienteData.cep}
                 onChange={handleChange}
                 className="p-4 block w-full mt-2 rounded-md border border-slate-400 bg-white py-1.5 text-gray-900 placeholder:text-sm placeholder-gray-500 focus:ring-2 focus:outline-none focus:border-blue-300 "
               />
             </div>
+
             <div className="sm:col-span-1">
               <label htmlFor="numero" className="block text-sm font-medium text-gray-900">
                 Nº
@@ -286,17 +288,18 @@ const InserirCliente = () => {
               />
             </div>
             <div className="sm:col-span-2">
-              <label htmlFor="cep" className="block text-sm font-medium text-gray-900">
-                CEP
+              <label htmlFor="logradouro" className="block text-sm font-medium text-gray-900">
+                Logradouro
               </label>
               <input
-                id="cep"
+                id="logradouro"
                 type="text"
-                value={clienteData.cep}
+                value={clienteData.logradouro}
                 onChange={handleChange}
                 className="p-4 block w-full mt-2 rounded-md border border-slate-400 bg-white py-1.5 text-gray-900 placeholder:text-sm placeholder-gray-500 focus:ring-2 focus:outline-none focus:border-blue-300 "
               />
             </div>
+           
             <div className='grid sm:col-span-6 grid-cols-2 gap-x-6 gap-y-6'>
               <div>
                 <label htmlFor="nome_conjugue" className="pb-2 block text-sm font-medium text-gray-900">

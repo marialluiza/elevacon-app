@@ -20,7 +20,7 @@ export default function MediaCard({
   const navigate = useNavigate();
 
   return (
-    <Card sx={{ maxWidth: 345, position: "relative", overflow: "visible" }}>
+    <Card sx={{ width: "100%", position: "relative", overflow: "visible" }}>
       {badgeContent != null && (
         <Badge
           badgeContent={badgeContent}
@@ -51,7 +51,7 @@ export default function MediaCard({
       </Box> */}
 
       <CardContent>
-        <Typography gutterBottom variant="h5" component="div">
+        <Typography gutterBottom component="div">
           {title}
         </Typography>
       </CardContent>

@@ -46,16 +46,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
-
-  // const fetchClientData = async (userId: number) => {
-  //   try {
-  //     const response = await api.get(`/cliente/cliente-logado/${userId}`);
-  //     setClient(response.data);
-  //   } catch (error) {
-  //     console.error('Erro ao buscar dados do cliente:', error);
-  //   }
-  // };
-
   const fetchContadorData = async (userId: number) => {
     try {
       const response = await api.get(`/contador/contador-logado/${userId}`);
@@ -99,18 +89,50 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       setUserRole(decodedToken.role);
 
       if (decodedToken.role === 'CLIENTE') {
-        fetchClientData(id_usuario);
+        await fetchClientData(id_usuario);
       } else if (decodedToken.role === 'CONTADOR') {
-        fetchContadorData(id_usuario);
+        await fetchContadorData(id_usuario);
       }
 
       navigate('/PaginaInicial');
-    } catch (error) {
+    } catch (error: any) {
       console.error('Erro na autenticação:', error);
+
+      throw new Error(
+        error?.response?.data?.message || 'Erro inesperado na autenticação'
+      );
     } finally {
       setLoading(false);
     }
   };
+
+
+  // const userAuth = async (login: string, senha: string) => {
+  //   setLoading(true);
+  //   try {
+  //     const response = await api.post('/autentica/login', { login, senha });
+  //     const { token, id_usuario } = response.data;
+  //     localStorage.setItem('token', token);
+  //     localStorage.setItem('userId', id_usuario);
+  //     setToken(token);
+  //     setUserId(id_usuario);
+
+  //     const decodedToken: any = jwtDecode(token);
+  //     setUserRole(decodedToken.role);
+
+  //     if (decodedToken.role === 'CLIENTE') {
+  //       fetchClientData(id_usuario);
+  //     } else if (decodedToken.role === 'CONTADOR') {
+  //       fetchContadorData(id_usuario);
+  //     }
+
+  //     navigate('/PaginaInicial');
+  //   } catch (error) {
+  //     console.error('Erro na autenticação:', error);
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
 
   const logout = () => {
     localStorage.removeItem('token');

@@ -104,11 +104,11 @@ const VisualizarCliente = () => {
                         <Tooltip
                             title={
                                 clienteStatus === "ATIVO"
-                                    ? "O acesso desse cliente já foi gerado."
+                                    ? "Acesso já gerado."
                                     : ""
                             }
                         >
-                            <span> {/* Necessário para envolver o botão desabilitado */}
+                            <span> 
                                 <Button
                                     className="hover:bg-blue-400 transition duration-300"
                                     style={{ cursor: clienteStatus === "ATIVO" ? "not-allowed" : "pointer" }}

@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { useAuth } from "../../../infra/context/AuthProvider";
 import api from "../../../infra/hooks/useAPI";
 import { toast } from "sonner";
+import Utils from "../../../utils/Utils";
 
 const EditarCliente = () => {
 
@@ -14,7 +15,7 @@ const EditarCliente = () => {
         nome: '',
         data_nascimento: '',
         ocupacao_principal: '',
-        email: '',
+        // email: '',
         titulo_eleitoral: '',
         cpf: '',
         telefone: '',
@@ -90,9 +91,46 @@ const EditarCliente = () => {
         }
     };
 
-    const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    // const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    //     const { id, value } = event.target;
+    //     setClienteData(prevData => ({ ...prevData, [id]: value }));
+    // };
+
+    const handleChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const { id, value } = event.target;
-        setClienteData(prevData => ({ ...prevData, [id]: value }));
+
+        // atualiza o estado do cliente com o valor do input/textarea
+        setClienteData((prev) => ({ ...prev, [id]: value }));
+
+        // se o campo é o CEP e o valor tem 8 dígitos, busca os dados do endereço
+        if (id === "cep" && Utils.apenasNumeros(value).length === 8) {
+            fetch(Utils.viaCep(value)) // url da api
+                .then((response) => {
+                    if (!response.ok) {
+                        throw new Error("Erro ao buscar CEP");
+                    }
+                    return response.json();
+                })
+                .then((data) => {
+                    if (data.erro) {
+                        alert("CEP não encontrado!");
+                        return;
+                    }
+
+                    // Atualiza os campos de endereço com os dados retornados
+                    setClienteData((prev) => ({
+                        ...prev,
+                        logradouro: data.logradouro || "",
+                        bairro: data.bairro || "",
+                        cidade: data.localidade || "",
+                        estado: data.uf || "",
+                    }));
+                })
+                .catch((error) => {
+                    console.error("Erro ao buscar o CEP:", error);
+                    toast.info("Erro ao buscar dados relacionados ao CEP. Tente novamente.");
+                });
+        }
     };
 
     if (loading) {
@@ -103,7 +141,20 @@ const EditarCliente = () => {
         <>
             <form className="space-y-10 p-4 pl-8 pr-8 pb-6" onSubmit={handleSubmit}>
                 <div className="border-b border-gray-900/10 pb-6">
-                    <div className="grid grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-6">
+
+                    <div className="mt-4 mb-4">
+                        <label htmlFor="observacoes" className="block text-sm font-medium text-gray-900">
+                            Observações
+                        </label>
+                        <input
+                            id="observacao"
+                            value={clienteData.observacao}
+                            onChange={handleChange}
+                            className="p-4 w-full h-16 mt-2 rounded-md border border-slate-400 bg-white py-1.5 text-gray-900 placeholder:text-sm placeholder-gray-500 focus:ring-2 focus:outline-none focus:border-blue-300"
+                            placeholder="Digite suas observações aqui"
+                        ></input>
+                    </div>
+                    <div className="grid grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-6 ">
                         <div className="sm:col-span-3">
                             <div className="flex">
                                 <label htmlFor="nome" className="block text-sm font-medium text-gray-900">
@@ -139,51 +190,6 @@ const EditarCliente = () => {
                         </div>
 
                         <div className="sm:col-span-2">
-                            <label htmlFor="ocupacao_principal" className="block text-sm font-medium text-gray-900">
-                                Ocupação principal
-                            </label>
-                            <input
-                                id="ocupacao_principal"
-                                type="text"
-                                value={clienteData.ocupacao_principal}
-                                onChange={handleChange}
-                                className="p-4 block w-full mt-2 rounded-md border border-slate-400 bg-white py-1.5 text-gray-900 placeholder-gray-500 focus:ring-2 focus:outline-none focus:border-blue-300 "
-                                placeholder="Informe a ocupação principal"
-                            />
-                        </div>
-
-                        <div className="sm:col-span-3">
-                            <div className="flex">
-                                <label htmlFor="email" className="block text-sm font-medium text-gray-900">
-                                    Email
-                                </label>
-                                <label className="text-red-600 ml-1">*</label>
-                            </div>
-                            <input
-                                id="email"
-                                type="email"
-                                value={clienteData.email}
-                                onChange={handleChange}
-                                className="p-4 block w-full mt-2 rounded-md border border-slate-400 bg-white py-1.5 text-gray-900 placeholder-gray-500 focus:ring-2 focus:outline-none focus:border-blue-300 "
-                                placeholder='exemplo@email.com'
-                            />
-                        </div>
-
-                        <div className="sm:col-span-3">
-                            <label htmlFor="titulo-eleitor" className="block text-sm font-medium text-gray-900">
-                                Título de eleitor
-                            </label>
-                            <input
-                                id="titulo_eleitoral"
-                                type="text"
-                                value={clienteData.titulo_eleitoral}
-                                onChange={handleChange}
-                                className="p-4 block w-full mt-2 rounded-md border border-slate-400 bg-white py-1.5 text-gray-900 placeholder-gray-500 focus:ring-2 focus:outline-none focus:border-blue-300 "
-                                placeholder="Informe o título de eleitor"
-                            />
-                        </div>
-
-                        <div className="sm:col-span-3">
                             <div className="flex">
                                 <label htmlFor="cpf" className="block text-sm font-medium text-gray-900">
                                     CPF
@@ -201,6 +207,58 @@ const EditarCliente = () => {
 
                         </div>
 
+                        {/* <div className="sm:col-span-3">
+                            <div className="flex">
+                                <label htmlFor="email" className="block text-sm font-medium text-gray-900">
+                                    Email
+                                </label>
+                                <label className="text-red-600 ml-1">*</label>
+                            </div>
+                            <input
+                                id="email"
+                                type="email"
+                                value={clienteData.email}
+                                onChange={handleChange}
+                                className="p-4 block w-full mt-2 rounded-md border border-slate-400 bg-white py-1.5 text-gray-900 placeholder-gray-500 focus:ring-2 focus:outline-none focus:border-blue-300 "
+                                placeholder='exemplo@email.com'
+                            />
+                        </div> */}
+
+                        <div className="sm:col-span-3">
+                            <div className="flex">
+                                <label htmlFor="titulo-eleitor" className="block text-sm font-medium text-gray-900">
+                                    Título de eleitor
+                                </label>
+                                <label className="text-white ml-1">*</label>
+                            </div>
+
+                            <input
+                                id="titulo_eleitoral"
+                                type="text"
+                                value={clienteData.titulo_eleitoral}
+                                onChange={handleChange}
+                                className="p-4 block w-full mt-2 rounded-md border border-slate-400 bg-white py-1.5 text-gray-900 placeholder-gray-500 focus:ring-2 focus:outline-none focus:border-blue-300 "
+                                placeholder="Informe o título de eleitor"
+                            />
+                        </div>
+
+                        <div className="sm:col-span-3">
+                            <div className="flex">
+                                <label htmlFor="ocupacao_principal" className="block text-sm font-medium text-gray-900">
+                                    Ocupação principal
+                                </label>
+                                <label className="text-white ml-1">*</label>
+                            </div>
+                            <input
+                                id="ocupacao_principal"
+                                type="text"
+                                value={clienteData.ocupacao_principal}
+                                onChange={handleChange}
+                                className="p-4 block w-full mt-2 rounded-md border border-slate-400 bg-white py-1.5 text-gray-900 placeholder-gray-500 focus:ring-2 focus:outline-none focus:border-blue-300 "
+                                placeholder="Informe a ocupação principal"
+                            />
+                        </div>
+
                         <div className="sm:col-span-3">
                             <label htmlFor="telefone" className="block text-sm font-medium text-gray-900">
                                 Telefone
@@ -212,6 +270,44 @@ const EditarCliente = () => {
                                 onChange={handleChange}
                                 className="p-4 block w-full mt-2 rounded-md border border-slate-400 bg-white py-1.5 text-gray-900 placeholder-gray-500 focus:ring-2 focus:outline-none focus:border-blue-300 "
                                 placeholder='(xx)xxxxx-xxxx'
+                            />
+                        </div>
+
+                        <div className="sm:col-span-1">
+                            <label htmlFor="cep" className="block text-sm font-medium text-gray-900">
+                                CEP
+                            </label>
+                            <input
+                                id="cep"
+                                type="text"
+                                onChange={handleChange}
+                                value={clienteData.cep}
+                                className="p-4 block w-full mt-2 rounded-md border border-slate-400 bg-white py-1.5 text-gray-900 placeholder-gray-500 focus:ring-2 focus:outline-none focus:border-blue-300 "
+                            />
+                        </div>
+                        <div className="sm:col-span-3">
+                            <label htmlFor="cidade" className="block text-sm font-medium text-gray-900">
+                                Cidade
+                            </label>
+                            <input
+                                id="cidade"
+                                type="text"
+                                value={clienteData.cidade}
+                                onChange={handleChange}
+                                className="p-4 block w-full mt-2 rounded-md border border-slate-400 bg-white py-1.5 text-gray-900 placeholder-gray-500 focus:ring-2 focus:outline-none focus:border-blue-300 "
+                            />
+                        </div>
+
+                        <div className="sm:col-span-1">
+                            <label htmlFor="estado" className="block text-sm font-medium text-gray-900">
+                                Estado
+                            </label>
+                            <input
+                                id="estado"
+                                type="text"
+                                onChange={handleChange}
+                                value={clienteData.estado}
+                                className="p-4 block w-full mt-2 rounded-md border border-slate-400 bg-white py-1.5 text-gray-900 placeholder-gray-500 focus:ring-2 focus:outline-none focus:border-blue-300 "
                             />
                         </div>
 
@@ -254,48 +350,11 @@ const EditarCliente = () => {
                             />
                         </div>
 
-                        <div className="sm:col-span-3">
-                            <label htmlFor="cidade" className="block text-sm font-medium text-gray-900">
-                                Cidade
-                            </label>
-                            <input
-                                id="cidade"
-                                type="text"
-                                value={clienteData.cidade}
-                                onChange={handleChange}
-                                className="p-4 block w-full mt-2 rounded-md border border-slate-400 bg-white py-1.5 text-gray-900 placeholder-gray-500 focus:ring-2 focus:outline-none focus:border-blue-300 "
-                            />
-                        </div>
 
-                        <div className="sm:col-span-1">
-                            <label htmlFor="estado" className="block text-sm font-medium text-gray-900">
-                                Estado
-                            </label>
-                            <input
-                                id="estado"
-                                type="text"
-                                onChange={handleChange}
-                                value={clienteData.estado}
-                                className="p-4 block w-full mt-2 rounded-md border border-slate-400 bg-white py-1.5 text-gray-900 placeholder-gray-500 focus:ring-2 focus:outline-none focus:border-blue-300 "
-                            />
-                        </div>
-
-                        <div className="sm:col-span-2 pb-10">
-                            <label htmlFor="cep" className="block text-sm font-medium text-gray-900">
-                                CEP
-                            </label>
-                            <input
-                                id="cep"
-                                type="text"
-                                onChange={handleChange}
-                                value={clienteData.cep}
-                                className="p-4 block w-full mt-2 rounded-md border border-slate-400 bg-white py-1.5 text-gray-900 placeholder-gray-500 focus:ring-2 focus:outline-none focus:border-blue-300 "
-                            />
-                        </div>
 
                     </div>
 
-                    <label htmlFor="nome_conjugue" className="block text-sm font-medium text-gray-900">
+                    <label htmlFor="nome_conjugue" className="block text-sm font-medium text-gray-900 mt-4">
                         Informações do conjugue
                     </label>
                     <div className="grid grid-cols-1 sm:grid-cols-6  border border-slate-400 rounded-md px-4">
@@ -328,18 +387,7 @@ const EditarCliente = () => {
                         </div>
 
                     </div>
-                    <div className="mt-4">
-                        <label htmlFor="observacoes" className="block text-sm font-medium text-gray-900">
-                            Observações
-                        </label>
-                        <input
-                            id="observacao"
-                            value={clienteData.observacao}
-                            onChange={handleChange}
-                            className="p-4 w-full h-4/5 mt-2 rounded-md border border-slate-400 bg-white py-1.5 text-gray-900 placeholder:text-sm placeholder-gray-500 focus:ring-2 focus:outline-none focus:border-blue-300"
-                            placeholder="Digite suas observações aqui"
-                        ></input>
-                    </div>
+
                 </div>
                 <button
                     type="submit"

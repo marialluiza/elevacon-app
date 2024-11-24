@@ -6,13 +6,18 @@ import { toast } from "sonner";
 import { ITipoDocumento } from "../../../interfaces/ITipoDocumento";
 import { Edit, Trash2 } from 'lucide-react';
 import * as Dialog from '@radix-ui/react-dialog';
+import { Pagination, Stack } from "@mui/material";
+import CreateDocumentNewType from "../../Documents/CreateType";
 
 const ListaTiposDocumentos: React.FC = () => {
-    const { token, loading, contador } = useAuth();
+    const { token, loading, contador, userRole } = useAuth();
     const [tiposDocumentos, setTiposDocumentos] = useState<ITipoDocumento[]>([]);
     const [confirmDeleteOpen, setConfirmDeleteOpen] = useState(false);
     const [selectedTipoDocumento, setSelectedTipoDocumento] = useState<ITipoDocumento | null>(null);
     const idContador = contador?.id_contador;
+    const [currentPage, setCurrentPage] = useState<number>(1);
+    const [isOpen, setOpen] = useState<boolean>(false);
+    const itemsPerPage = 5;
 
     useEffect(() => {
         const fetchTiposDocumentos = async () => {
@@ -33,7 +38,11 @@ const ListaTiposDocumentos: React.FC = () => {
         if (idContador && token) {
             fetchTiposDocumentos();
         }
-    }, [idContador, token])
+    }, [idContador, token]);
+
+    const handleChangePage = (_event: React.ChangeEvent<unknown>, page: number) => {
+        setCurrentPage(page);
+    };
 
     const handleDeleteConfirm = (tipoDocumento: ITipoDocumento) => {
         setSelectedTipoDocumento(tipoDocumento);
@@ -59,16 +68,26 @@ const ListaTiposDocumentos: React.FC = () => {
         }
     };
 
+    const handleCreateTipoDocumento = (novoTipoDocumento: ITipoDocumento) => {
+        setTiposDocumentos((prevTipos) => [...prevTipos, novoTipoDocumento]);
+    };
+
     if (loading) {
         return <div>Carregando...</div>;
     }
 
+
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const paginatedTipos = tiposDocumentos.slice(startIndex, startIndex + itemsPerPage);
+
     return (
         <>
-            <div className="min-h-screen bg-gray-100 p-4">
+            <div className="min-h-[89vh] bg-gray-100 p-4">
                 <div className="bg-white p-6 rounded-lg shadow-lg">
+
                     <h2 className="text-2xl font-semibold mb-6">Tipos de Documentos</h2>
-                    <div className="overflow-y-auto max-h-[70vh]">
+
+                    <div className="overflow-y-auto min-h-[65vh] max-h-[70vh] flex justify-between flex-col">
                         <Table.Root>
                             <Table.Header>
                                 <Table.Row>
@@ -80,23 +99,46 @@ const ListaTiposDocumentos: React.FC = () => {
                             </Table.Header>
 
                             <Table.Body>
-                                {tiposDocumentos.map((tipoDocumento) => (
+                                {paginatedTipos.map((tipoDocumento) => (
                                     <Table.Row key={tipoDocumento.id}>
                                         <Table.Cell>{tipoDocumento.nome ? tipoDocumento.nome : 'N/A'}</Table.Cell>
                                         <Table.Cell>{tipoDocumento.formato ? tipoDocumento.formato : 'N/A'}</Table.Cell>
-                                        <Table.Cell>{tipoDocumento.descricao ? tipoDocumento.descricao : 'N/A'}</Table.Cell>
-                                        <Table.Cell className="flex justify-center align-middle gap-2">
-                                            <button>
-                                                <Edit className="text-blue-500" />
-                                            </button>
-                                            <button onClick={() => handleDeleteConfirm(tipoDocumento)}>
-                                                <Trash2 className="text-red-500 ml-10" />
-                                            </button>
+                                        <Table.Cell className="max-w-md">{tipoDocumento.descricao ? tipoDocumento.descricao : 'N/A'}</Table.Cell>
+                                        <Table.Cell className="max-w-10">
+                                            <div className="flex justify-start gap-2">
+                                                <button>
+                                                    <Edit className="text-blue-500" />
+                                                </button>
+                                                <button onClick={() => handleDeleteConfirm(tipoDocumento)}>
+                                                    <Trash2 className="text-red-500 ml-8" />
+                                                </button>
+                                            </div>
                                         </Table.Cell>
                                     </Table.Row>
                                 ))}
                             </Table.Body>
                         </Table.Root>
+
+                        <Stack spacing={2} className="mt-4 flex justify-between align-middle" direction="row">
+                            <Pagination
+                                count={Math.ceil(tiposDocumentos.length / itemsPerPage)}
+                                page={currentPage}
+                                onChange={handleChangePage}
+                                shape="rounded"
+                            />
+
+                            {userRole === "CONTADOR" && (
+                                <>
+                                    <button
+                                        onClick={() => { setOpen(true) }}
+                                        type="button"
+                                        className="right-4 px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition duration-300">
+                                        Criar novo tipo
+                                    </button>
+                                    <CreateDocumentNewType isOpen={isOpen} onClose={() => setOpen(false)} onCreate={handleCreateTipoDocumento} />
+                                </>
+                            )}
+                        </Stack>
                     </div>
                 </div>
 
@@ -147,3 +189,4 @@ const ListaTiposDocumentos: React.FC = () => {
 };
 
 export default ListaTiposDocumentos;
+

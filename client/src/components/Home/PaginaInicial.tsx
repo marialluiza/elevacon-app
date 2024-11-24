@@ -83,33 +83,32 @@ export const PaginaInicial = () => {
   };
 
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="flex flex-col">
       <div className="flex-grow p-4">
         <h2 className="text-xl font-bold">Atualizações</h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 my-4">
-          <MediaCard
-            title="Documentos Recebidos"
-            shareText="Solicitar"
-            learnMoreText="Visualizar todos"
-            badgeContent={documentosRecebidos ?? 0}
-            shareRoute="/SolicitarDocumento"
-            learnMoreRoute="/ListaDocumento"
-          />
-          <MediaCard
-            title="Documentos Enviados"
-            shareText="Enviar"
-            learnMoreText="Visualizar todos"
-            badgeContent={documentosEnviados ?? "-"}
-            shareRoute="/EnviarDocumento"
-            learnMoreRoute="/ListaDocumentosEnviados"
-          />
-          {/* <MediaCard
-            title="Todos os Documentos"
-            shareText="Criar novo tipo"
-            learnMoreText="Visualizar todos"
-            badgeContent={totalDocumentos ?? "-"}
-          /> */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 my-4 align-middle">
+
+            <MediaCard
+              title="Documentos Recebidos"
+              shareText="Solicitar"
+              learnMoreText="Visualizar todos"
+              badgeContent={documentosRecebidos ?? 0}
+              shareRoute="/SolicitarDocumento"
+              learnMoreRoute="/ListaDocumento"
+            />
+            <div className="">
+              <MediaCard
+                title="Documentos Enviados"
+                shareText="Enviar"
+                learnMoreText="Visualizar todos"
+                badgeContent={documentosEnviados ?? "-"}
+                shareRoute="/EnviarDocumento"
+                learnMoreRoute="/ListaDocumentosEnviados"
+              />
+            </div>
+          
         </div>
+
         <h2 className="text-xl font-bold mt-8">Acessar</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 my-4">
           {userRole === "CONTADOR" && (
@@ -139,23 +138,26 @@ export const PaginaInicial = () => {
             Documentos
           </Link>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 my-4">
-          {/* Card para gráfico de crescimento */}
-          <Card sx={{ maxWidth: 400 }}>
-            <CardContent>
-              <Typography variant="h6" component="div">
-                Crescimento de Clientes
-              </Typography>
-              <Box sx={{ height: "200px", marginTop: 2 }}>
-                <Line data={growthData} />
-              </Box>
-            </CardContent>
-          </Card>
-        </div>
+
         <div>
         </div>
       </div>
-      <div className="p-4"></div>
+      {
+        userRole == "CONTADOR" && (
+          <div className="col-span-2 gap-4 mb-4 ml-5">
+            <Card sx={{ maxWidth: 400 }}>
+              <CardContent>
+                <Typography component="div">
+                  Crescimento de Clientes
+                </Typography>
+                <Box sx={{ height: "180px", marginTop: 2 }}>
+                  <Line data={growthData} />
+                </Box>
+              </CardContent>
+            </Card>
+          </div>
+        )
+      }
     </div>
   );
 };

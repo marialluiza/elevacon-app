@@ -3,6 +3,8 @@ import { useAuth } from "../../../../infra/context/AuthProvider";
 import api from "../../../../infra/hooks/useAPI";
 import { useState } from "react";
 import { IClient } from "../../../../interfaces/IClient";
+import { toast } from "sonner";
+import Utils from "../../../../utils/Utils";
 
 interface EditarClienteClienteProps { }
 
@@ -28,6 +30,11 @@ const EditarClienteCliente: React.FC<EditarClienteClienteProps> = () => {
                 id_usuario: userId,
             };
 
+            if (!cliente.cpf || cliente.cpf.trim() === "") {
+                toast.info("Insira o CPF.");
+                return;
+            }
+
             await api.put('/cliente/editar', formattedData, {
                 headers: { Authorization: `Bearer ${token}` },
             });
@@ -42,15 +49,56 @@ const EditarClienteCliente: React.FC<EditarClienteClienteProps> = () => {
         }
     };
 
-
-    const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const handleChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const { id, value } = event.target;
-        setCliente((prevData) => ({
-            ...prevData,
-            [id]: value,
-        }) as IClient);
 
+        // atualiza o estado do cliente apenas se `prev` estiver definido
+        setCliente((prev) => {
+            if (!prev) return prev; // retorna o estado anterior se estiver undefined
+            return { ...prev, [id]: value };
+        });
+
+        if (id === "cep" && Utils.apenasNumeros(value).length === 8) {
+            fetch(Utils.viaCep(value)) // URL da API
+                .then((response) => {
+                    if (!response.ok) {
+                        throw new Error("Erro ao buscar CEP");
+                    }
+                    return response.json();
+                })
+                .then((data) => {
+                    if (data.erro) {
+                        alert("CEP não encontrado!");
+                        return;
+                    }
+
+                    setCliente((prev) => {
+                        if (!prev) return prev;
+                        return {
+                            ...prev,
+                            logradouro: data.logradouro || "",
+                            bairro: data.bairro || "",
+                            cidade: data.localidade || "",
+                            estado: data.uf || "",
+                        };
+                    });
+                })
+                .catch((error) => {
+                    console.error("Erro ao buscar o CEP:", error);
+                    toast.info("Erro ao buscar dados relacionados ao CEP. Tente novamente.");
+                });
+        }
     };
+
+
+    // const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    //     const { id, value } = event.target;
+    //     setCliente((prevData) => ({
+    //         ...prevData,
+    //         [id]: value,
+    //     }) as IClient);
+
+    // };
 
     return (
         <>
