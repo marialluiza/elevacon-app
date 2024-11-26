@@ -27,3 +27,31 @@
 ::-webkit-scrollbar-thumb:hover {
     background: #555;
 }
+
+.table-column-nome {
+    width: 280px;
+}
+
+.table-column-telefone {
+    width: 200px;
+}
+
+.table-column-cpf {
+    width: 200px;
+}
+
+.table-column-data-nascimento {
+    width: 200px;
+}
+
+.table-column-ocupacao {
+    width: 180px;
+}
+
+.table-column-titulo-eleitoral {
+    width: 180px;
+}
+
+/* .table-column-acoes {
+    width: 100px;
+} */

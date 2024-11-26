@@ -210,20 +210,21 @@ const ListaCliente: React.FC = () => {
             </Link>
           </div>
           <div className="overflow-y-auto min-h-[60vh] max-h-[65vh] flex    justify-between flex-col">
-            <Table.Root>
+            <Table.Root className="table-root">
               <Table.Header>
                 <Table.Row>
-                  <Table.ColumnHeaderCell>Nome</Table.ColumnHeaderCell>
-                  <Table.ColumnHeaderCell>Telefone</Table.ColumnHeaderCell>
-                  <Table.ColumnHeaderCell>CPF</Table.ColumnHeaderCell>
-                  <Table.ColumnHeaderCell>Data de nascimento</Table.ColumnHeaderCell>
-                  <Table.ColumnHeaderCell>Ocupação</Table.ColumnHeaderCell>
-                  <Table.ColumnHeaderCell>Titulo Eleitoral</Table.ColumnHeaderCell>
-                  <Table.ColumnHeaderCell></Table.ColumnHeaderCell>
-                  <Table.ColumnHeaderCell></Table.ColumnHeaderCell>
-                  <Table.ColumnHeaderCell></Table.ColumnHeaderCell>
+                  <Table.ColumnHeaderCell className="table-column-nome">Nome</Table.ColumnHeaderCell>
+                  <Table.ColumnHeaderCell className="table-column-telefone">Telefone</Table.ColumnHeaderCell>
+                  <Table.ColumnHeaderCell className="table-column-cpf">CPF</Table.ColumnHeaderCell>
+                  <Table.ColumnHeaderCell className="table-column-data-nascimento">Data de nascimento</Table.ColumnHeaderCell>
+                  <Table.ColumnHeaderCell className="table-column-ocupacao">Ocupação</Table.ColumnHeaderCell>
+                  <Table.ColumnHeaderCell className="table-column-titulo-eleitoral">Titulo Eleitoral</Table.ColumnHeaderCell>
+                  <Table.ColumnHeaderCell className="table-column-acoes"></Table.ColumnHeaderCell>
+                  <Table.ColumnHeaderCell className="table-column-acoes"></Table.ColumnHeaderCell>
+                  <Table.ColumnHeaderCell className="table-column-acoes"></Table.ColumnHeaderCell>
                 </Table.Row>
               </Table.Header>
+
 
               <Table.Body>
                 {currentClientes.map(cliente => (
