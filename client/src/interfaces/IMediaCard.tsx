@@ -5,4 +5,5 @@ export interface IMediaCardProps {
   badgeContent?: number | string;
   shareRoute?: string;
   learnMoreRoute?: string;
+  isShareDisabled?: boolean;
 }

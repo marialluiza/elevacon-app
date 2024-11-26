@@ -16,6 +16,7 @@ export default function MediaCard({
   badgeContent,
   shareRoute,
   learnMoreRoute,
+  isShareDisabled = false,
 }: IMediaCardProps) {
   const navigate = useNavigate();
 
@@ -25,7 +26,7 @@ export default function MediaCard({
         <Badge
           badgeContent={badgeContent}
           color="primary"
-          // showZero
+          showZero
           sx={{
             position: "absolute",
             top: 5,
@@ -58,7 +59,7 @@ export default function MediaCard({
 
       <CardActions>
         {shareText && shareRoute && (
-          <Button size="small" onClick={() => navigate(shareRoute)}>
+          <Button size="small" onClick={() => navigate(shareRoute)} disabled={isShareDisabled} >
             {shareText}
           </Button>
         )}

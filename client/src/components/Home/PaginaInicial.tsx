@@ -10,6 +10,7 @@ import {
   CategoryScale,
   LinearScale,
   PointElement,
+  BarElement,
   LineElement,
   Title,
   Tooltip,
@@ -20,6 +21,7 @@ ChartJS.register(
   CategoryScale,
   LinearScale,
   PointElement,
+  BarElement,
   LineElement,
   Title,
   Tooltip,
@@ -82,31 +84,67 @@ export const PaginaInicial = () => {
     ],
   };
 
+  const documentosData = {
+    labels: ["Janeiro", "Fevereiro", "Março"], // Exemplo de meses
+    datasets: [
+      {
+        label: "Documentos Enviados",
+        data: [30, 50, 70], // Dados fictícios
+        backgroundColor: "rgba(54, 162, 235, 0.6)",
+      },
+      {
+        label: "Documentos Recebidos",
+        data: [40, 60, 90], // Dados fictícios
+        backgroundColor: "rgba(255, 99, 132, 0.6)",
+      },
+    ],
+  };
+
+  const performanceData = {
+    labels: ["Semana 1", "Semana 2", "Semana 3", "Semana 4"],
+    datasets: [
+      {
+        label: "Performance Mensal",
+        data: [65, 80, 90, 75],
+        backgroundColor: "rgba(153, 102, 255, 0.6)",
+        borderColor: "rgba(153, 102, 255, 1)",
+        borderWidth: 2,
+      },
+    ],
+  };
+
   return (
     <div className="flex flex-col">
       <div className="flex-grow p-4">
         <h2 className="text-xl font-bold">Atualizações</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 my-4 align-middle">
 
-            <MediaCard
-              title="Documentos Recebidos"
-              shareText="Solicitar"
-              learnMoreText="Visualizar todos"
-              badgeContent={documentosRecebidos ?? 0}
-              shareRoute="/SolicitarDocumento"
-              learnMoreRoute="/ListaDocumento"
-            />
-            <div className="">
-              <MediaCard
-                title="Documentos Enviados"
-                shareText="Enviar"
-                learnMoreText="Visualizar todos"
-                badgeContent={documentosEnviados ?? "-"}
-                shareRoute="/EnviarDocumento"
-                learnMoreRoute="/ListaDocumentosEnviados"
-              />
-            </div>
-          
+          <MediaCard
+            title="Documentos Recebidos"
+            shareText="Solicitar"
+            learnMoreText="Visualizar todos"
+            badgeContent={documentosRecebidos ?? 0}
+            shareRoute="/SolicitarDocumento"
+            learnMoreRoute="/ListaDocumento"
+            isShareDisabled={true}
+          />
+          <MediaCard
+            title="Documentos Enviados"
+            shareText="Enviar"
+            learnMoreText="Visualizar todos"
+            badgeContent={documentosEnviados ?? "-"}
+            shareRoute="/EnviarDocumento"
+            learnMoreRoute="/ListaDocumentosEnviados"
+          />
+          <MediaCard
+            title="Tipos de Documentos"
+            shareText="Criar novo"
+            learnMoreText="Visualizar todos"
+            // badgeContent={documentosEnviados ?? "-"}
+            shareRoute="/ListarTiposDocumentos"
+            learnMoreRoute="/ListarTiposDocumentos"
+          />
+
         </div>
 
         <h2 className="text-xl font-bold mt-8">Acessar</h2>
@@ -144,14 +182,28 @@ export const PaginaInicial = () => {
       </div>
       {
         userRole == "CONTADOR" && (
-          <div className="col-span-2 gap-4 mb-4 ml-5">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4 ml-5">
             <Card sx={{ maxWidth: 400 }}>
               <CardContent>
-                <Typography component="div">
-                  Crescimento de Clientes
-                </Typography>
+                <Typography component="div">Crescimento de Clientes</Typography>
                 <Box sx={{ height: "180px", marginTop: 2 }}>
                   <Line data={growthData} />
+                </Box>
+              </CardContent>
+            </Card>
+            <Card sx={{ maxWidth: 400 }}>
+              <CardContent>
+                <Typography component="div">Documentos Enviados e Recebidos</Typography>
+                <Box sx={{ height: "180px", marginTop: 2 }}>
+                  <Bar data={documentosData} />
+                </Box>
+              </CardContent>
+            </Card>
+            <Card sx={{ maxWidth: 400 }}>
+              <CardContent>
+                <Typography component="div">Performance Mensal</Typography>
+                <Box sx={{ height: "180px", marginTop: 2 }}>
+                  <Bar data={performanceData} />
                 </Box>
               </CardContent>
             </Card>
