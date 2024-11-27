@@ -22,14 +22,14 @@ import PeopleAltOutlinedIcon from '@mui/icons-material/PeopleAltOutlined';
 import AccountCircleOutlinedIcon from '@mui/icons-material/AccountCircleOutlined';
 import PermContactCalendarOutlinedIcon from '@mui/icons-material/PermContactCalendarOutlined';
 import ArticleOutlinedIcon from '@mui/icons-material/ArticleOutlined';
-import ExpandLess from '@mui/icons-material/ArticleOutlined';
-import ExpandMore from '@mui/icons-material/ArticleOutlined';
 import { FileInput, FileOutput } from 'lucide-react';
 import PictureAsPdfOutlinedIcon from '@mui/icons-material/PictureAsPdfOutlined';
 import LiveHelpOutlinedIcon from '@mui/icons-material/LiveHelpOutlined';
 import LogoutOutlinedIcon from '@mui/icons-material/LogoutOutlined';
 import { useAuth } from '../../infra/context/AuthProvider';
 import { Collapse, Tooltip } from '@mui/material';
+import KeyboardArrowDownOutlinedIcon from '@mui/icons-material/KeyboardArrowDownOutlined';
+import KeyboardArrowUpOutlinedIcon from '@mui/icons-material/KeyboardArrowUpOutlined';
 
 interface MiniDrawerProps {
   toggleSidebar: () => void;
@@ -257,7 +257,7 @@ export default function MiniDrawer({ toggleSidebar }: MiniDrawerProps) {
                           { color: theme.palette.primary.main },
                         ]}
                       />
-                      {open ? (documentosOpen ? <ExpandLess /> : <ExpandMore />) : null}
+                      {open ? (documentosOpen ? <KeyboardArrowUpOutlinedIcon /> : <KeyboardArrowDownOutlinedIcon />) : null}
                     </ListItemButton>
                   </ListItem>
                   <Collapse in={documentosOpen} timeout="auto" unmountOnExit>

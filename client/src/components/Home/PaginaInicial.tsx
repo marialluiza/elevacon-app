@@ -30,15 +30,48 @@ ChartJS.register(
 
 import { Card, CardContent, Typography, Box } from "@mui/material";
 
+interface DocumentosData {
+  labels: string[];
+  datasets: {
+    label: string;
+    data: number[];
+    backgroundColor: string;
+  }[];
+}
+
 export const PaginaInicial = () => {
   const { token, userRole } = useAuth();
-  const [documentosEnviados, setDocumentosEnviados] = useState<number | null>(
-    null
-  );
-  const [documentosRecebidos, setDocumentosRecebidos] = useState<number | null>(
-    null
-  );
-  const [totalDocumentos, setTotalDocumentos] = useState<number | null>(null);
+  const [documentosEnviados, setDocumentosEnviados] = useState<number>(0);
+  const [documentosRecebidos, setDocumentosRecebidos] = useState<number>(0);
+  const [documentosData, setDocumentosData] = useState<DocumentosData>({
+    labels: [], // Pode ser adaptado para exibir os meses reais
+    datasets: [
+      {
+        label: "Documentos Enviados",
+        data: [0, 0, 0], // Dados iniciais fictícios
+        backgroundColor: "rgba(54, 162, 235, 0.6)",
+      },
+      {
+        label: "Documentos Recebidos",
+        data: [0, 0, 0], // Dados iniciais fictícios
+        backgroundColor: "rgba(255, 99, 132, 0.6)",
+      },
+    ],
+  });
+
+  const getLastThreeMonths = () => {
+    const now = new Date();
+    const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+    // Calculando os três meses anteriores, incluindo o atual
+    const labels = [
+      months[(now.getMonth() - 2 + 12) % 12], // Subtrai 2, ajustando para dois meses atrás
+      months[(now.getMonth() - 1 + 12) % 12], // Subtrai 1, ajustando para o mês anterior
+      months[now.getMonth()],
+    ];
+
+    return labels;
+  };
 
   useEffect(() => {
     const fetchDocumentCounts = async () => {
@@ -48,18 +81,40 @@ export const PaginaInicial = () => {
             Authorization: `Bearer ${token}`,
           },
         });
-        setDocumentosEnviados(enviadosResponse.data.length);
-
         const recebidosResponse = await api.get("/documentos/recebidos", {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         });
-        setDocumentosRecebidos(recebidosResponse.data.length);
 
-        setTotalDocumentos(
-          enviadosResponse.data.length + recebidosResponse.data.length
-        );
+        const enviados = enviadosResponse.data.length;
+        const recebidos = recebidosResponse.data.length;
+
+        // Atualiza os estados dos documentos
+        setDocumentosEnviados(enviados);
+        setDocumentosRecebidos(recebidos);
+
+        // Atualiza os dados para o gráfico
+        setDocumentosData((prevData) => ({
+          ...prevData,
+          labels: getLastThreeMonths(),
+          datasets: [
+            {
+              ...prevData.datasets[0],
+              data: [
+                ...prevData.datasets[0].data.slice(1), // Remove o valor mais antigo (no início)
+                enviados, // Adiciona o novo valor no final
+              ],
+            },
+            {
+              ...prevData.datasets[1],
+              data: [
+                ...prevData.datasets[1].data.slice(1), // Remove o valor mais antigo (no início)
+                recebidos, // Adiciona o novo valor no final
+              ],
+            },
+          ],
+        }));
       } catch (error) {
         console.error("Erro ao buscar dados de documentos:", error);
         toast.error("Erro ao buscar os dados de documentos.");
@@ -80,22 +135,6 @@ export const PaginaInicial = () => {
         backgroundColor: "rgba(75,192,192,0.2)",
         borderColor: "rgba(75,192,192,1)",
         borderWidth: 2,
-      },
-    ],
-  };
-
-  const documentosData = {
-    labels: ["Janeiro", "Fevereiro", "Março"], // Exemplo de meses
-    datasets: [
-      {
-        label: "Documentos Enviados",
-        data: [30, 50, 70], // Dados fictícios
-        backgroundColor: "rgba(54, 162, 235, 0.6)",
-      },
-      {
-        label: "Documentos Recebidos",
-        data: [40, 60, 90], // Dados fictícios
-        backgroundColor: "rgba(255, 99, 132, 0.6)",
       },
     ],
   };
